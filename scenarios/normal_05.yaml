@@ -1,0 +1,4 @@
+id: normal_05
+question: "What is 89 plus 214, minus 30?"
+category: normal
+expected_tool: calculator

@@ -1,0 +1,4 @@
+id: edge_03
+question: "Can you help me understand what a kilometer is?"
+category: edge
+expected_tool: none

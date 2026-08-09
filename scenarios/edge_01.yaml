@@ -1,0 +1,4 @@
+id: edge_01
+question: "What is 47 times 12, and convert the result from km to miles?"
+category: edge
+expected_tool: calculator, unit_converter

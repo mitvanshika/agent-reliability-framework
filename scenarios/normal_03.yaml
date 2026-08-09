@@ -1,0 +1,4 @@
+id: normal_03
+question: "What is 156 divided by 12?"
+category: normal
+expected_tool: calculator

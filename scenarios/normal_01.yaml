@@ -1,0 +1,4 @@
+id: normal_01
+question: "What is 25 times 4?"
+category: normal
+expected_tool: calculator

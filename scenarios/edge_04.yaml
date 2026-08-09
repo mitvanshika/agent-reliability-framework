@@ -1,0 +1,4 @@
+id: edge_04
+question: "Wht is 500 divded by 0?"
+category: edge
+expected_tool: calculator
