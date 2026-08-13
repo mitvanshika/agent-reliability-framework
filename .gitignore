@@ -1,2 +1,5 @@
 venv/
-traces/ 
+traces/
+.env
+__pycache__/
+ judged_traces/

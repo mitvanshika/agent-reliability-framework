@@ -59,7 +59,15 @@ app = graph.compile()
 
 def run_agent(question: str):
     result = app.invoke({"messages": [HumanMessage(content=question)]})
-    return result["messages"][-1].content
+    tools_used = []
+    for msg in result["messages"]:
+        if hasattr(msg, "tool_calls") and msg.tool_calls:
+            for call in msg.tool_calls:
+                tools_used.append(call["name"])
+    return {
+        "answer": result["messages"][-1].content,
+        "tools_used": tools_used
+    }
 
 if __name__ == "__main__":
     print(run_agent("What is 47 times 12, and convert the result from km to miles?"))

@@ -23,12 +23,15 @@ def run_suite():
     for scenario in scenarios:
         print(f"Running {scenario['id']}...")
         try:
-            answer = run_agent(scenario["question"])
+            result_data = run_agent(scenario["question"])
+            answer = result_data["answer"]
+            tools_used = result_data["tools_used"]
             result = {
                 "scenario_id": scenario["id"],
                 "question": scenario["question"],
                 "category": scenario["category"],
                 "answer": answer,
+                "tools_used": tools_used,
                 "timestamp": timestamp,
                 "error": None
             }
@@ -38,6 +41,7 @@ def run_suite():
                 "question": scenario["question"],
                 "category": scenario["category"],
                 "answer": None,
+                "tools_used": [],
                 "timestamp": timestamp,
                 "error": str(e)
             }
@@ -46,6 +50,5 @@ def run_suite():
         with open(output_path, "w") as f:
             json.dump(result, f, indent=2)
         print(f"  Saved to {output_path}")
-
 if __name__ == "__main__":
     run_suite()
