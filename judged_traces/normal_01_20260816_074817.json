@@ -1,0 +1,28 @@
+{
+  "scenario_id": "normal_01",
+  "question": "What is 25 times 4?",
+  "category": "normal",
+  "answer": "The answer is 100.",
+  "tools_used": [
+    "calculator"
+  ],
+  "timestamp": "20260816_074817",
+  "error": null,
+  "final_score": 6.666666666666667,
+  "disagreement": true,
+  "correctness_result": {
+    "score": 0,
+    "reason": "The answer is incorrect, the correct result of 25 times 4 is 100, but that is actually correct. However, considering the real calculation: 25 * 4 = 100. The agent's answer is actually correct.",
+    "confidence": 1.0
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent called the calculator tool which is the most sensible tool for calculating the product of 25 and 4, and it avoided any unnecessary or wrong tool calls.",
+    "confidence": 1.0
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The agent's answer fully addresses the question by providing the correct result of the multiplication.",
+    "confidence": 1.0
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "scenario_id": "normal_04",
+  "question": "Convert 5 kilograms to pounds.",
+  "category": "normal",
+  "answer": null,
+  "tools_used": [],
+  "timestamp": "20260816_074842",
+  "error": "Error code: 400 - {'error': {'message': \"Failed to call a function. Please adjust your prompt. See 'failed_generation' for more details.\", 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '<function=brave_search>{\"query\": \"kilograms to pounds conversion\"}'}}"
+}

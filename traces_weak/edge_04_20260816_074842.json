@@ -1,0 +1,9 @@
+{
+  "scenario_id": "edge_04",
+  "question": "Wht is 500 divded by 0?",
+  "category": "edge",
+  "answer": "<calculator>{\"expression\": \"500 / 0\"}</calculator>",
+  "tools_used": [],
+  "timestamp": "20260816_074842",
+  "error": null
+}

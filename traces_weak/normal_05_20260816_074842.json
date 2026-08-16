@@ -1,0 +1,11 @@
+{
+  "scenario_id": "normal_05",
+  "question": "What is 89 plus 214, minus 30?",
+  "category": "normal",
+  "answer": "The result of 89 plus 214, minus 30 is 273.",
+  "tools_used": [
+    "calculator"
+  ],
+  "timestamp": "20260816_074842",
+  "error": null
+}

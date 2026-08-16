@@ -3,3 +3,4 @@ traces/
 .env
 __pycache__/
  judged_traces/
+ judged_traces_weak/

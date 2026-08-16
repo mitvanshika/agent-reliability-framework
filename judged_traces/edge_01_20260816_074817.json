@@ -1,0 +1,29 @@
+{
+  "scenario_id": "edge_01",
+  "question": "What is 47 times 12, and convert the result from km to miles?",
+  "category": "edge",
+  "answer": "The result of 47 times 12 is 564. Converting 564 km to miles results in approximately 350.45 miles.",
+  "tools_used": [
+    "calculator",
+    "unit_converter"
+  ],
+  "timestamp": "20260816_074817",
+  "error": null,
+  "final_score": 10.0,
+  "disagreement": false,
+  "correctness_result": {
+    "score": 10,
+    "reason": "The AI agent's answer is factually correct. The calculation 47 * 12 equals 564, and converting 564 km to miles indeed results in approximately 350.45 miles.",
+    "confidence": 1.0
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent called the necessary tools in a sensible order. It used the calculator to find the result of 47 times 12 and then used the unit converter to convert the result from km to miles.",
+    "confidence": 1.0
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The agent's answer fully addresses both parts of the question, providing the result of the multiplication and then converting it from kilometers to miles.",
+    "confidence": 1.0
+  }
+}

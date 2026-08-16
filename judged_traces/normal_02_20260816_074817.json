@@ -1,0 +1,28 @@
+{
+  "scenario_id": "normal_02",
+  "question": "Convert 10 kilometers to miles.",
+  "category": "normal",
+  "answer": "The result of the conversion is 6.21371 miles.",
+  "tools_used": [
+    "unit_converter"
+  ],
+  "timestamp": "20260816_074817",
+  "error": null,
+  "final_score": 10.0,
+  "disagreement": false,
+  "correctness_result": {
+    "score": 10,
+    "reason": "The agent's answer is factually correct, as 10 kilometers is indeed equal to 6.21371 miles when rounded to five decimal places.",
+    "confidence": 1.0
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The AI agent called the unit_converter tool, which is the most relevant and necessary tool for converting kilometers to miles. It avoided unnecessary tool calls and used the tool in a sensible order to arrive at the correct answer.",
+    "confidence": 1.0
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The agent's answer fully addresses the question by providing the conversion result of 10 kilometers to miles, leaving no part of the question unanswered or incomplete.",
+    "confidence": 1.0
+  }
+}
