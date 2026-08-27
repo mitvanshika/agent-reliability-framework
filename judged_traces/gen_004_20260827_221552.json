@@ -1,0 +1,47 @@
+{
+  "scenario_id": "gen_004",
+  "question": "Do you ship to PO boxes and how long does it take?",
+  "category": "normal",
+  "answer": "I\u2019m escalating your request to a human support specialist so they can provide the most accurate information about shipping to PO boxes and the delivery timeframes. Thank you for your patience\u2014someone will be with you shortly.",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "faq_search",
+    "faq_search",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.",
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.",
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query",
+    "Escalated to human support. Reason: Need to provide shipping policy for PO boxes which is not in FAQ"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221552",
+  "error": null,
+  "final_score": 3.511688311688312,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "correctness_result": {
+    "score": 2,
+    "reason": "The answer does not address the question directly; it defers to a human instead of providing factual information about whether shipping to PO boxes is possible and the delivery time. This makes the response largely unhelpful and factually incomplete.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "score": 2,
+    "reason": "The agent over\u2011used the faq_search tool (four calls) without showing any retrieved information and then escalated to a human even though the answer likely exists in the FAQs. The extra searches were unnecessary and the escalation was premature, indicating poor tool selection and ordering.",
+    "confidence": 0.94
+  },
+  "completeness_result": {
+    "score": 1,
+    "reason": "The response does not provide any information about whether shipping to PO boxes is supported or the delivery time; it only escalates to a human, leaving both parts of the question unanswered.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The tools did not contain any information about shipping to PO boxes, only generic shipping times, and the agent correctly escalated to human support rather than fabricating an answer. This honest handling aligns with the scoring guidelines for cases where no useful data is available.",
+    "confidence": 0.97
+  },
+  "judge_error": null
+}

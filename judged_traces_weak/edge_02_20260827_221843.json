@@ -1,0 +1,18 @@
+{
+  "scenario_id": "edge_02",
+  "question": "Can you check order Z9999 for me?",
+  "category": "edge",
+  "answer": "I\u2019m sorry\u2014I wasn\u2019t able to locate an order with the ID **Z9999**. Could you double\u2011check the order number and let me know if there\u2019s a typo or an alternative reference (e.g., a different order ID, email address, or name) you\u2019d like me to look up? I\u2019m happy to help with any other questions you have about your purchase.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "No order found with ID Z9999"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221843",
+  "error": null,
+  "final_score": null,
+  "disagreement": null,
+  "judge_error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kw03fqczeh5vv331g56atk4k` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199687, Requested 597. Please try again in 2m2.688s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+}

@@ -1,0 +1,15 @@
+{
+  "scenario_id": "normal_03",
+  "question": "How long does standard shipping take?",
+  "category": "normal",
+  "answer": "Standard shipping typically takes **5\u20117 business days** to arrive. If you need a faster delivery option, we also offer express shipping, which arrives in 2\u20113 business days. Let me know if you have any other questions!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221843",
+  "error": null
+}

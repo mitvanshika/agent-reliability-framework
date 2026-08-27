@@ -1,0 +1,15 @@
+{
+  "scenario_id": "normal_02",
+  "question": "Can you check the status of order A1001?",
+  "category": "normal",
+  "answer": "Sure! Order **A1001** has been **delivered**. The total amount was **$89.99**, and it\u2019s been **12\u202fdays** since the purchase. \n\nLet me know if there\u2019s anything else I can help you with\u2014perhaps a return, refund, or anything else related to this order.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221843",
+  "error": null
+}

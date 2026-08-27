@@ -1,0 +1,43 @@
+{
+  "scenario_id": "edge_01",
+  "question": "I want a refund for order A1002, and if I can't get one, I want to speak to someone.",
+  "category": "edge",
+  "answer": "I\u2019ve checked the details of order **A1002**. Since the purchase was made **45\u202fdays ago**, it falls outside our 30\u2011day refund window, so a refund isn\u2019t possible under our standard policy.\n\nI\u2019ve escalated your request to a human support representative so they can review your case further and discuss any other options. They\u2019ll be with you shortly. If you have any other questions in the meantime, feel free to let me know.",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Order A1002: status=delivered, total=$45.5, days_since_purchase=45",
+    "Not eligible for refund: purchase was made more than 30 days ago",
+    "Escalated to human support. Reason: Customer requested refund for order A1002 but is not eligible; they want to speak to a human."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221552",
+  "error": null,
+  "final_score": 9.501278772378516,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "correctness_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the order is outside the 30\u2011day refund window, explained that a refund isn\u2019t possible under the standard policy, and fulfilled the user\u2019s request to speak with a human by escalating the case. The response fully addresses both parts of the user\u2019s request.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent first called order_lookup to retrieve the order's purchase date, then used refund_calculator to determine that the 45\u2011day age exceeds the 30\u2011day refund window, and finally called escalate_to_human because a refund was not possible. All three tools were required and were invoked in a logical order, with no unnecessary calls.",
+    "confidence": 0.98
+  },
+  "completeness_result": {
+    "score": 9,
+    "reason": "The answer acknowledges the refund request, explains why a refund cannot be issued, and fulfills the second part by escalating to a human representative as requested. It covers both components of the query, though it could include a more specific timeframe for the follow\u2011up, hence not a perfect 10.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's response directly reflects the tool data: it states the order was purchased 45 days ago, exceeds the 30\u2011day refund window, and therefore a refund is not possible, and it notes the escalation to human support as indicated by the tools. No hallucination or contradiction is present.",
+    "confidence": 0.99
+  },
+  "judge_error": null
+}

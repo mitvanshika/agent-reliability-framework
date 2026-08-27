@@ -3,6 +3,8 @@ import os
 import sys
 from scipy.stats import fisher_exact
 
+from alerts import send_slack_alert, format_regression_alert
+
 
 def load_judged_traces(folder):
     results = {}
@@ -60,6 +62,8 @@ def detect_regressions():
     print(f"\nFisher's exact test p-value: {p_value:.4f}")
     if p_value < 0.05:
         print("Result: statistically significant regression detected.")
+        alert_text = format_regression_alert(strong_pass, len(strong), weak_pass, len(weak), p_value)
+        send_slack_alert(alert_text)
     else:
         print("Result: no statistically significant regression (could be normal variation, or sample size too small to tell).")
 

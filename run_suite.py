@@ -1,13 +1,8 @@
 """
-Runs the fixed scenario suite against either the strong or weak
-agent. Replaces the old separate run_suite.py / run_suite_weak.py
-files with one script that takes a variant argument.
-
-Also fixes a latent bug from the old run_suite_weak.py: its except
-block referenced result_data even in the case where run_agent()
-itself raised before result_data was ever assigned, which would
-have crashed with a NameError. This version's except block doesn't
-depend on anything from the try block.
+Runs the fixed scenario suite against either the "strong" or "weak"
+target defined in targets.yaml — which can point at ANY Python
+function, not just the built-in support-bot agents. See targets.yaml
+for how to point this at your own agent/feature.
 
 Usage:
     python run_suite.py strong
@@ -22,11 +17,17 @@ import os
 from datetime import datetime
 
 SCENARIOS_DIR = "scenarios"
+TARGETS_FILE = "targets.yaml"
 
-VARIANTS = {
-    "strong": {"agent_module": "test_agent", "traces_dir": "traces"},
-    "weak": {"agent_module": "agent_v2_weak", "traces_dir": "traces_weak"},
+TRACES_DIRS = {
+    "strong": "traces",
+    "weak": "traces_weak",
 }
+
+
+def load_targets() -> dict:
+    with open(TARGETS_FILE) as f:
+        return yaml.safe_load(f)
 
 
 def load_scenarios():
@@ -38,13 +39,49 @@ def load_scenarios():
     return scenarios
 
 
+def resolve_target_function(variant: str):
+    targets = load_targets()
+    if variant not in targets:
+        raise ValueError(f"'{variant}' is not defined in {TARGETS_FILE}. Found: {list(targets.keys())}")
+    config = targets[variant]
+    module = importlib.import_module(config["module"])
+    return getattr(module, config["function"])
+
+
+def normalize_result(raw_result) -> dict:
+    """
+    Accepts whatever shape the target function returned and fills in
+    defaults for anything missing, so run_suite.py works whether the
+    target is a full LangGraph agent or a one-line function that just
+    returns a string.
+    """
+    if isinstance(raw_result, str):
+        return {
+            "answer": raw_result,
+            "tools_used": [],
+            "tool_outputs": [],
+            "error": None,
+            "retries_needed": 0,
+        }
+    if isinstance(raw_result, dict):
+        return {
+            "answer": raw_result.get("answer"),
+            "tools_used": raw_result.get("tools_used", []),
+            "tool_outputs": raw_result.get("tool_outputs", []),
+            "error": raw_result.get("error"),
+            "retries_needed": raw_result.get("retries_needed", 0),
+        }
+    raise TypeError(
+        f"Target function returned {type(raw_result)}, expected a string or a dict. "
+        f"See targets.yaml for supported return shapes."
+    )
+
+
 def run_suite(variant: str):
-    if variant not in VARIANTS:
+    if variant not in TRACES_DIRS:
         raise ValueError(f"Unknown variant '{variant}'. Use 'strong' or 'weak'.")
-    config = VARIANTS[variant]
-    agent_module = importlib.import_module(config["agent_module"])
-    run_agent = agent_module.run_agent
-    traces_dir = config["traces_dir"]
+    traces_dir = TRACES_DIRS[variant]
+    run_target = resolve_target_function(variant)
 
     os.makedirs(traces_dir, exist_ok=True)
     scenarios = load_scenarios()
@@ -53,17 +90,18 @@ def run_suite(variant: str):
     for scenario in scenarios:
         print(f"[{variant}] Running {scenario['id']}...")
         try:
-            result_data = run_agent(scenario["question"])
+            raw_result = run_target(scenario["question"])
+            normalized = normalize_result(raw_result)
             result = {
                 "scenario_id": scenario["id"],
                 "question": scenario["question"],
                 "category": scenario["category"],
-                "answer": result_data["answer"],
-                "tools_used": result_data["tools_used"],
-                "tool_outputs": result_data.get("tool_outputs", []),
-                "retries_needed": result_data.get("retries_needed", 0),
+                "answer": normalized["answer"],
+                "tools_used": normalized["tools_used"],
+                "tool_outputs": normalized["tool_outputs"],
+                "retries_needed": normalized["retries_needed"],
                 "timestamp": timestamp,
-                "error": result_data.get("error"),
+                "error": normalized["error"],
             }
         except Exception as e:
             result = {

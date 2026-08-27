@@ -1,0 +1,15 @@
+{
+  "scenario_id": "gen_001",
+  "question": "What is the current status of order A1003?",
+  "category": "normal",
+  "answer": "Your order **A1003** has been **shipped**. Let me know if you need any more details or assistance!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221843",
+  "error": null
+}

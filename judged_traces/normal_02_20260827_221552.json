@@ -1,0 +1,18 @@
+{
+  "scenario_id": "normal_02",
+  "question": "Can you check the status of order A1001?",
+  "category": "normal",
+  "answer": "Your order **A1001** was delivered on **12 days ago**. The total amount for the order was **$89.99**. Let me know if you need any further assistance\u2014such as help with a return, refund, or anything else!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221552",
+  "error": null,
+  "final_score": null,
+  "disagreement": null,
+  "judge_error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kw03fqczeh5vv331g56atk4k` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199755, Requested 893. Please try again in 4m39.936s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+}

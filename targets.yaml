@@ -1,0 +1,22 @@
+# Maps each variant being compared to the actual function to test.
+# Point this at ANY Python function that takes a question string and
+# returns an answer — it doesn't need to be an agent, doesn't need
+# tools, and doesn't need to match any particular return shape.
+#
+# Supported return shapes from your function:
+#   - A plain string (just the answer text) — simplest case, e.g. a
+#     summarizer or classifier with no tool use.
+#   - A dict with an "answer" key, and optionally "tools_used",
+#     "tool_outputs", "error", "retries_needed" — anything not
+#     present is filled in with sensible defaults (empty list / None).
+#
+# To test something other than the built-in support-bot agents,
+# change module/function below to point at your own code.
+
+strong:
+  module: test_agent
+  function: run_agent
+
+weak:
+  module: agent_v2_weak
+  function: run_agent

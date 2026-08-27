@@ -1,0 +1,15 @@
+{
+  "scenario_id": "gen_006",
+  "question": "Is there a way to track my package for order A1002?",
+  "category": "normal",
+  "answer": "Your order **A1002** has already been **delivered** (it was shipped about\u202f45\u202fdays ago). If you haven\u2019t received it or need more details (such as the carrier\u2019s tracking link or delivery confirmation), please let me know and I can help you investigate further.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221843",
+  "error": null
+}

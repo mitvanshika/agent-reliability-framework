@@ -1,0 +1,11 @@
+{
+  "scenario_id": "edge_03",
+  "question": "I'm really upset, my order never arrived and it's been a month, I want a full refund immediately.",
+  "category": "edge",
+  "answer": "I\u2019m really sorry to hear that your order still hasn\u2019t arrived\u2014that\u2019s definitely not the experience we want you to have. Could you please share your order number with me? Once I have that, I can look up the details and get the refund process started for you right away.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20260827_221843",
+  "error": null
+}

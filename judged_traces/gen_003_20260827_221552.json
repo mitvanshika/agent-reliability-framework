@@ -1,0 +1,43 @@
+{
+  "scenario_id": "gen_003",
+  "question": "My credit card was declined when I tried to place an order, can you tell me why?",
+  "category": "edge",
+  "answer": "I\u2019m sorry you ran into a problem with your payment.\u202fWhen a credit\u2011card transaction is declined, it\u2019s usually due to one (or a combination) of the following reasons:\n\n| Reason | What to check / do |\n|--------|-------------------|\n| **Insufficient funds or credit limit reached** | Verify that you have enough available balance or credit on the card. |\n| **Incorrect card details** | Double\u2011check the card number, expiration date, CVV, and billing address you entered. |\n| **Bank security block** | Some banks flag online purchases as suspicious. You may receive a text/email from your bank, or you can call their fraud\u2011prevention line to approve the charge. |\n| **Card not enabled for online or international transactions** | Some cards need to be activated for e\u2011commerce or for purchases outside your home country. |\n| **Expired or deactivated card** | Make sure the card is still valid and hasn\u2019t been replaced or cancelled. |\n| **Mismatch with the billing address** | The address you entered must match the one on file with the card issuer. |\n| **Technical issues with the payment gateway** | Occasionally our payment processor experiences a temporary glitch. Trying again after a few minutes often resolves it. |\n\n**What you can do right now**\n\n1. **Verify the card information** you entered (number, expiry, CVV, billing address).  \n2. **Check with your bank** to see if they blocked the transaction and, if so, ask them to lift the block or approve the purchase.  \n3. **Try a different payment method** (another credit/debit card, PayPal, etc.) if the issue persists.  \n4. **Attempt the checkout again** after a short wait; sometimes the issue is momentary.\n\nIf you have an order number or can tell me which card you tried to use, I can look up any details on the attempted purchase and see if there\u2019s anything else we can do to help. Feel free to share that information, and I\u2019ll gladly assist further!",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221552",
+  "error": null,
+  "final_score": 6.037837837837838,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "correctness_result": {
+    "score": 9,
+    "reason": "The answer accurately lists common reasons why a credit\u2011card transaction can be declined and provides practical steps the user can take, which directly addresses the question. All information is factually correct; no misleading statements are present.",
+    "confidence": 0.96
+  },
+  "tool_efficiency_result": {
+    "score": 5,
+    "reason": "The agent called the FAQ search tool, which is appropriate for a question about declined credit\u2011card payments, but it made three separate calls without showing any distinct queries or using the results in the answer. The final response is a generic explanation that could have been produced from a single relevant FAQ article. The redundant calls suggest unnecessary tool usage, lowering the score.",
+    "confidence": 0.78
+  },
+  "completeness_result": {
+    "score": 9,
+    "reason": "The answer lists the common reasons a credit\u2011card can be declined and gives clear actions the user can take, directly addressing the user\u2019s request for why the payment failed. It\u2019s thorough and practical, though it asks for additional order details which aren\u2019t required to answer the original question, so it\u2019s not a perfect 10.",
+    "confidence": 0.98
+  },
+  "groundedness_result": {
+    "score": 1,
+    "reason": "The tool output contained no relevant information (only 'No matching FAQ found'), yet the agent provided a detailed explanation and troubleshooting steps that were not present in the tool data, constituting a hallucination. Therefore the answer is not grounded in the provided data.",
+    "confidence": 0.98
+  },
+  "judge_error": null
+}

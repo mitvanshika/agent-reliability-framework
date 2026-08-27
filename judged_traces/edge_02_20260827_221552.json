@@ -1,0 +1,41 @@
+{
+  "scenario_id": "edge_02",
+  "question": "Can you check order Z9999 for me?",
+  "category": "edge",
+  "answer": "I\u2019m sorry, but I couldn\u2019t find any order with the ID **Z9999** in our system. Could you double\u2011check the order number and let me know the correct one? If you need help locating it (e.g., on your confirmation email), just let me know\u2014I\u2019m happy to assist!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "No order found with ID Z9999"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221552",
+  "error": null,
+  "final_score": 9.069908814589667,
+  "disagreement": true,
+  "low_confidence_judges": [
+    "correctness"
+  ],
+  "correctness_result": {
+    "score": 4,
+    "reason": "The agent's response is a safe fallback, stating no order was found. Without external verification, we cannot confirm if this is true, so the factual correctness is uncertain and likely incomplete.",
+    "confidence": 0.35
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the order_lookup tool was required, invoked it once, and based on the result responded appropriately without any unnecessary or incorrect tool calls.",
+    "confidence": 0.99
+  },
+  "completeness_result": {
+    "score": 9,
+    "reason": "The answer directly addresses the sole request to check order Z9999, informs the user that the order was not found, and asks for clarification while offering further assistance. It covers all aspects of the question, though it cannot provide the order details without correct information, which is appropriate.",
+    "confidence": 0.96
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's response directly mirrors the tool output, stating that no order with ID Z9999 was found. This is an honest, grounded answer with no fabrication.",
+    "confidence": 0.99
+  },
+  "judge_error": null
+}

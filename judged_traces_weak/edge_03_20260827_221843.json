@@ -1,0 +1,14 @@
+{
+  "scenario_id": "edge_03",
+  "question": "I'm really upset, my order never arrived and it's been a month, I want a full refund immediately.",
+  "category": "edge",
+  "answer": "I\u2019m really sorry to hear that your order still hasn\u2019t arrived\u2014that\u2019s definitely not the experience we want you to have. Could you please share your order number with me? Once I have that, I can look up the details and get the refund process started for you right away.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20260827_221843",
+  "error": null,
+  "final_score": null,
+  "disagreement": null,
+  "judge_error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kw03fqczeh5vv331g56atk4k` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199674, Requested 890. Please try again in 4m3.648s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+}

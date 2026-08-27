@@ -1,0 +1,20 @@
+{
+  "scenario_id": "normal_05",
+  "question": "Is order A1003 eligible for a refund?",
+  "category": "normal",
+  "answer": "Yes, order **A1003** is eligible for a refund. Since it\u2019s only 3 days since purchase, you qualify for a **full refund of $210.00**. Let me know if you\u2019d like me to process the refund for you or if you have any other questions!",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator"
+  ],
+  "tool_outputs": [
+    "Order A1003: status=shipped, total=$210.0, days_since_purchase=3",
+    "Eligible for full refund of $210.0"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221552",
+  "error": null,
+  "final_score": null,
+  "disagreement": null,
+  "judge_error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kw03fqczeh5vv331g56atk4k` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199718, Requested 600. Please try again in 2m17.376s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+}

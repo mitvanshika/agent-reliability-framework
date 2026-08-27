@@ -1,0 +1,14 @@
+{
+  "scenario_id": "gen_005",
+  "question": "I want to return my defective headphones and get a replacement, not a refund. How do I proceed?",
+  "category": "edge",
+  "answer": "I\u2019m sorry to hear the headphones arrived defective! Let\u2019s get a replacement sent out for you.\n\n**What I\u2019ll need from you**\n1. **Order number** \u2013 so I can verify the purchase and check the warranty/return eligibility.  \n2. **A brief description** of the defect (optional, but helpful for our quality\u2011control team).\n\n**Typical next steps once I have the order details**\n\n1. **Return authorization** \u2013 I\u2019ll generate a prepaid return label for you.  \n2. **Ship the defective item** \u2013 Pack the headphones securely, attach the label, and drop the package off at the nearest carrier location (or schedule a pickup, if that\u2019s more convenient).  \n3. **Replacement shipment** \u2013 As soon as the return is logged, we\u2019ll ship a brand\u2011new replacement to the address on file. You\u2019ll receive a tracking number via email.  \n\nYou won\u2019t be charged for the return shipping, and you\u2019ll receive the replacement at no extra cost.\n\nIf you\u2019d prefer I start the return process now, just share your order number (or the email address used for the purchase) and I\u2019ll take care of the rest.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20260827_221843",
+  "error": null,
+  "final_score": null,
+  "disagreement": null,
+  "judge_error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kw03fqczeh5vv331g56atk4k` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199587, Requested 1097. Please try again in 4m55.488s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+}

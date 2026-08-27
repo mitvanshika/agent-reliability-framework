@@ -1,0 +1,26 @@
+{
+  "scenario_id": "gen_010",
+  "question": "Do you offer any warranty on electronics purchased from your store?",
+  "category": "edge",
+  "answer": "I\u2019m sorry I couldn\u2019t locate the specific warranty details for electronics in our system. I\u2019ve escalated your request to a human support specialist who will get back to you shortly with the information you need. Thank you for your patience!",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "faq_search",
+    "faq_search",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query",
+    "Items can be returned within 30 days of purchase for a full refund.",
+    "Escalated to human support. Reason: Need warranty policy details for electronics"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20260827_221552",
+  "error": null,
+  "final_score": null,
+  "disagreement": null,
+  "judge_error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kw03fqczeh5vv331g56atk4k` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199842, Requested 728. Please try again in 4m6.24s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+}
