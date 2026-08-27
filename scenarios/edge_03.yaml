@@ -1,4 +1,4 @@
 id: edge_03
-question: "Can you help me understand what a kilometer is?"
+question: "I'm really upset, my order never arrived and it's been a month, I want a full refund immediately."
 category: edge
-expected_tool: none
+expected_tool: "order_lookup, escalate_to_human"

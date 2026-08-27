@@ -1,4 +1,4 @@
 id: normal_01
-question: "What is 25 times 4?"
+question: "What is your return policy?"
 category: normal
-expected_tool: calculator
+expected_tool: faq_search

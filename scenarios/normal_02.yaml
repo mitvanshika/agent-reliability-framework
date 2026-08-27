@@ -1,4 +1,4 @@
 id: normal_02
-question: "Convert 10 kilometers to miles."
+question: "Can you check the status of order A1001?"
 category: normal
-expected_tool: unit_converter
+expected_tool: order_lookup

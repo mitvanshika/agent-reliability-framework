@@ -1,9 +1,0 @@
-{
-  "scenario_id": "edge_03",
-  "question": "Can you help me understand what a kilometer is?",
-  "category": "edge",
-  "answer": "There are 1000 meters in a kilometer.",
-  "tools_used": [],
-  "timestamp": "20260816_074842",
-  "error": null
-}

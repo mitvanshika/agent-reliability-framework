@@ -1,4 +1,4 @@
 id: edge_02
-question: "Convert 100 kilograms to miles."
+question: "Can you check order Z9999 for me?"
 category: edge
-expected_tool: unit_converter
+expected_tool: order_lookup

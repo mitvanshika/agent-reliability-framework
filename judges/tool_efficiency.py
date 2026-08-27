@@ -1,13 +1,7 @@
-from langchain_groq import ChatGroq
-from dotenv import load_dotenv
-from judges.schema import JudgeVerdict
+from judges.base import call_judge
 
-load_dotenv()
 
-llm = ChatGroq(model="llama-3.3-70b-versatile")
-structured_llm = llm.with_structured_output(JudgeVerdict)
-
-def judge_tool_efficiency(question: str, answer: str, tools_used: list[str]) -> JudgeVerdict:
+def judge_tool_efficiency(question: str, answer: str, tools_used: list[str], max_retries: int = 2):
     prompt = f"""You are evaluating whether an AI agent used tools sensibly to answer a question.
 
 Question: {question}
@@ -17,7 +11,8 @@ Agent's final answer: {answer}
 Consider: did it call the tools actually needed for this question? Did it avoid unnecessary or wrong tool calls? Did it use tools in a sensible order?
 
 Score the tool usage from 0 to 10, explain why, and state your confidence."""
-    return structured_llm.invoke(prompt)
+    return call_judge(prompt, max_retries)
+
 
 if __name__ == "__main__":
     result = judge_tool_efficiency(

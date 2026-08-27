@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent Reliability Investigator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060913;
+    --panel: #0e1424;
+    --panel-2: #131a2d;
+    --border: #202a44;
+    --border-hi: #33436b;
+    --text: #e8edf7;
+    --text-dim: #7c88a8;
+    --text-faint: #4a5474;
+    --accent: #5b8dff;
+    --accent-soft: #26386b;
+    --accent-glow: rgba(91, 141, 255, 0.28);
+    --fail: #ec6f63;
+    --pass: #5fc99a;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(77,232,201,0.06), transparent),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+  }
+  .app { max-width: 1180px; margin: 0 auto; padding: 40px 40px 150px; }
+
+  /* ---------- Setup ---------- */
+  .setup-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 34px;
+    flex-wrap: wrap;
+  }
+  .setup-field {
+    flex: 1;
+    min-width: 220px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 15px;
+    transition: border-color 0.2s;
+  }
+  .setup-field:focus-within { border-color: var(--border-hi); }
+  .setup-field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 7px;
+  }
+  .setup-field input[type="password"],
+  .setup-field input[type="file"] {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    font-family: var(--font-mono);
+  }
+  .setup-field input[type="file"] { font-family: var(--font-body); }
+  .setup-status {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-top: 5px;
+  }
+
+  /* ---------- Home ---------- */
+  #homeScreen { display: block; }
+  .home-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .home-title {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    margin: 0 0 14px;
+    line-height: 1.12;
+  }
+  .home-sub {
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 640px;
+    margin-bottom: 40px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 1000px) {
+    .card-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+  .q-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s, transform 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+  .q-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(180px circle at var(--mx, 50%) var(--my, 0%), var(--accent-glow), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.25s;
+    pointer-events: none;
+  }
+  .q-card:hover::before { opacity: 1; }
+  .q-card:hover {
+    border-color: var(--border-hi);
+    transform: translateY(-2px);
+  }
+  .q-card .cat {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 9px;
+  }
+  .q-card .q {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    line-height: 1.32;
+  }
+  .q-card .desc {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+
+  /* ---------- Analysis ---------- */
+  #analysisScreen { display: none; }
+  .back-link {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--text-dim);
+    cursor: pointer;
+    margin-bottom: 26px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-faint);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 26px;
+  }
+
+  .thread { display: flex; flex-direction: column; gap: 22px; max-width: 760px; }
+  .you-row { display: flex; gap: 13px; align-items: flex-start; }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--panel-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .you-text {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 600; line-height: 1.4; padding-top: 4px;
+  }
+
+  /* ---------- The signature moment: investigating card ---------- */
+  .invest-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+  .orb-wrap {
+    position: relative;
+    width: 44px; height: 44px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .orb-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid var(--accent-soft);
+    animation: spin-ring 4s linear infinite;
+    opacity: 0.6;
+  }
+  .orb-ring::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 50%;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px 2px var(--accent-glow);
+  }
+  @keyframes spin-ring {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .orb-core {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d5fff5, var(--accent) 55%, var(--accent-soft) 100%);
+    box-shadow: 0 0 18px 2px var(--accent-glow);
+    animation: breathe 2.2s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
+  .invest-body { flex: 1; min-width: 0; }
+  .invest-title {
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 650; margin-bottom: 6px;
+  }
+  .invest-status {
+    font-family: var(--font-mono);
+    font-size: 12.5px; color: var(--text-dim); margin-bottom: 12px; min-height: 16px;
+  }
+  .progress-track {
+    height: 2.5px; background: var(--border); border-radius: 2px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .answer-block {
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: #d8dee2;
+    white-space: pre-wrap;
+    padding: 0 2px;
+    animation: fade-in 0.4s ease;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .answer-block.err { color: var(--fail); }
+
+  /* ---------- Input bar ---------- */
+  .input-bar {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(720px, 92vw);
+    background: rgba(17, 20, 23, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-hi);
+    border-radius: 16px;
+    padding: 13px 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .input-bar input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 14.5px;
+    outline: none;
+    margin-bottom: 11px;
+    font-family: var(--font-body);
+  }
+  .input-bar input::placeholder { color: var(--text-faint); }
+  .input-bar-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sources-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot-indicator {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-faint);
+  }
+  .dot-indicator.on { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
+  .ask-btn {
+    background: var(--accent);
+    color: #04241c;
+    border: none;
+    border-radius: 9px;
+    padding: 8px 18px;
+    font-weight: 650;
+    font-size: 13px;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .ask-btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .ask-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="setup-row">
+    <div class="setup-field" id="dataStatus">
+      <label>Trace Data</label>
+      <div class="setup-status" id="uploadStatus">Loading live results...</div>
+    </div>
+  </div>
+
+  <div id="homeScreen">
+    <div class="home-eyebrow">
+      <div class="orb-wrap" style="width:16px;height:16px;"><div class="orb-core" style="width:16px;height:16px;"></div></div>
+      Your Reliability Agent
+    </div>
+    <h1 class="home-title">What should we figure out?</h1>
+    <div class="home-sub">Ask questions across your agent's test runs. The investigator reads the real traces, tool calls, and judge verdicts — then explains what it finds.</div>
+
+    <div class="card-grid" id="cardGrid"></div>
+  </div>
+
+  <div id="analysisScreen">
+    <div class="back-link" onclick="goHome()">&larr; Back</div>
+    <div class="section-label">ANALYSIS</div>
+    <div class="thread" id="thread"></div>
+  </div>
+
+  <div class="input-bar">
+    <input type="text" id="questionInput" placeholder="Ask anything about your test results..." />
+    <div class="input-bar-footer">
+      <div class="sources-badge"><div class="dot-indicator" id="sourceDot"></div><span id="sourcesBadge">0 sources connected</span></div>
+      <button class="ask-btn" id="askBtn" disabled>Ask</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let bundle = null;
+
+const uploadStatus = document.getElementById('uploadStatus');
+const sourcesBadge = document.getElementById('sourcesBadge');
+const sourceDot = document.getElementById('sourceDot');
+const cardGrid = document.getElementById('cardGrid');
+const homeScreen = document.getElementById('homeScreen');
+const analysisScreen = document.getElementById('analysisScreen');
+const thread = document.getElementById('thread');
+const questionInput = document.getElementById('questionInput');
+const askBtn = document.getElementById('askBtn');
+
+const SUGGESTIONS = [
+  { cat: "Regression", q: "Why did the weak agent regress?", desc: "Diagnose the drop across scenarios" },
+  { cat: "Evidence", q: "Which scenario shows the clearest hallucination?", desc: "Find the strongest example" },
+  { cat: "Judges", q: "Summarize the groundedness judge's findings", desc: "See what it caught and why" },
+  { cat: "Statistics", q: "How confident should I be this is real?", desc: "Interpret the Fisher's test result" },
+];
+
+function renderCards() {
+  cardGrid.innerHTML = SUGGESTIONS.map(s => `
+    <div class="q-card" onclick="startAnalysis(${JSON.stringify(s.q)})"
+         onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px');">
+      <div class="cat">${s.cat}</div>
+      <div class="q">${s.q}</div>
+      <div class="desc">${s.desc}</div>
+    </div>
+  `).join('');
+}
+renderCards();
+
+async function loadLiveData() {
+  try {
+    const response = await fetch('/api/data');
+    bundle = await response.json();
+    const strongCount = Object.keys(bundle.strong || {}).length;
+    const weakCount = Object.keys(bundle.weak || {}).length;
+
+    if (strongCount === 0 && weakCount === 0) {
+      uploadStatus.textContent = 'No judged traces found yet — run the pipeline first.';
+      return;
+    }
+
+    uploadStatus.textContent = `${strongCount + weakCount} traces loaded (live)`;
+    sourcesBadge.textContent = "2 sources connected";
+    sourceDot.classList.add('on');
+    askBtn.disabled = false;
+  } catch (err) {
+    uploadStatus.textContent = 'Could not reach /api/data — is the server running?';
+  }
+}
+loadLiveData();
+
+function passed(trace, threshold = 7) {
+  if (!trace || trace.error) return false;
+  const score = trace.final_score;
+  if (score === null || score === undefined) return false;
+  return score >= threshold;
+}
+
+function truncate(str, maxLen) {
+  if (!str) return str;
+  return str.length > maxLen ? str.slice(0, maxLen) + '...' : str;
+}
+
+function buildContext() {
+  const summarize = (traces) => Object.values(traces || {}).map(t => ({
+    scenario_id: t.scenario_id,
+    category: t.category,
+    question: truncate(t.question, 200),
+    answer: truncate(t.answer, 300),
+    tools_used: t.tools_used,
+    final_score: t.final_score,
+    disagreement: t.disagreement,
+    judge_error: t.judge_error,
+    correctness: t.correctness_result ? { score: t.correctness_result.score, reason: truncate(t.correctness_result.reason, 100) } : null,
+    tool_efficiency: t.tool_efficiency_result ? { score: t.tool_efficiency_result.score, reason: truncate(t.tool_efficiency_result.reason, 100) } : null,
+    completeness: t.completeness_result ? { score: t.completeness_result.score, reason: truncate(t.completeness_result.reason, 100) } : null,
+    groundedness: t.groundedness_result ? { score: t.groundedness_result.score, reason: truncate(t.groundedness_result.reason, 100) } : null,
+  }));
+  return { strong: summarize(bundle.strong), weak: summarize(bundle.weak) };
+}
+
+function goHome() {
+  analysisScreen.style.display = 'none';
+  homeScreen.style.display = 'block';
+}
+
+const STATUS_STEPS = [
+  "Reading agent traces...",
+  "Comparing judge verdicts...",
+  "Checking tool call patterns...",
+  "Writing the analytical brief..."
+];
+
+async function startAnalysis(question) {
+  if (!bundle) {
+    alert("Data hasn't loaded yet — wait a moment or reload the page.");
+    return;
+  }
+  homeScreen.style.display = 'none';
+  analysisScreen.style.display = 'block';
+  questionInput.value = '';
+
+  const you = document.createElement('div');
+  you.className = 'you-row';
+  you.innerHTML = `<div class="avatar">Y</div><div class="you-text">${escapeHtml(question)}</div>`;
+  thread.appendChild(you);
+
+  const investId = 'invest-' + Date.now();
+  const invest = document.createElement('div');
+  invest.className = 'invest-card';
+  invest.id = investId;
+  invest.innerHTML = `
+    <div class="orb-wrap">
+      <div class="orb-ring"></div>
+      <div class="orb-core"></div>
+    </div>
+    <div class="invest-body">
+      <div class="invest-title">Investigating</div>
+      <div class="invest-status" id="${investId}-status">${STATUS_STEPS[0]}</div>
+      <div class="progress-track"><div class="progress-fill" id="${investId}-fill"></div></div>
+    </div>
+  `;
+  thread.appendChild(invest);
+  invest.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+  let step = 0;
+  const statusEl = document.getElementById(`${investId}-status`);
+  const fillEl = document.getElementById(`${investId}-fill`);
+  fillEl.style.width = '15%';
+  const cycle = setInterval(() => {
+    step = (step + 1) % STATUS_STEPS.length;
+    statusEl.textContent = STATUS_STEPS[step];
+    fillEl.style.width = `${15 + step * 22}%`;
+  }, 900);
+
+  const context = buildContext();
+  const systemPrompt = `You are analyzing results from an AI agent reliability testing framework. Two versions of a customer-support agent (a "strong" baseline and a "weak" degraded-prompt variant) were each run against the same 10 test questions and scored 0-10 by 4 LLM judges (correctness, tool_efficiency, completeness, groundedness), averaged into final_score. A score >= 7 counts as a pass.
+
+Explain findings in plain, simple language — the way you'd explain it to a friend who isn't deep into ML, not like an academic report. Avoid jargon-heavy phrasing; say "makes stuff up" instead of "hallucinates," "guesses confidently" instead of "fabricates unsupported claims," etc. Keep it to a couple of short, easy sentences up front stating the core finding in one clear line, then 2-4 sentences of specific evidence (cite real scenario_ids and scores, short quotes ok).
+
+After the explanation, always add one short paragraph starting with "Try this:" that suggests one concrete, actionable next step someone could take to investigate further or fix the issue — a specific prompt tweak, a scenario to re-check, or a follow-up question to ask. Keep the whole answer under 150 words total.
+
+If the data doesn't support a claim, say so rather than speculating.
+
+DATA:
+${JSON.stringify(context)}`;
+
+  try {
+    const response = await fetch("/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ system: systemPrompt, question: question })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error?.message || data.error || `Request failed (${response.status})`);
+    }
+    const answer = data.choices?.[0]?.message?.content?.trim() || "No answer returned.";
+
+    clearInterval(cycle);
+    fillEl.style.width = '100%';
+    setTimeout(() => {
+      invest.outerHTML = `<div class="answer-block">${escapeHtml(answer)}</div>`;
+    }, 300);
+
+  } catch (err) {
+    clearInterval(cycle);
+    invest.outerHTML = `<div class="answer-block err">Error: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+askBtn.addEventListener('click', () => {
+  const q = questionInput.value.trim();
+  if (q) startAnalysis(q);
+});
+questionInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const q = questionInput.value.trim();
+    if (q) startAnalysis(q);
+  }
+});
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>

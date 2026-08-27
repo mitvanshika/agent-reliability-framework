@@ -1,4 +1,4 @@
 id: normal_03
-question: "What is 156 divided by 12?"
+question: "How long does standard shipping take?"
 category: normal
-expected_tool: calculator
+expected_tool: faq_search

@@ -1,4 +1,4 @@
 id: normal_04
-question: "Convert 5 kilograms to pounds."
+question: "What payment methods do you accept?"
 category: normal
-expected_tool: unit_converter
+expected_tool: faq_search

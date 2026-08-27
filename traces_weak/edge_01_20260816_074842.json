@@ -1,9 +1,0 @@
-{
-  "scenario_id": "edge_01",
-  "question": "What is 47 times 12, and convert the result from km to miles?",
-  "category": "edge",
-  "answer": null,
-  "tools_used": [],
-  "timestamp": "20260816_074842",
-  "error": "Error code: 400 - {'error': {'message': 'tool call validation failed: parameters for tool unit_converter did not match schema: errors: [`/value`: expected number, but got string]', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '<function=unit_converter>{\"from_unit\": \"km\", \"to_unit\": \"miles\", \"value\": \"564\"} </function>'}}"
-}

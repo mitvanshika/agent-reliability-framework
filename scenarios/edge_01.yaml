@@ -1,4 +1,4 @@
 id: edge_01
-question: "What is 47 times 12, and convert the result from km to miles?"
+question: "I want a refund for order A1002, and if I can't get one, I want to speak to someone."
 category: edge
-expected_tool: calculator, unit_converter
+expected_tool: "order_lookup, refund_calculator, escalate_to_human"

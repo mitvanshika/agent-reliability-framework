@@ -1,4 +1,4 @@
 id: edge_04
-question: "Wht is 500 divded by 0?"
+question: "What's your policy on international customs fees?"
 category: edge
-expected_tool: calculator
+expected_tool: "faq_search, escalate_to_human"

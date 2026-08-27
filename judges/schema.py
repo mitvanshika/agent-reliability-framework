@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class JudgeVerdict(BaseModel):
     score: int = Field(description="Score from 0 to 10, where 10 is perfect")
     reason: str = Field(description="Brief explanation for the score")

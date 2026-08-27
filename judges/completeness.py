@@ -1,13 +1,7 @@
-from langchain_groq import ChatGroq
-from dotenv import load_dotenv
-from judges.schema import JudgeVerdict
+from judges.base import call_judge
 
-load_dotenv()
 
-llm = ChatGroq(model="llama-3.3-70b-versatile")
-structured_llm = llm.with_structured_output(JudgeVerdict)
-
-def judge_completeness(question: str, answer: str) -> JudgeVerdict:
+def judge_completeness(question: str, answer: str, max_retries: int = 2):
     prompt = f"""You are evaluating whether an AI agent's answer fully addresses everything the question asked.
 
 Question: {question}
@@ -16,7 +10,8 @@ Agent's answer: {answer}
 Consider: if the question had multiple parts, did the answer address all of them? Did it leave anything unanswered or incomplete?
 
 Score the completeness from 0 to 10, explain why, and state your confidence."""
-    return structured_llm.invoke(prompt)
+    return call_judge(prompt, max_retries)
+
 
 if __name__ == "__main__":
     result = judge_completeness(

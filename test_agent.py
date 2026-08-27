@@ -2,51 +2,76 @@ from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from langchain_groq import ChatGroq
 from langchain_core.tools import tool
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from typing import TypedDict, Annotated
 from dotenv import load_dotenv
 import operator
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
+
+from store import get_order, search_faq
 
 load_dotenv()
 
-@tool
-def calculator(expression: str) -> str:
-    """Evaluates a math expression and returns the result."""
-    try:
-        return str(eval(expression))
-    except Exception as e:
-        return f"Error: {e}"
 
 @tool
-def unit_converter(value: float, from_unit: str, to_unit: str) -> str:
-    """Converts a value from one unit to another, e.g. km to miles."""
-    conversions = {
-        ("km", "miles"): 0.621371,
-        ("miles", "km"): 1.60934,
-        ("kg", "lbs"): 2.20462,
-        ("lbs", "kg"): 0.453592,
-    }
-    factor = conversions.get((from_unit, to_unit))
-    if factor is None:
-        return f"Conversion from {from_unit} to {to_unit} not supported"
-    return str(value * factor)
+def order_lookup(order_id: str) -> str:
+    """Looks up an order by its ID and returns its status, total, and purchase date info."""
+    order = get_order(order_id)
+    if order is None:
+        return f"No order found with ID {order_id}"
+    return f"Order {order_id}: status={order['status']}, total=${order['total']}, days_since_purchase={order['days_since_purchase']}"
 
-tools = [calculator, unit_converter]
+
+@tool
+def refund_calculator(order_total: float, days_since_purchase: int) -> str:
+    """Determines refund eligibility and amount based on order total and days since purchase."""
+    if days_since_purchase <= 30:
+        return f"Eligible for full refund of ${order_total}"
+    return "Not eligible for refund: purchase was made more than 30 days ago"
+
+
+@tool
+def faq_search(query: str) -> str:
+    """Searches FAQ topics like shipping, return policy, or payment methods."""
+    answer = search_faq(query)
+    return answer if answer else "No matching FAQ found for this query"
+
+
+@tool
+def escalate_to_human(reason: str) -> str:
+    """Flags that this case should be handed off to a human agent, with a reason."""
+    return f"Escalated to human support. Reason: {reason}"
+
+
+tools = [order_lookup, refund_calculator, faq_search, escalate_to_human]
 tool_node = ToolNode(tools)
-llm = ChatGroq(model="llama-3.3-70b-versatile").bind_tools(tools)
+import os
+
+AGENT_MODEL = os.environ.get("AGENT_MODEL", "openai/gpt-oss-120b")
+
+llm = ChatGroq(model=AGENT_MODEL).bind_tools(tools)
+
+SYSTEM_PROMPT = """You are a customer support agent for an online store.
+Use order_lookup to check order details, refund_calculator to determine refund eligibility,
+faq_search for general policy questions, and escalate_to_human for anything you cannot resolve
+yourself or that requires human judgment. Always use the actual tools rather than guessing."""
+
 
 class AgentState(TypedDict):
     messages: Annotated[list, operator.add]
 
+
 def call_model(state: AgentState):
     response = llm.invoke(state["messages"])
     return {"messages": [response]}
+
 
 def should_continue(state: AgentState):
     last_message = state["messages"][-1]
     if last_message.tool_calls:
         return "tools"
     return END
+
 
 graph = StateGraph(AgentState)
 graph.add_node("agent", call_model)
@@ -57,25 +82,37 @@ graph.add_edge("tools", "agent")
 
 app = graph.compile()
 
-def run_agent(question: str):
-    try:
-        result = app.invoke({"messages": [HumanMessage(content=question)]})
-        tools_used = []
-        for msg in result["messages"]:
-            if hasattr(msg, "tool_calls") and msg.tool_calls:
-                for call in msg.tool_calls:
-                    tools_used.append(call["name"])
-        return {
-            "answer": result["messages"][-1].content,
-            "tools_used": tools_used,
-            "error": None
-        }
-    except Exception as e:
-        return {
-            "answer": None,
-            "tools_used": [],
-            "error": str(e)
-        }
+
+def run_agent(question: str, max_retries: int = 2):
+    last_error = None
+    for attempt in range(max_retries + 1):
+        try:
+            result = app.invoke({"messages": [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=question)]})
+            tools_used = []
+            tool_outputs = []
+            for msg in result["messages"]:
+                if hasattr(msg, "tool_calls") and msg.tool_calls:
+                    for call in msg.tool_calls:
+                        tools_used.append(call["name"])
+                if isinstance(msg, ToolMessage):
+                    tool_outputs.append(msg.content)
+            return {
+                "answer": result["messages"][-1].content,
+                "tools_used": tools_used,
+                "tool_outputs": tool_outputs,
+                "error": None,
+                "retries_needed": attempt
+            }
+        except Exception as e:
+            last_error = str(e)
+    return {
+        "answer": None,
+        "tools_used": [],
+        "tool_outputs": [],
+        "error": last_error,
+        "retries_needed": max_retries
+    }
+
 
 if __name__ == "__main__":
-    print(run_agent("What is 47 times 12, and convert the result from km to miles?"))
+    print(run_agent("Can I get a refund for order A1002?"))
