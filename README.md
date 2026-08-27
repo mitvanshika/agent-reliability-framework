@@ -92,4 +92,3 @@ Results shift somewhat run-to-run given LLM output is non-deterministic and the 
 - **Toy backend.** The agent's data (orders, FAQs) is a small seeded SQLite database, not a real production system — intentional, since the framework is what's being demonstrated, not the agent.
 - **Single alert channel.** Slack only, for now  email/PagerDuty integration would be a natural extension for a real team setting.
 
-feature is in production and changing it carries real risk.
