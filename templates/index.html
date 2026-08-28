@@ -458,22 +458,41 @@ function truncate(str, maxLen) {
   return str.length > maxLen ? str.slice(0, maxLen) + '...' : str;
 }
 
+function lowestJudgeNote(t) {
+  if (!t) return 'ERR';
+  const judges = [
+    ['correctness', t.correctness_result],
+    ['tool_eff', t.tool_efficiency_result],
+    ['completeness', t.completeness_result],
+    ['grounded', t.groundedness_result],
+  ].filter(([, v]) => v);
+  if (!judges.length) return '';
+  const [name, lowest] = judges.reduce((a, b) => (a[1].score <= b[1].score ? a : b));
+  return `${name}=${lowest.score}: ${truncate(lowest.reason, 55)}`;
+}
+
+// Plain-text, one line per scenario instead of full nested JSON —
+// repeated JSON field names across 50 objects (25 scenarios x 2
+// variants) burn far more tokens than the actual content does, so a
+// compact table keeps this comfortably under Groq's per-request
+// token limit even with a large scenario set.
 function buildContext() {
-  const summarize = (traces) => Object.values(traces || {}).map(t => ({
-    scenario_id: t.scenario_id,
-    category: t.category,
-    question: truncate(t.question, 200),
-    answer: truncate(t.answer, 300),
-    tools_used: t.tools_used,
-    final_score: t.final_score,
-    disagreement: t.disagreement,
-    judge_error: t.judge_error,
-    correctness: t.correctness_result ? { score: t.correctness_result.score, reason: truncate(t.correctness_result.reason, 100) } : null,
-    tool_efficiency: t.tool_efficiency_result ? { score: t.tool_efficiency_result.score, reason: truncate(t.tool_efficiency_result.reason, 100) } : null,
-    completeness: t.completeness_result ? { score: t.completeness_result.score, reason: truncate(t.completeness_result.reason, 100) } : null,
-    groundedness: t.groundedness_result ? { score: t.groundedness_result.score, reason: truncate(t.groundedness_result.reason, 100) } : null,
-  }));
-  return { strong: summarize(bundle.strong), weak: summarize(bundle.weak) };
+  const ids = new Set([
+    ...Object.keys(bundle.strong || {}),
+    ...Object.keys(bundle.weak || {}),
+  ]);
+  const lines = [];
+  for (const id of ids) {
+    const s = bundle.strong?.[id];
+    const w = bundle.weak?.[id];
+    const q = truncate((s || w)?.question, 70);
+    const sScore = s?.final_score != null ? s.final_score.toFixed(1) : 'ERR';
+    const wScore = w?.final_score != null ? w.final_score.toFixed(1) : 'ERR';
+    lines.push(
+      `${id} [${q}]\n  strong=${sScore} (lowest judge: ${lowestJudgeNote(s)})\n  weak=${wScore} (lowest judge: ${lowestJudgeNote(w)})`
+    );
+  }
+  return lines.join('\n');
 }
 
 function goHome() {
@@ -531,7 +550,7 @@ async function startAnalysis(question) {
   }, 900);
 
   const context = buildContext();
-  const systemPrompt = `You are analyzing results from an AI agent reliability testing framework. Two versions of a customer-support agent (a "strong" baseline and a "weak" degraded-prompt variant) were each run against the same 10 test questions and scored 0-10 by 4 LLM judges (correctness, tool_efficiency, completeness, groundedness), averaged into final_score. A score >= 7 counts as a pass.
+  const systemPrompt = `You are analyzing results from an AI agent reliability testing framework. Two versions of a customer-support agent (a "strong" baseline and a "weak" degraded-prompt variant) were each run against the same set of test questions and scored 0-10 by 4 LLM judges (correctness, tool_efficiency, completeness, groundedness), averaged into final_score. A score >= 7 counts as a pass.
 
 Explain findings in plain, simple language — the way you'd explain it to a friend who isn't deep into ML, not like an academic report. Avoid jargon-heavy phrasing; say "makes stuff up" instead of "hallucinates," "guesses confidently" instead of "fabricates unsupported claims," etc. Keep it to a couple of short, easy sentences up front stating the core finding in one clear line, then 2-4 sentences of specific evidence (cite real scenario_ids and scores, short quotes ok).
 
@@ -539,8 +558,10 @@ After the explanation, always add one short paragraph starting with "Try this:" 
 
 If the data doesn't support a claim, say so rather than speculating.
 
+Each line below is one scenario: its final scores for strong and weak, plus the single lowest-scoring judge and a short reason for that side (not all 4 judges — just the weakest one, to keep this compact).
+
 DATA:
-${JSON.stringify(context)}`;
+${context}`;
 
   try {
     const response = await fetch("/api/ask", {

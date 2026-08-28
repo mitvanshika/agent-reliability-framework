@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from scipy.stats import fisher_exact
+from scipy.stats import fisher_exact, mannwhitneyu
 
 from alerts import send_slack_alert, format_regression_alert
 
@@ -62,10 +62,33 @@ def detect_regressions():
     print(f"\nFisher's exact test p-value: {p_value:.4f}")
     if p_value < 0.05:
         print("Result: statistically significant regression detected.")
-        alert_text = format_regression_alert(strong_pass, len(strong), weak_pass, len(weak), p_value)
-        send_slack_alert(alert_text)
     else:
         print("Result: no statistically significant regression (could be normal variation, or sample size too small to tell).")
+
+    # Secondary check: Mann-Whitney U compares the raw 0-10 score
+    # distributions directly, instead of thresholding everything into
+    # pass/fail first. Fisher's exact answers "is the pass rate
+    # different"; this answers "are the underlying scores different"
+    # — related but not identical questions, since thresholding to
+    # pass/fail discards some information (a 6.9 and a 7.1 are treated
+    # as categorically different even though they're nearly the same).
+    strong_scores = [t.get("final_score") for t in strong.values() if t.get("final_score") is not None]
+    weak_scores = [t.get("final_score") for t in weak.values() if t.get("final_score") is not None]
+
+    u_pvalue = None
+    if strong_scores and weak_scores:
+        u_stat, u_pvalue = mannwhitneyu(strong_scores, weak_scores, alternative="two-sided")
+        print(f"\nMann-Whitney U test (raw score distributions) p-value: {u_pvalue:.4f}")
+        if u_pvalue < 0.05:
+            print("Result: score distributions are significantly different.")
+        else:
+            print("Result: no significant difference in score distributions.")
+    else:
+        print("\nMann-Whitney U test skipped (no scored data on one or both sides).")
+
+    if p_value < 0.05:
+        alert_text = format_regression_alert(strong_pass, len(strong), weak_pass, len(weak), p_value, u_pvalue)
+        send_slack_alert(alert_text)
 
     return p_value
 

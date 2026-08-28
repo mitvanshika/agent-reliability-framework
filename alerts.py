@@ -44,11 +44,14 @@ def send_slack_alert(text: str):
         print(f"[alerts] Slack alert failed: {e}")
 
 
-def format_regression_alert(strong_pass: int, strong_total: int, weak_pass: int, weak_total: int, p_value: float) -> str:
-    return (
-        f":rotating_light: *Agent reliability regression detected*\n"
-        f"Strong agent pass rate: {strong_pass}/{strong_total}\n"
-        f"Weak agent pass rate: {weak_pass}/{weak_total}\n"
-        f"Fisher's exact test p-value: {p_value:.4f} (significant at p < 0.05)\n"
-        f"Review before shipping this change."
-    )
+def format_regression_alert(strong_pass: int, strong_total: int, weak_pass: int, weak_total: int, p_value: float, u_pvalue: float = None) -> str:
+    lines = [
+        f":rotating_light: *Agent reliability regression detected*",
+        f"Strong agent pass rate: {strong_pass}/{strong_total}",
+        f"Weak agent pass rate: {weak_pass}/{weak_total}",
+        f"Fisher's exact test p-value: {p_value:.4f} (significant at p < 0.05)",
+    ]
+    if u_pvalue is not None:
+        lines.append(f"Mann-Whitney U test (raw scores) p-value: {u_pvalue:.4f}")
+    lines.append("Review before shipping this change.")
+    return "\n".join(lines)
