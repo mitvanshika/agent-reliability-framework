@@ -2,3 +2,5 @@ id: normal_03
 question: "How long does standard shipping take?"
 category: normal
 expected_tool: faq_search
+expected_answer: "Standard shipping takes 5-7 business days (express 2-3 business days is optional extra information)."
+expected_tools: [faq_search]

@@ -15,13 +15,16 @@ import os
 import time
 
 from run_judges import evaluate_trace, VARIANTS
+from trace_utils import latest_trace_files
 
 
 def find_trace_file(traces_dir: str, scenario_id: str):
-    for filename in os.listdir(traces_dir):
-        if filename.endswith(".json") and filename.startswith(scenario_id + "_"):
-            return os.path.join(traces_dir, filename)
-    return None
+    # Newest run for this scenario (see trace_utils.py), matched on the
+    # trace's scenario_id field rather than a filename prefix.
+    match = latest_trace_files(traces_dir).get(scenario_id)
+    if match is None:
+        return None
+    return os.path.join(traces_dir, match[0])
 
 
 def rejudge_scenario(variant: str, scenario_id: str):
@@ -31,7 +34,7 @@ def rejudge_scenario(variant: str, scenario_id: str):
         print(f"[{scenario_id}] No trace file found in {config['traces_dir']}/ — skipping.")
         return
 
-    with open(trace_path) as f:
+    with open(trace_path, encoding="utf-8") as f:
         trace = json.load(f)
 
     if trace.get("error") is not None:

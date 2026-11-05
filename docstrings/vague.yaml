@@ -1,0 +1,6 @@
+# Tool descriptions for agent_configurable.py, keyed by tool name.
+# Exact copy of the weak agent's deliberately vague docstrings (agent_v2_weak.py).
+order_lookup: "Does order stuff."
+refund_calculator: "Handles refunds."
+faq_search: "Searches things."
+escalate_to_human: "Escalates."

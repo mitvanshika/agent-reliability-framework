@@ -1,0 +1,10 @@
+name: baseline
+description: "The strong demo agent, described as settings (same prompt, tools, model as test_agent.py)"
+target: configurable
+settings:
+  model: openai/gpt-oss-120b
+  temperature: 0
+  prompt: prompts/v1.txt
+  docstrings: docstrings/detailed.yaml
+  retrieval: {method: substring}
+  recursion_limit: 25

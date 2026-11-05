@@ -1,0 +1,5 @@
+name: exp_04_bm25
+description: "Same as baseline but FAQ search ranks by keywords (BM25) instead of exact topic substring"
+extends: baseline
+settings:
+  retrieval: {method: bm25}

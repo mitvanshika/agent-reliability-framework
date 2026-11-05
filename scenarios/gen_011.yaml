@@ -1,3 +1,5 @@
 id: "gen_011"
 question: "Can you tell me which payment methods are accepted for international orders?"
 category: "normal"
+expected_answer: "Accepted payment methods are Visa, Mastercard and PayPal; nothing indicates different methods for international orders. Optionally: international orders may incur customs fees paid by the buyer."
+expected_tools: [faq_search]

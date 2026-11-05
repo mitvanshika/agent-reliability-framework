@@ -1,25 +1,4 @@
-"""
-Generates new test scenarios automatically using an LLM, instead of
-you hand-writing every question. This directly addresses two things:
 
-1. More than 10 questions — run this to grow the suite as large as
-   you want, without manually authoring each one.
-2. Removes you as the sole author of every test case — you wrote
-   the agent's tools AND all 10 original questions, which risks
-   unconsciously writing questions your agent already handles well.
-   An LLM generating questions from a description of the tools (not
-   from knowing how your agent responds) is a step toward
-   independent test authorship.
-
-New scenarios are saved as gen_XX.yaml files alongside your existing
-edge_XX.yaml / normal_XX.yaml files — nothing existing is touched or
-overwritten. run_suite.py already picks up every .yaml file in
-scenarios/, so no other code needs to change.
-
-Usage:
-    python generate_scenarios.py 10
-    (generates 10 new scenarios; defaults to 10 if no count given)
-"""
 
 import os
 import sys
@@ -62,7 +41,7 @@ def get_existing_questions() -> list[str]:
     for filename in os.listdir(SCENARIOS_DIR):
         if not filename.endswith(".yaml"):
             continue
-        with open(os.path.join(SCENARIOS_DIR, filename)) as f:
+        with open(os.path.join(SCENARIOS_DIR, filename), encoding="utf-8") as f:
             for line in f:
                 if line.strip().startswith("question:"):
                     q = line.split(":", 1)[1].strip().strip('"')
@@ -121,7 +100,7 @@ def save_scenarios(scenarios: list[GeneratedScenario]):
             f'category: "{scenario.category}"\n'
         )
         path = os.path.join(SCENARIOS_DIR, f"{scenario_id}.yaml")
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write(content)
         print(f"Saved {path}")
         existing_ids.add(scenario_id)

@@ -1,3 +1,5 @@
 id: "gen_003"
 question: "My credit card was declined when I tried to place an order, can you tell me why?"
 category: "edge"
+expected_answer: "The agent has no access to payment or transaction details, so it cannot say why the card was declined. Accepted payment methods are Visa, Mastercard and PayPal. Escalate to a human for a payment investigation. Must not invent a decline reason."
+expected_tools: [escalate_to_human]

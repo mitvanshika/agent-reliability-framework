@@ -1,3 +1,5 @@
 id: "gen_006"
 question: "Is there a way to track my package for order A1002?"
 category: "normal"
+expected_answer: "A1002 has already been delivered (purchased 45 days ago, $45.50). No tracking tool or tracking number is available. Must not invent a tracking number or carrier."
+expected_tools: [order_lookup]

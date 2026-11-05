@@ -1,0 +1,5 @@
+id: "rag_06"
+question: "Do you sell gift cards?"
+category: "edge"
+expected_answer: "No information about gift cards is available. Must not invent a gift card offer or its terms. Escalate to a human or say it is not known."
+expected_tools: [escalate_to_human]

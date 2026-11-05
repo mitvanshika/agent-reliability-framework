@@ -1,0 +1,72 @@
+"""
+Names of the judge sets, kept in a tiny module with no LLM imports so
+compare.py / promote_baseline.py / run_experiment.py can use it cheaply.
+
+Scores are only comparable when produced by the same judge set: a
+final_score averaged over 4 judges (classic) and one averaged over 5
+judges with an answer key (experiment) measure different things.
+"""
+
+import hashlib
+import json
+
+# Track 1 (run_judges.py) and every run judged before Phase 3.
+CLASSIC = {
+    "name": "classic_v1",
+    "llm_judges": ["correctness", "tool_efficiency", "completeness", "groundedness"],
+    "checks": [],
+}
+
+# judge_experiment.py: answer-key correctness + context relevance, plus tool_match (code, display only).
+EXPERIMENT = {
+    "name": "experiment_v1",
+    "llm_judges": ["correctness_gt", "completeness", "groundedness", "tool_efficiency", "context_relevance"],
+    "checks": ["tool_match"],
+}
+
+# every judge/check name, in display order
+ALL_NAMES = list(dict.fromkeys(EXPERIMENT["llm_judges"] + CLASSIC["llm_judges"] + EXPERIMENT["checks"]))
+
+
+def key(judge_set) -> str:
+    """Canonical identity: name + judges + checks + judge model."""
+    js = judge_set or CLASSIC
+    return json.dumps({k: js.get(k) for k in ("name", "llm_judges", "checks", "judge_model")}, sort_keys=True)
+
+
+def same(a, b) -> bool:
+    a, b = a or CLASSIC, b or CLASSIC
+    if a.get("judge_model") is None or b.get("judge_model") is None:   # classic runs never recorded a model
+        return {k: a.get(k) for k in ("name", "llm_judges", "checks")} == {k: b.get(k) for k in ("name", "llm_judges", "checks")}
+    return key(a) == key(b)
+
+
+def describe(judge_set) -> str:
+    js = judge_set or CLASSIC
+    if js.get("name") == "mixed":
+        return "mixed (some scenarios judged with different judge sets)"
+    model = f", model {js['judge_model']}" if js.get("judge_model") else ""
+    checks = f" + {', '.join(js['checks'])}" if js.get("checks") else ""
+    return f"{js['name']} ({', '.join(js['llm_judges'])}{checks}{model})"
+
+
+def answer_key_hash(scenario: dict) -> str | None:
+    """Fingerprint of a scenario's answer key (expected_answer + expected_tools)."""
+    if scenario.get("expected_answer") is None and scenario.get("expected_tools") is None:
+        return None
+    blob = json.dumps({"expected_answer": scenario.get("expected_answer"),
+                       "expected_tools": scenario.get("expected_tools")}, sort_keys=True)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()[:12]
+
+
+def of_judged_traces(traces) -> dict:
+    """The judge set used for a run's judged traces; CLASSIC if none recorded one."""
+    found = {}
+    for t in traces:
+        js = t.get("judge_set") or CLASSIC
+        found[key(js)] = js
+    if not found:
+        return CLASSIC
+    if len(found) > 1:
+        return {"name": "mixed", "llm_judges": [], "checks": [], "variants": list(found.values())}
+    return next(iter(found.values()))

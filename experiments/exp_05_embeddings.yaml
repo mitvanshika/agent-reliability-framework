@@ -1,0 +1,5 @@
+name: exp_05_embeddings
+description: "Same as baseline but FAQ search uses semantic embeddings (bge-small) instead of exact topic substring"
+extends: baseline
+settings:
+  retrieval: {method: embeddings}

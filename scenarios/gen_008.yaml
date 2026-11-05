@@ -1,3 +1,5 @@
 id: "gen_008"
 question: "How many days do I have to return an item after receiving it?"
 category: "normal"
+expected_answer: "Items can be returned within 30 days of purchase for a full refund."
+expected_tools: [faq_search]

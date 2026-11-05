@@ -1,3 +1,5 @@
 id: "gen_005"
 question: "I want to return my defective headphones and get a replacement, not a refund. How do I proceed?"
 category: "edge"
+expected_answer: "Items can be returned within 30 days of purchase for a full refund. Replacements are not something the agent can arrange, so the request is escalated to a human. No order ID was given. Must not promise a replacement."
+expected_tools: [faq_search, escalate_to_human]

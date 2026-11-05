@@ -1,0 +1,8 @@
+# Optional: only needed for experiments with retrieval.method: embeddings
+# (retrieval.py). Track 1 / CI do not need it.
+#   pip install -r requirements-rag.txt
+# Pinned so embedding scores are reproducible across machines.
+fastembed==0.9.1
+onnxruntime==1.31.1
+tokenizers==0.23.3
+huggingface_hub==1.33.0

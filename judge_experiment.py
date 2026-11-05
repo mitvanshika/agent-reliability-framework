@@ -1,0 +1,168 @@
+"""
+The experiment judge set (judge_sets.EXPERIMENT): 5 LLM judges plus a
+code check, in the same fan-out / fan-in LangGraph shape as run_judges.py.
+
+    correctness_gt     answer vs the scenario's expected_answer (falls back to
+                       the classic correctness judge when there is none)
+    completeness       did it answer every part of the question
+    groundedness       is it supported by what the tools returned
+    tool_efficiency    sensible tool use
+    context_relevance  did the retrieved tool outputs contain what was needed
+                       (N/A when no retrieval happened)
+    tool_match         code check vs expected_tools (display only)
+
+final_score = confidence-weighted average of the APPLICABLE LLM judges:
+N/A judges are left out, not counted as 0. tool_match is never in it.
+
+The answer key is read from scenarios/ at judge time (so runs made
+before the key existed can be re-judged). Each judged trace records
+judge_set and answer_key_hash; compare.py refuses to compare scores made
+with a different judge set or a different answer key.
+
+judge_run.py uses this for experiment runs; Track 1 (run_judges.py /
+pipeline.py) keeps the classic 4 judges.
+"""
+
+from typing import TypedDict
+
+from langgraph.graph import END, StateGraph
+
+import judge_sets
+import run_judges
+from judge_sets import answer_key_hash  # noqa: F401  (re-exported; lives in the light module)
+import run_suite
+from judges import base as judges_base
+from judges.completeness import judge_completeness
+from judges.context_relevance import judge_context_relevance
+from judges.correctness_gt import judge_correctness_gt
+from judges.groundedness import judge_groundedness
+from judges.tool_efficiency import judge_tool_efficiency
+from judges.tool_match import tool_match
+
+LLM_JUDGES = judge_sets.EXPERIMENT["llm_judges"]
+
+
+def judge_set():
+    return {**judge_sets.EXPERIMENT, "judge_model": judges_base.llm.model_name}
+
+
+class ExperimentJudgeState(TypedDict, total=False):
+    question: str
+    answer: str
+    tools_used: list
+    tool_outputs: list
+    expected_answer: str
+    expected_tools: list
+    correctness_gt_result: dict
+    completeness_result: dict
+    groundedness_result: dict
+    tool_efficiency_result: dict
+    context_relevance_result: dict
+    tool_match_result: dict
+    final_score: float
+    disagreement: bool
+    low_confidence_judges: list
+    na_judges: list
+
+
+def _na(reason):
+    return {"na": True, "reason": reason}
+
+
+def run_correctness_gt(state):
+    verdict, mode = judge_correctness_gt(state["question"], state["answer"], state.get("expected_answer"))
+    return {"correctness_gt_result": {**verdict.model_dump(), "mode": mode}}
+
+
+def run_completeness(state):
+    return {"completeness_result": judge_completeness(state["question"], state["answer"]).model_dump()}
+
+
+def run_groundedness(state):
+    return {"groundedness_result": judge_groundedness(state["question"], state["answer"],
+                                                      state.get("tool_outputs", [])).model_dump()}
+
+
+def run_tool_efficiency(state):
+    return {"tool_efficiency_result": judge_tool_efficiency(state["question"], state["answer"],
+                                                            state.get("tools_used", [])).model_dump()}
+
+
+def run_context_relevance(state):
+    verdict = judge_context_relevance(state["question"], state.get("tools_used", []),
+                                      state.get("tool_outputs", []), state.get("expected_answer"))
+    if verdict is None:
+        return {"context_relevance_result": _na("no retrieval happened (no tool outputs from retrieval tools)")}
+    return {"context_relevance_result": verdict.model_dump()}
+
+
+def run_tool_match(state):
+    return {"tool_match_result": tool_match(state.get("tools_used", []), state.get("expected_tools"))}
+
+
+def combine(verdicts: dict) -> dict:
+    """Confidence-weighted final_score over the applicable judges ({name: result dict})."""
+    applicable = {n: v for n, v in verdicts.items() if v and not v.get("na") and "score" in v}
+    na = [n for n in verdicts if n not in applicable]
+    if not applicable:
+        return {"final_score": None, "disagreement": None, "low_confidence_judges": [], "na_judges": na}
+    scores = [v["score"] for v in applicable.values()]
+    confidences = [v["confidence"] for v in applicable.values()]
+    total = sum(confidences)
+    final = (sum(s * c for s, c in zip(scores, confidences)) / total) if total > 0 else sum(scores) / len(scores)
+    return {
+        "final_score": final,
+        "disagreement": max(scores) - min(scores) >= 4,
+        "low_confidence_judges": [n for n, v in applicable.items() if v["confidence"] < 0.5],
+        "na_judges": na,
+    }
+
+
+def combine_node(state):
+    return combine({n: state.get(f"{n}_result") for n in LLM_JUDGES})
+
+
+_NODES = {"correctness_gt": run_correctness_gt, "completeness": run_completeness,
+          "groundedness": run_groundedness, "tool_efficiency": run_tool_efficiency,
+          "context_relevance": run_context_relevance, "tool_match": run_tool_match}
+
+graph = StateGraph(ExperimentJudgeState)
+graph.add_node("start", lambda state: {})
+graph.add_node("combine", combine_node)
+graph.set_entry_point("start")
+for node_name, fn in _NODES.items():
+    graph.add_node(node_name, fn)
+    graph.add_edge("start", node_name)
+    graph.add_edge(node_name, "combine")
+graph.add_edge("combine", END)
+app = graph.compile()
+
+
+def evaluate(trace: dict, scenario: dict) -> dict:
+    """All judged fields for one answered trace."""
+    result = app.invoke({
+        "question": trace["question"], "answer": trace["answer"],
+        "tools_used": trace.get("tools_used", []), "tool_outputs": trace.get("tool_outputs", []),
+        "expected_answer": scenario.get("expected_answer"), "expected_tools": scenario.get("expected_tools"),
+    })
+    fields = {k: result.get(k) for k in ("final_score", "disagreement", "low_confidence_judges", "na_judges")}
+    for name in LLM_JUDGES + judge_sets.EXPERIMENT["checks"]:
+        fields[f"{name}_result"] = result.get(f"{name}_result")
+    fields["answer_key_hash"] = answer_key_hash(scenario)
+    if fields["final_score"] is None:
+        raise RuntimeError("every judge was N/A, nothing to score")
+    return fields
+
+
+def judge_run_folder(name: str, traces_dir: str, judged_dir: str):
+    """Judge one run folder with this judge set, reusing run_judges.judge_all_traces
+    (latest trace per scenario, crashed-trace handling, judge-error handling, pacing)."""
+    scenarios = {s["id"]: s for s in run_suite.load_scenarios()}
+    js = judge_set()
+
+    def evaluator(trace):
+        return evaluate(trace, scenarios.get(trace["scenario_id"], {}))
+
+    run_judges.judge_all_traces(name, traces_dir=traces_dir, judged_dir=judged_dir,
+                                evaluator=evaluator, extra_fields={"judge_set": js})
+    return js

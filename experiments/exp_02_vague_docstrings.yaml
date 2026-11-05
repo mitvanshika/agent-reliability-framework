@@ -1,0 +1,5 @@
+name: exp_02_vague_docstrings
+description: "Same as baseline but with vague tool descriptions"
+extends: baseline
+settings:
+  docstrings: docstrings/vague.yaml

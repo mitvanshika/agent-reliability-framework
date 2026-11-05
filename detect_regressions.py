@@ -4,18 +4,16 @@ import sys
 from scipy.stats import fisher_exact, mannwhitneyu
 
 from alerts import send_slack_alert, format_regression_alert
+from trace_utils import load_latest_traces
+
+JUDGE_NAMES = ["correctness", "tool_efficiency", "completeness", "groundedness"]
+NOISE_DIR = "noise"
 
 
 def load_judged_traces(folder):
-    results = {}
-    for filename in os.listdir(folder):
-        if not filename.endswith(".json"):
-            continue
-        with open(os.path.join(folder, filename)) as f:
-            trace = json.load(f)
-        scenario_id = trace["scenario_id"]
-        results[scenario_id] = trace
-    return results
+    # Latest run per scenario only (see trace_utils.py), so an old
+    # run's file can't silently override the current one.
+    return load_latest_traces(folder)
 
 
 def passed(trace, threshold=7):
@@ -27,11 +25,82 @@ def passed(trace, threshold=7):
     return score >= threshold
 
 
+def load_noise_bands(variants=("strong", "weak"), noise_dir=NOISE_DIR):
+    """Score wobble per scenario from calibrate_noise.py output, if any.
+
+    Returns ({scenario_id: band}, [source descriptions]). The band is the
+    score range seen across calibration runs; if both variants were
+    calibrated, the larger of the two (the conservative choice).
+    """
+    bands, sources = {}, []
+    for variant in variants:
+        path = os.path.join(noise_dir, f"{variant}_noise.json")
+        if not os.path.isfile(path):
+            continue
+        with open(path, encoding="utf-8") as f:
+            report = json.load(f)
+        note = ""
+        if report.get("mode") == "judge_only":
+            note = ", judge noise only: agent noise not included, bands may be too narrow"
+        sources.append(f"{path} ({report.get('mode')} mode, {report.get('runs')} runs{note})")
+        for scenario_id, st in report.get("scenarios", {}).items():
+            if st.get("range") is not None:
+                bands[scenario_id] = max(bands.get(scenario_id, 0.0), st["range"])
+    return bands, sources
+
+
+def _judge_field(trace, judge, field):
+    return trace.get(f"{judge}_result", {}).get(field, "?")
+
+
+def reliability_warnings(traces):
+    """Judged traces whose evaluation itself is shaky.
+    Returns (disagreed, low_confidence), each a list of (scenario_id, detail)."""
+    disagreed, low_confidence = [], []
+    for scenario_id in sorted(traces):
+        trace = traces[scenario_id]
+        if trace.get("final_score") is None:
+            continue  # never judged (agent crash / judge error): nothing to assess
+        if trace.get("disagreement"):
+            detail = ", ".join(f"{j} {_judge_field(trace, j, 'score')}" for j in JUDGE_NAMES)
+            disagreed.append((scenario_id, detail))
+        low = trace.get("low_confidence_judges") or []
+        if low:
+            detail = ", ".join(f"{j} {_judge_field(trace, j, 'confidence')}" for j in low)
+            low_confidence.append((scenario_id, detail))
+    return disagreed, low_confidence
+
+
+def print_evaluation_reliability(variants):
+    # Display only: does not affect pass/fail, the statistical tests or the exit code.
+    print("\nEvaluation reliability (where the MEASUREMENT is shaky, not the agent):")
+    flagged, judged = set(), 0
+    for name, traces in variants.items():
+        disagreed, low_confidence = reliability_warnings(traces)
+        judged += sum(1 for t in traces.values() if t.get("final_score") is not None)
+        flagged |= {(name, sid) for sid, _ in disagreed + low_confidence}
+        print(f"  {name}:")
+        print("    judges disagreed (score spread >= 4):" + ("" if disagreed else " none"))
+        for sid, detail in disagreed:
+            print(f"      {sid:15} {detail}")
+        print("    low-confidence judges (confidence < 0.5):" + ("" if low_confidence else " none"))
+        for sid, detail in low_confidence:
+            print(f"      {sid:15} {detail}")
+    print(f"  {len(flagged)} of {judged} judged results have a reliability warning; "
+          "treat those scores with caution.")
+
+
 def detect_regressions():
     strong = load_judged_traces("judged_traces")
     weak = load_judged_traces("judged_traces_weak")
 
     shared_ids = sorted(set(strong.keys()) & set(weak.keys()))
+
+    # Display only: noise bands never change pass/fail, the tests or the exit code.
+    noise_bands, noise_sources = load_noise_bands()
+    if noise_sources:
+        print("Noise bands from: " + "; ".join(noise_sources))
+        print("A drop no bigger than the scenario's noise band is marked (within noise).\n")
 
     print("Per-scenario comparison:")
     print("-" * 60)
@@ -45,7 +114,13 @@ def detect_regressions():
         flag = ""
         if s_score is not None and w_score is not None and (s_score - w_score) >= 2:
             flag = "  <-- possible regression"
-        print(f"{scenario_id:15} strong: {s_str:6} weak: {w_str:6}{flag}")
+        noise = ""
+        if scenario_id in noise_bands and s_score is not None and w_score is not None:
+            delta = s_score - w_score
+            noise = f"  delta {delta:+.1f}, noise {noise_bands[scenario_id]:.1f}"
+            if 0 < delta <= noise_bands[scenario_id]:
+                noise += " (within noise)"
+        print(f"{scenario_id:15} strong: {s_str:6} weak: {w_str:6}{flag}{noise}")
 
     strong_pass = sum(1 for t in strong.values() if passed(t))
     strong_fail = len(strong) - strong_pass
@@ -55,6 +130,8 @@ def detect_regressions():
     print("-" * 60)
     print(f"Strong agent pass rate: {strong_pass}/{len(strong)}")
     print(f"Weak agent pass rate:   {weak_pass}/{len(weak)}")
+
+    print_evaluation_reliability({"strong": strong, "weak": weak})
 
     table = [[strong_pass, strong_fail], [weak_pass, weak_fail]]
     odds_ratio, p_value = fisher_exact(table)

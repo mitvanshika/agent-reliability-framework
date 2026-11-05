@@ -1,0 +1,119 @@
+name: Experiment Check
+
+# Track 2 gate: runs the baseline experiment with the PR's code and compares it
+# with the committed baselines/<target>.json. Fails if DECLINED.
+# The Track 1 workflow (regression-check.yml) is separate and unchanged.
+
+on:
+  pull_request:
+    paths:
+      - "prompts/**"
+      - "docstrings/**"
+      - "experiments/**"
+      - "scenarios/**"
+      - "baselines/**"
+      - "targets.yaml"
+      - "agent_configurable.py"
+      - "agent_retry.py"
+      - "test_agent.py"
+      - "retrieval.py"
+      - "store.py"
+      - "judges/**"
+      - "judge_experiment.py"
+      - "judge_sets.py"
+      - "run_experiment.py"
+      - "judge_run.py"
+      - "compare.py"
+      - "diagnose.py"
+      - "experiment_pipeline.py"
+      - "requirements.txt"
+      - "requirements-rag.txt"
+      - ".github/workflows/experiment-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: experiment-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  experiment-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      EXPERIMENT: experiments/baseline.yaml
+      # Call budget. Repo variable EXPERIMENT_CI_SCENARIOS: space-separated ids, or "all".
+      # Default: 10 scenarios (~30 agent + ~50 judge calls).
+      CI_SCENARIOS: ${{ vars.EXPERIMENT_CI_SCENARIOS || 'normal_01 normal_02 normal_05 gen_002 gen_004 gen_009 edge_01 edge_04 rag_01 rag_03' }}
+      HF_HUB_DISABLE_SYMLINKS_WARNING: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for API key
+        id: key
+        run: |
+          if [ -z "$GROQ_API_KEY" ]; then
+            echo "::notice title=Experiment check skipped::GROQ_API_KEY is not available to this run (e.g. a PR from a fork). Nothing was run."
+            {
+              echo "### Experiment check skipped"
+              echo "GROQ_API_KEY is not available to this workflow run (PRs from forks don't receive secrets). Nothing was run."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-python@v5
+        if: steps.key.outputs.available == 'true'
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-rag.txt
+
+      - name: Install dependencies
+        if: steps.key.outputs.available == 'true'
+        run: pip install -r requirements.txt -r requirements-rag.txt
+
+      - name: Cache embedding model + FAQ vectors
+        if: steps.key.outputs.available == 'true'
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: rag-cache-${{ hashFiles('requirements-rag.txt') }}-bge-small-en-v1.5
+
+      - name: Seed database
+        if: steps.key.outputs.available == 'true'
+        run: python store.py
+
+      - name: Run experiment pipeline vs committed baseline
+        id: pipeline
+        if: steps.key.outputs.available == 'true'
+        run: |
+          set +e
+          if [ "$CI_SCENARIOS" = "all" ]; then SCEN=""; else SCEN="--scenarios $CI_SCENARIOS"; fi
+          python experiment_pipeline.py "$EXPERIMENT" $SCEN --yes --summary-md "$GITHUB_STEP_SUMMARY"
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Upload comparison
+        if: always() && steps.key.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: experiment-comparison
+          path: |
+            runs/*/comparison.json
+            runs/*/diagnosis.json
+            runs/*/summary.json
+            runs/*/pipeline.json
+          if-no-files-found: warn
+
+      - name: Fail if DECLINED or a step failed
+        if: steps.key.outputs.available == 'true'
+        run: |
+          code="${{ steps.pipeline.outputs.code }}"
+          if [ "$code" = "1" ]; then echo "::error title=DECLINED::The PR makes the baseline experiment worse. See the job summary."; exit 1; fi
+          if [ "$code" != "0" ]; then echo "::error title=Pipeline failed::A pipeline step failed (exit $code). See the log and job summary."; exit 1; fi

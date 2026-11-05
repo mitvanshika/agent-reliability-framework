@@ -1,3 +1,5 @@
 id: "gen_002"
 question: "Can I get a refund for order A1001 if it was purchased 45 days ago?"
 category: "edge"
+expected_answer: "Store records show A1001 was purchased 12 days ago (not 45), so it is within the 30-day window and eligible for a full refund of $89.99."
+expected_tools: [order_lookup, refund_calculator]

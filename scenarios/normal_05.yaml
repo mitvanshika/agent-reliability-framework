@@ -2,3 +2,5 @@ id: normal_05
 question: "Is order A1003 eligible for a refund?"
 category: normal
 expected_tool: "order_lookup, refund_calculator"
+expected_answer: "Yes. A1003 was purchased 3 days ago, within the 30-day window, so it is eligible for a full refund of $210.00 (it has shipped but is not yet delivered)."
+expected_tools: [order_lookup, refund_calculator]

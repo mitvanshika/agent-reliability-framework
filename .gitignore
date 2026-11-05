@@ -7,3 +7,12 @@ judged_traces_weak/
 __pycache__/
 store.db
 dashboard_data.json
+# raw calibrate_noise.py runs (the summaries in noise/*.json are committed)
+noise_runs/
+# run_experiment.py output (raw traces per run)
+runs/
+# retrieval.py: downloaded embedding model + cached FAQ vectors
+.cache/
+# export_finetune.py output (review it before using it)
+finetune/
+agent-reliability-framework/

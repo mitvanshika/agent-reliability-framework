@@ -26,7 +26,7 @@ TRACES_DIRS = {
 
 
 def load_targets() -> dict:
-    with open(TARGETS_FILE) as f:
+    with open(TARGETS_FILE, encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
@@ -34,7 +34,7 @@ def load_scenarios():
     scenarios = []
     for filename in sorted(os.listdir(SCENARIOS_DIR)):
         if filename.endswith(".yaml"):
-            with open(os.path.join(SCENARIOS_DIR, filename)) as f:
+            with open(os.path.join(SCENARIOS_DIR, filename), encoding="utf-8") as f:
                 scenarios.append(yaml.safe_load(f))
     return scenarios
 
@@ -61,6 +61,7 @@ def normalize_result(raw_result) -> dict:
             "tools_used": [],
             "tool_outputs": [],
             "error": None,
+            "error_type": None,
             "retries_needed": 0,
         }
     if isinstance(raw_result, dict):
@@ -69,6 +70,7 @@ def normalize_result(raw_result) -> dict:
             "tools_used": raw_result.get("tools_used", []),
             "tool_outputs": raw_result.get("tool_outputs", []),
             "error": raw_result.get("error"),
+            "error_type": raw_result.get("error_type"),
             "retries_needed": raw_result.get("retries_needed", 0),
         }
     raise TypeError(
@@ -77,14 +79,20 @@ def normalize_result(raw_result) -> dict:
     )
 
 
-def run_suite(variant: str):
-    if variant not in TRACES_DIRS:
-        raise ValueError(f"Unknown variant '{variant}'. Use 'strong' or 'weak'.")
-    traces_dir = TRACES_DIRS[variant]
+def run_suite(variant: str, traces_dir: str | None = None, scenario_ids: list[str] | None = None):
+    # traces_dir / scenario_ids are optional (used by calibrate_noise.py).
+    # Left as None, behaviour is exactly as before.
+    if traces_dir is None:
+        if variant not in TRACES_DIRS:
+            raise ValueError(f"Unknown variant '{variant}'. Use 'strong' or 'weak'.")
+        traces_dir = TRACES_DIRS[variant]
     run_target = resolve_target_function(variant)
 
     os.makedirs(traces_dir, exist_ok=True)
     scenarios = load_scenarios()
+    if scenario_ids is not None:
+        wanted = set(scenario_ids)
+        scenarios = [s for s in scenarios if s["id"] in wanted]
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     for scenario in scenarios:
@@ -102,6 +110,7 @@ def run_suite(variant: str):
                 "retries_needed": normalized["retries_needed"],
                 "timestamp": timestamp,
                 "error": normalized["error"],
+                "error_type": normalized["error_type"],
             }
         except Exception as e:
             result = {
@@ -114,6 +123,7 @@ def run_suite(variant: str):
                 "retries_needed": 0,
                 "timestamp": timestamp,
                 "error": str(e),
+                "error_type": "crash",
             }
 
         output_path = os.path.join(traces_dir, f"{scenario['id']}_{timestamp}.json")

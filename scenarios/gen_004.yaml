@@ -1,3 +1,5 @@
 id: "gen_004"
 question: "Do you ship to PO boxes and how long does it take?"
 category: "normal"
+expected_answer: "Yes, PO boxes are served via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to a PO box typically takes 7-10 business days."
+expected_tools: [faq_search]

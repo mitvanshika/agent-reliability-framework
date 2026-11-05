@@ -1,13 +1,16 @@
+import operator
+import os
+import time
+from typing import TypedDict, Annotated
+
+from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
+from langchain_core.tools import tool
+from langchain_groq import ChatGroq
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
-from langchain_groq import ChatGroq
-from langchain_core.tools import tool
-from langchain_core.messages import HumanMessage, SystemMessage
-from typing import TypedDict, Annotated
-from dotenv import load_dotenv
-import operator
-from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 
+from agent_retry import classify_agent_error, retry_delay
 from store import get_order, search_faq
 
 load_dotenv()
@@ -45,11 +48,10 @@ def escalate_to_human(reason: str) -> str:
 
 tools = [order_lookup, refund_calculator, faq_search, escalate_to_human]
 tool_node = ToolNode(tools)
-import os
 
 AGENT_MODEL = os.environ.get("AGENT_MODEL", "openai/gpt-oss-120b")
 
-llm = ChatGroq(model=AGENT_MODEL).bind_tools(tools)
+llm = ChatGroq(model=AGENT_MODEL, temperature=0).bind_tools(tools)
 
 SYSTEM_PROMPT = "You are a support agent. Help the customer."
 
@@ -82,9 +84,15 @@ app = graph.compile()
 
 def run_agent(question: str, max_retries: int = 2):
     last_error = None
+    error_type = None
     for attempt in range(max_retries + 1):
         try:
-            result = app.invoke({"messages": [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=question)]})
+            # recursion_limit=25 caps a stuck tool loop at ~12 rounds.
+            # langgraph 1.2's default is 10007 (~5000 LLM calls per loop).
+            result = app.invoke(
+                {"messages": [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=question)]},
+                config={"recursion_limit": 25},
+            )
             tools_used = []
             tool_outputs = []
             for msg in result["messages"]:
@@ -98,16 +106,25 @@ def run_agent(question: str, max_retries: int = 2):
                 "tools_used": tools_used,
                 "tool_outputs": tool_outputs,
                 "error": None,
+                "error_type": None,
                 "retries_needed": attempt
             }
         except Exception as e:
             last_error = str(e)
+            error_type = classify_agent_error(e)
+            delay = retry_delay(error_type, attempt)
+            if delay is None or attempt == max_retries:
+                break
+            print(f"  [agent] {type(e).__name__} ({error_type}), retry {attempt + 1}/{max_retries}"
+                  + (f" in {delay:.1f}s" if delay else " now"))
+            time.sleep(delay)
     return {
         "answer": None,
         "tools_used": [],
         "tool_outputs": [],
         "error": last_error,
-        "retries_needed": max_retries
+        "error_type": error_type,
+        "retries_needed": attempt
     }
 
 

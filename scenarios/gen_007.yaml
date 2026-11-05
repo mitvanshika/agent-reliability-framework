@@ -1,3 +1,6 @@
 id: "gen_007"
 question: "I tried logging into my account but keep getting an error, can you fix it?"
 category: "edge"
+expected_answer: "The agent cannot access or fix customer accounts, so the login problem is escalated to a human / technical support. Must not invent troubleshooting results."
+expected_tools: [escalate_to_human]
+split: train

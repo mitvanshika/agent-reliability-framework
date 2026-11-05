@@ -1,3 +1,5 @@
 id: "gen_001"
 question: "What is the current status of order A1003?"
 category: "normal"
+expected_answer: "A1003 has shipped (not yet delivered). Order total $210.00, purchased 3 days ago."
+expected_tools: [order_lookup]

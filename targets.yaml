@@ -7,8 +7,10 @@
 #   - A plain string (just the answer text) — simplest case, e.g. a
 #     summarizer or classifier with no tool use.
 #   - A dict with an "answer" key, and optionally "tools_used",
-#     "tool_outputs", "error", "retries_needed" — anything not
-#     present is filled in with sensible defaults (empty list / None).
+#     "tool_outputs", "error", "error_type", "retries_needed" —
+#     anything not present is filled in with sensible defaults
+#     (empty list / None). error_type is a short label for why it
+#     failed, e.g. "loop_limit", "rate_limit", "timeout", "auth", "crash".
 #
 # To test something other than the built-in support-bot agents,
 # change module/function below to point at your own code.
@@ -20,3 +22,15 @@ strong:
 weak:
   module: agent_v2_weak
   function: run_agent
+
+# Built from experiment settings (experiments/*.yaml), run via
+# run_experiment.py. accepts_settings: true means the harness calls
+# function(question, settings=<the experiment's settings>); without it,
+# function(question) exactly as for strong/weak. Plug in your own system
+# the same way: its function receives the settings dict and decides what
+# the keys mean (chunk_size, top_k, prompt, ...). run_suite.py and
+# pipeline.py ignore this entry.
+configurable:
+  module: agent_configurable
+  function: run_agent
+  accepts_settings: true

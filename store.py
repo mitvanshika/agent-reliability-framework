@@ -3,10 +3,11 @@ Lightweight SQLite-backed data store for the support agent's fake
 backend. Replaces the old hardcoded ORDERS / FAQS Python dicts that
 lived directly in test_agent.py and agent_v2_weak.py.
 
-This doesn't change what data exists — same 4 orders, same 3 FAQ
-topics — it just makes the tools query a real (if tiny) database the
-way a production agent would query a real service, instead of
-reading a dict that happens to live in the same file as the tool.
+Holds the same 4 orders as the old dicts, plus 5 FAQ topics (shipping,
+return policy, payment methods, po box, customs) — it just makes the
+tools query a real (if tiny) database the way a production agent
+would query a real service, instead of reading a dict that happens to
+live in the same file as the tool.
 
 Run this once to create and seed the database:
     python store.py

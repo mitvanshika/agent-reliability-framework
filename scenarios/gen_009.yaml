@@ -1,3 +1,5 @@
 id: "gen_009"
 question: "My order A1004 arrived damaged, I need a refund and I want to speak to a manager now!"
 category: "edge"
+expected_answer: "A1004 was purchased 60 days ago, outside the 30-day refund window, so it is not eligible for a refund under the standard policy. The item is damaged and the customer wants a manager, so the case is escalated to a human. Must not promise a refund."
+expected_tools: [order_lookup, refund_calculator, escalate_to_human]

@@ -14,6 +14,9 @@ Also now tracks which judges (if any) were under 0.5 confidence on
 a given trace, so you can see where the evaluation itself was shaky
 — not just where the agent's answer was.
 
+Crashed agent traces are written with final_score=None so they count
+as failures instead of vanishing from the stats.
+
 Usage:
     python run_judges.py strong
     python run_judges.py weak
@@ -31,6 +34,7 @@ from judges.correctness import judge_correctness
 from judges.tool_efficiency import judge_tool_efficiency
 from judges.completeness import judge_completeness
 from judges.groundedness import judge_groundedness
+from trace_utils import latest_trace_files
 
 VARIANTS = {
     "strong": {"traces_dir": "traces", "judged_dir": "judged_traces"},
@@ -141,34 +145,56 @@ def evaluate_trace(question: str, answer: str, tools_used: list[str], tool_outpu
     })
 
 
-def judge_all_traces(variant: str):
-    if variant not in VARIANTS:
-        raise ValueError(f"Unknown variant '{variant}'. Use 'strong' or 'weak'.")
-    config = VARIANTS[variant]
+def judge_all_traces(variant: str, traces_dir: str | None = None, judged_dir: str | None = None,
+                     evaluator=None, extra_fields: dict | None = None):
+    # traces_dir / judged_dir are optional (used by calibrate_noise.py).
+    # Left as None, the variant's normal folders are used, as before.
+    # evaluator / extra_fields are optional (used by judge_experiment.py):
+    # evaluator(trace) -> dict of judged fields replaces the classic 4 judges,
+    # extra_fields is added to every judged file. Left as None: unchanged.
+    if traces_dir is None or judged_dir is None:
+        if variant not in VARIANTS:
+            raise ValueError(f"Unknown variant '{variant}'. Use 'strong' or 'weak'.")
+        traces_dir = traces_dir or VARIANTS[variant]["traces_dir"]
+        judged_dir = judged_dir or VARIANTS[variant]["judged_dir"]
+    config = {"traces_dir": traces_dir, "judged_dir": judged_dir}
     os.makedirs(config["judged_dir"], exist_ok=True)
-    trace_files = [f for f in os.listdir(config["traces_dir"]) if f.endswith(".json")]
+    # Only the newest trace per scenario. Old runs stay on disk but are
+    # not re-judged, which would waste tokens and rate limit.
+    latest = latest_trace_files(config["traces_dir"])
 
-    for filename in trace_files:
-        with open(os.path.join(config["traces_dir"], filename)) as f:
-            trace = json.load(f)
-
+    for filename, trace in latest.values():
         if trace["error"] is not None:
-            print(f"Skipping {filename} (agent errored, nothing to judge)")
-            continue
+            # Agent crashed, so there is no answer to judge. Still write it
+            # to the judged folder so it counts as a FAIL in the pass rate
+            # instead of silently disappearing from the stats.
+            print(f"[{variant}] {filename}: agent errored, recording as failure (not judged)")
+            trace["final_score"] = None
+            trace["disagreement"] = None
+            trace["low_confidence_judges"] = []
+            trace["judge_error"] = None
+            trace["not_judged_reason"] = "agent_error"
+            trace.update(extra_fields or {})
+            with open(os.path.join(config["judged_dir"], filename), "w") as f:
+                json.dump(trace, f, indent=2)
+            continue  # no API call was made, so no sleep needed
 
         print(f"[{variant}] Judging {filename}...")
         try:
-            judge_result = evaluate_trace(
-                trace["question"], trace["answer"],
-                trace.get("tools_used", []), trace.get("tool_outputs", [])
-            )
-            trace["final_score"] = judge_result["final_score"]
-            trace["disagreement"] = judge_result["disagreement"]
-            trace["low_confidence_judges"] = judge_result["low_confidence_judges"]
-            trace["correctness_result"] = judge_result["correctness_result"]
-            trace["tool_efficiency_result"] = judge_result["tool_efficiency_result"]
-            trace["completeness_result"] = judge_result["completeness_result"]
-            trace["groundedness_result"] = judge_result["groundedness_result"]
+            if evaluator is not None:
+                trace.update(evaluator(trace))
+            else:
+                judge_result = evaluate_trace(
+                    trace["question"], trace["answer"],
+                    trace.get("tools_used", []), trace.get("tool_outputs", [])
+                )
+                trace["final_score"] = judge_result["final_score"]
+                trace["disagreement"] = judge_result["disagreement"]
+                trace["low_confidence_judges"] = judge_result["low_confidence_judges"]
+                trace["correctness_result"] = judge_result["correctness_result"]
+                trace["tool_efficiency_result"] = judge_result["tool_efficiency_result"]
+                trace["completeness_result"] = judge_result["completeness_result"]
+                trace["groundedness_result"] = judge_result["groundedness_result"]
             trace["judge_error"] = None
         except Exception as e:
             print(f"  Judging failed after retries: {e}")
@@ -176,6 +202,7 @@ def judge_all_traces(variant: str):
             trace["disagreement"] = None
             trace["judge_error"] = str(e)
 
+        trace.update(extra_fields or {})
         with open(os.path.join(config["judged_dir"], filename), "w") as f:
             json.dump(trace, f, indent=2)
         print(f"  Saved to {config['judged_dir']}/{filename}")

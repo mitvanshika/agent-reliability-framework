@@ -1,14 +1,4 @@
-"""
-Runs the full reliability pipeline end to end: both agent suites,
-both judge passes, then the regression check. Exits with a non-zero
-status code if a statistically significant regression is detected —
-so this can be dropped into a CI pipeline (e.g. GitHub Actions) and
-fail a build automatically whenever a prompt/model change makes the
-agent measurably worse.
 
-Usage:
-    python pipeline.py
-"""
 
 import sys
 import subprocess
