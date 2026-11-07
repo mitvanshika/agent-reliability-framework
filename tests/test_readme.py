@@ -68,11 +68,26 @@ targets_example = next(yaml.safe_load(b) for b in blocks if "accepts_settings" i
 ok("targets.yaml example has module/function/accepts_settings",
    targets_example["financial_dd"] == {"module": "my_rag.entry", "function": "answer", "accepts_settings": True})
 
+print("plug-in section matches the real example:")
+four = text.split("\n## Plug in your system in 4 steps\n", 1)
+ok("'Plug in your system in 4 steps' comes before the architecture section",
+   len(four) == 2 and four[1].find("\n## Architecture: two tracks\n") > 0)
+real_targets = yaml.safe_load(open("targets.yaml", encoding="utf-8"))
+shown = next(yaml.safe_load(b) for b in blocks if "summarizer:" in b)
+ok("its targets.yaml block = the real summarizer entry (can't go stale)", shown["summarizer"] == real_targets["summarizer"],
+   shown)
+ok("the example experiment it runs exists", os.path.isfile("examples/summarizer/summarizer_baseline.yaml"))
+sys.path.insert(0, REPO)
+import target_config  # noqa: E402
+ok("every per-target key in the README table is a real key", all(
+   k in target_config.KEYS for k in re.findall(r"^\| `(\w+)` \|", text, re.M)),
+   re.findall(r"^\| `(\w+)` \|", text, re.M))
+
 print("sections:")
 for h in ["Architecture: two tracks", "How it works (Track 1)", "The experiment workflow (Track 2)", "Experiments",
           "Judges and the answer key", "Baselines and comparison", "Diagnosis", "Plug in your own system",
           "Fine-tuning data", "CI", "Dashboards", "Key features", "Tech stack", "Project structure", "Setup",
-          "Results", "Known limitations / future work", "The headline finding"]:
+          "Results", "Known limitations / future work", "The headline finding", "Plug in your system in 4 steps"]:
     ok(f"## {h}", f"\n## {h}\n" in text)
 
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")

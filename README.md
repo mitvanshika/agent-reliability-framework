@@ -10,6 +10,35 @@ While building the evaluation itself, the framework caught a bug in its own judg
 
 The judges were rewarding hallucination over honesty. A dedicated **groundedness judge** was added specifically to catch this checking not just "is the answer plausible" but "is the answer actually supported by what the agent's tools returned."
 
+## Plug in your system in 4 steps
+
+The support bot in this repo is only the first system tested here. Anything that turns an input into an output can be
+plugged in: a chatbot, a RAG pipeline, a summarizer, a classifier, an agent with or without tools.
+`examples/summarizer/` is a complete example that needed **zero framework edits** (`tests/test_summarizer_example.py`
+checks that from git).
+
+1. **Expose one function**: `answer(question) -> str`, or a dict with `"answer"` and optionally `"tools_used"`,
+   `"tool_outputs"`, `"usage"`. Give it a `settings=` parameter if experiments should vary it.
+2. **Add it to `targets.yaml`** (copy the `summarizer` entry):
+   ```yaml
+   summarizer:
+     module: examples.summarizer.summarizer
+     function: summarize
+     description: "summarises a short news article in at most two sentences"
+     judge_set: generic_v1                                  # domain-neutral judge wording
+     judges: [correctness_gt, completeness, groundedness]   # no tools: tool judges are N/A
+     pass_threshold: 7
+     scenarios: examples/summarizer/scenarios
+   ```
+3. **Write scenarios**: one YAML file per test with `id`, `question` and `expected_answer` (what a correct output
+   must contain, and what it must not claim).
+4. **Check, then run**:
+   ```
+   python check_target.py summarizer               # conformance checks, no API calls (--call: one test call)
+   python experiment_pipeline.py examples/summarizer/summarizer_baseline.yaml
+   python promote_baseline.py runs/<that run>      # once; every later run is compared with it
+   ```
+
 ## Architecture: two tracks
 
 ```
@@ -203,6 +232,25 @@ The demo support agent is only an example. To measure changes to your own system
 5. **Write scenarios** with an answer key (`expected_answer`, optionally `expected_tools`), then run `python experiment_pipeline.py experiments/fdd_baseline.yaml`, promote it, and compare every change against it.
 
 If your system reports `tool_outputs`, the context_relevance judge scores your retrieval. If it reports `usage` and you add a `pricing.yaml`, you get cost per run.
+
+**Per-target settings in `targets.yaml`** (all optional; left out = the behaviour of the support bot):
+
+| key | what it does | default |
+|---|---|---|
+| `description` | one line about the system; given to the judges (generic_v1, safety), the `scope` addon and `generate_adversarial.py` | none |
+| `judge_set` | judge wording: `generic_v1` (domain-neutral, for most systems) or `experiment_v2` (the support-bot wording) | `experiment_v2` |
+| `judges` | which judges apply; the others are recorded N/A and left out of final_score | all of the set |
+| `pass_threshold` | final_score at or above this counts as a pass | 7 |
+| `scenarios` | the target's own scenario folder (its main suite, baseline `baselines/<target>.json`) | `scenarios/` |
+| `non_retrieval_tools` | tools whose output is not retrieved information (ignored by context_relevance) | none |
+| `tools` | `module:function` returning the tools, opts in to `fuzz_tools.py` | not fuzzed |
+
+`python check_target.py <target>` checks all of this before you spend a token.
+
+**Sample-agent only.** These files belong to the demo support bot and are support-specific on purpose; your system does
+not need them: `test_agent.py`, `agent_v2_weak.py`, `agent_configurable.py` (with `prompts/`, `docstrings/`,
+`scenarios/`), `store.py`, `retrieval.py`, `generate.py`, `export_finetune.py`, and the Track 1 scripts (`pipeline.py`,
+`run_judges.py`, `find_failed.py`, `export_for_dashboard.py`, `rejudge_specific.py`, the Track 1 dashboard).
 
 ## Fine-tuning data
 

@@ -58,14 +58,15 @@ CAUSES = {
                     "(python run_experiment.py <experiment> --scenarios ...)"),
     "CONFIG": (None, "check GROQ_API_KEY and settings.model, then re-run"),
     "TOOLS/PROMPT": ("prompt", "try a prompt change: 'call each tool at most once; if a tool returns no data, "
-                               "answer from what you have or escalate'"),
+                               "answer from what you have or say you don't know'"),
     "AGENT CRASH": (None, "read the error in the trace; fix the target's code, then re-run"),
     "SAFETY": ("prompt_addons", "try prompt_addons: [injection_resistance, no_invention, scope]"),
-    "RAG": ("retrieval", "try a retrieval change: retrieval.method embeddings, or top_k: 2"),
-    "PROMPT (used info badly)": ("prompt", "try a prompt change: 'answer only from the most relevant FAQ / tool "
-                                           "output, and repeat exact numbers, dates and statuses'"),
-    "TOOL DESCRIPTIONS": ("docstrings", "try a docstrings change: clearer tool descriptions "
-                                        "(start from docstrings/detailed.yaml)"),
+    "RAG": ("retrieval", "try a retrieval change: a better search method or more results "
+                         "(demo agent: retrieval.method embeddings, or top_k: 2)"),
+    "PROMPT (used info badly)": ("prompt", "try a prompt change: 'answer only from the most relevant source "
+                                           "material, and repeat exact numbers, dates and statuses'"),
+    "TOOL DESCRIPTIONS": ("docstrings", "try clearer tool descriptions "
+                                        "(demo agent: start from docstrings/detailed.yaml)"),
     "PROMPT (missed part)": ("prompt", "try a prompt change: 'list every part of the question first, then answer each'"),
     "MEASUREMENT UNSURE": (None, "read the answer by hand; re-judge (judge_run.py) or calibrate noise before trusting it"),
     "UNCLEAR": (None, "open the run and baseline traces side by side and read them"),
