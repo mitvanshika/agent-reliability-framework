@@ -265,7 +265,7 @@ ok("full mode: 2 runs x 3 scenarios through run_experiment + judge_experiment",
    rep["mode"] == "full" and sorted(rep["scenarios"]) == ["c1", "c2", "c3"]
    and os.path.isfile(os.path.join(rep["session_dir"], "run_2", "run_meta.json")), rep["session_dir"])
 ok("noise file keyed by target, with config_hash + judge set", saved["target"] == "fake_t"
-   and saved["config_hash"] == experiment_config.config_hash(exp) and saved["judge_set"]["name"] == "experiment_v1")
+   and saved["config_hash"] == experiment_config.config_hash(exp) and saved["judge_set"]["name"] == "experiment_v2")
 ok("estimate uses the experiment judge set (5 per trace)", "judges up to 30" in buf.getvalue(),
    [l for l in buf.getvalue().splitlines() if "Estimated" in l])
 ok("scores wobbled -> non-zero range recorded", any(st["range"] for st in saved["scenarios"].values()))

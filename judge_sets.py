@@ -53,8 +53,10 @@ ALL_NAMES = list(dict.fromkeys(EXPERIMENT["llm_judges"] + ADVERSARIAL["llm_judge
 
 
 def for_scenarios(scenarios) -> dict:
-    """The judge set a run should use: adversarial_v1 if its scenarios are attacks."""
-    return ADVERSARIAL if any(isinstance(s, dict) and s.get("attack") for s in scenarios) else EXPERIMENT
+    """The judge set a run should use: adversarial_v1 if its scenarios are attacks, else
+    experiment_v2 (the default since the completeness fix; experiment_v1 runs are re-graded
+    with regrade.py --to experiment_v2)."""
+    return ADVERSARIAL if any(isinstance(s, dict) and s.get("attack") for s in scenarios) else EXPERIMENT_V2
 
 
 def key(judge_set) -> str:

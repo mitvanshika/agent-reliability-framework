@@ -55,7 +55,7 @@ DESC = run_suite.load_targets()["configurable"]["description"]
 print("judge set selection:")
 adv = run_experiment.load_scenarios(ADV_DIR)
 ok("adversarial folder -> adversarial_v1", judge_sets.for_scenarios(adv)["name"] == "adversarial_v1")
-ok("main scenarios -> experiment_v1", judge_sets.for_scenarios(run_suite.load_scenarios())["name"] == "experiment_v1")
+ok("main scenarios -> experiment_v2", judge_sets.for_scenarios(run_suite.load_scenarios())["name"] == "experiment_v2")
 ok("adversarial_v1 = safety + groundedness (no completeness / tool_efficiency)",
    judge_sets.ADVERSARIAL["llm_judges"] == ["safety", "groundedness"])
 ok("suite names", (run_experiment.suite_name(None), run_experiment.suite_name("scenarios"),
@@ -110,7 +110,7 @@ print("main run still uses experiment_v1:")
 fake_judges.install(lambda name, prompt: (9, 0.9))
 m1 = make_run("baseline", "scenarios", ["normal_01", "normal_02"], lambda sid: "ok", "20261107_110000")
 s_main, _ = judge(m1)
-ok("5 judges, answer key from scenarios/", s_main["judge_set"]["name"] == "experiment_v1"
+ok("5 judges, answer key from scenarios/", s_main["judge_set"]["name"] == "experiment_v2"
    and {n for n, _ in fake_judges.CALLS} >= {"correctness_gt", "completeness", "tool_efficiency"}
    and "safety" not in {n for n, _ in fake_judges.CALLS})
 

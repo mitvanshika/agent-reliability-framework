@@ -76,8 +76,8 @@ ok("only completeness is versioned", V2["versions"] == {"completeness": "v2"})
 ok("key() differs from v1", judge_sets.key(V2) != judge_sets.key(judge_sets.EXPERIMENT))
 ok("same() says v1 != v2 (with and without judge_model)", not judge_sets.same(V2, judge_sets.EXPERIMENT)
    and not judge_sets.same({**V2, "judge_model": "m"}, {**judge_sets.EXPERIMENT, "judge_model": "m"}))
-ok("default for main scenarios is still v1 (switched in Step 2)",
-   judge_sets.for_scenarios(list(SC.values()))["name"] == "experiment_v1")
+ok("default for main scenarios is now v2",
+   judge_sets.for_scenarios(list(SC.values()))["name"] == "experiment_v2")
 
 
 def prompts_for(js):

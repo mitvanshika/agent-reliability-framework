@@ -132,7 +132,7 @@ crashed = json.load(open(os.path.join(d3, "judged", "s4.json"), encoding="utf-8"
 ok("crashed trace handled like run_judges.py", crashed["final_score"] is None and crashed["not_judged_reason"] == "agent_error")
 ok("summary after judging", s3["passed"] == 3 and s3["scenarios"] == 4 and s3["not_judged"] == [])
 ok("judge set saved in summary.json", json.load(open(os.path.join(d3, "summary.json"), encoding="utf-8"))["judge_set"]["name"]
-   == "experiment_v1" and "Judge set:    experiment_v1" in out)
+   == "experiment_v2" and "Judge set:    experiment_v2" in out)
 ok("N/A counted, fallbacks listed", s3["per_judge_na"] == {"context_relevance": 3}
    and s3["correctness_fallbacks"] == ["s1", "s2", "s3"] and s3["per_judge_mean"]["context_relevance"] is None, s3["per_judge_na"])
 ok("latency/usage survive judging (judged files keep trace fields)",

@@ -126,9 +126,9 @@ ok("tool_match recorded but NOT in final_score", n05["tool_match_result"]["score
 ok("no answer key -> classic fallback, tool_match N/A", nokey["correctness_gt_result"]["mode"] == "fallback_no_answer_key"
    and nokey["correctness_gt_result"]["score"] == 4 and nokey["tool_match_result"].get("na") is True
    and nokey["answer_key_hash"] is None)
-ok("crash: no judge calls, judge_set still recorded", crash["final_score"] is None and crash["judge_set"]["name"] == "experiment_v1")
+ok("crash: no judge calls, judge_set still recorded", crash["final_score"] is None and crash["judge_set"]["name"] == "experiment_v2")
 ok("summary.json: judge set, per-judge incl. new judges, tool_match, N/A counts",
-   s1["judge_set"]["name"] == "experiment_v1" and set(s1["per_judge_mean"]) == set(je.LLM_JUDGES)
+   s1["judge_set"]["name"] == "experiment_v2" and set(s1["per_judge_mean"]) == set(je.LLM_JUDGES)
    and s1["per_judge_na"] == {"context_relevance": 2} and s1["tool_match_mean"] is not None, s1["per_judge_mean"])
 
 print("judge-set mismatch refusal:")
@@ -153,10 +153,10 @@ ok("classic baseline vs experiment run -> refused, exit 2", code == 2 and "Judge
 
 buf = io.StringIO()
 with contextlib.redirect_stdout(buf):
-    promote_baseline.main([run1, "--yes", "--note", "re-judged with experiment_v1"])
+    promote_baseline.main([run1, "--yes", "--note", "re-judged with experiment_v2"])
 ok("re-promote shows 'not comparable' instead of a bogus comparison", "Not comparable: the current baseline was judged with classic_v1" in buf.getvalue())
 base = json.load(open(compare.baseline_path("configurable"), encoding="utf-8"))
-ok("baseline stores judge_set + answer_key_hash", base["judge_set"]["name"] == "experiment_v1"
+ok("baseline stores judge_set + answer_key_hash", base["judge_set"]["name"] == "experiment_v2"
    and base["scenarios"]["normal_02"]["answer_key_hash"] == n02["answer_key_hash"])
 
 print("per-judge deltas include the new judges:")
@@ -168,7 +168,7 @@ with contextlib.redirect_stdout(io.StringIO()):
 code, out, err = run_compare([run2])
 r = json.load(open(os.path.join(run2, "comparison.json"), encoding="utf-8"))
 pj = r["per_judge"]
-ok("same judge set -> compared", code in (0, 1) and r["judge_set"]["name"] == "experiment_v1", err.strip())
+ok("same judge set -> compared", code in (0, 1) and r["judge_set"]["name"] == "experiment_v2", err.strip())
 # correctness_gt: 3 answer-key scenarios 9 -> 4 (-5) + zz_no_key on the classic fallback both times (4 -> 4)
 ok("correctness_gt delta (-5*3 + 0)/4 = -3.75, context_relevance +3 (n=2: N/A left out), tool_match marked as check",
    pj["correctness_gt"]["delta"] == -3.75 and pj["context_relevance"]["delta"] == 3 and pj["context_relevance"]["n"] == 2

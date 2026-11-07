@@ -17,7 +17,7 @@
     }
   },
   "judge_set": {
-    "name": "experiment_v1",
+    "name": "experiment_v2",
     "llm_judges": [
       "correctness_gt",
       "completeness",
@@ -28,67 +28,71 @@
     "checks": [
       "tool_match"
     ],
+    "versions": {
+      "completeness": "v2"
+    },
     "judge_model": "openai/gpt-oss-120b"
   },
+  "scenario_suite": "main",
   "mode": "from_runs",
   "runs": 2,
   "source_runs": [
     "runs/baseline_20261106_101856",
     "runs/baseline_20261106_111506"
   ],
-  "created": "2026-11-06T12:01:28",
+  "created": "2026-11-07T18:15:46",
   "note": "bands from 2 existing runs (agent + judge noise). With few runs the range underestimates the real spread; add runs with --from-runs a b c ... to improve it. Do not evaluate these same runs against these bands (circular).",
   "threshold": 7,
   "jumpy_range": 2.0,
   "scenarios": {
     "edge_01": {
       "scores": [
-        9.604081632653061,
-        8.921108742004266
+        9.60569105691057,
+        9.13163481953291
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.263,
-      "std": 0.483,
-      "min": 8.921108742004266,
-      "max": 9.604081632653061,
-      "range": 0.683,
+      "mean": 9.369,
+      "std": 0.335,
+      "min": 9.13163481953291,
+      "max": 9.60569105691057,
+      "range": 0.474,
       "jumpy": false,
       "skipped_runs": []
     },
     "edge_02": {
       "scores": [
-        9.802845528455284,
-        9.410204081632651
+        10.000000000000002,
+        9.803245436105477
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.607,
-      "std": 0.278,
-      "min": 9.410204081632651,
-      "max": 9.802845528455284,
-      "range": 0.393,
+      "mean": 9.902,
+      "std": 0.139,
+      "min": 9.803245436105477,
+      "max": 10.000000000000002,
+      "range": 0.197,
       "jumpy": false,
       "skipped_runs": []
     },
     "edge_03": {
       "scores": [
-        7.266318537859008,
-        5.587131367292225
+        7.536842105263158,
+        6.1035422343324255
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "PF",
       "flips": 1,
-      "mean": 6.427,
-      "std": 1.187,
-      "min": 5.587131367292225,
-      "max": 7.266318537859008,
-      "range": 1.679,
+      "mean": 6.82,
+      "std": 1.013,
+      "min": 6.1035422343324255,
+      "max": 7.536842105263158,
+      "range": 1.433,
       "jumpy": true,
       "skipped_runs": []
     },
@@ -111,24 +115,24 @@
     },
     "edge_05": {
       "scores": [
-        8.614107883817427,
-        7.92407809110629
+        8.820247933884298,
+        8.13852813852814
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "PP",
       "flips": 0,
-      "mean": 8.269,
-      "std": 0.488,
-      "min": 7.92407809110629,
-      "max": 8.614107883817427,
-      "range": 0.69,
+      "mean": 8.479,
+      "std": 0.482,
+      "min": 8.13852813852814,
+      "max": 8.820247933884298,
+      "range": 0.682,
       "jumpy": false,
       "skipped_runs": []
     },
     "gen_001": {
       "scores": [
-        9.010162601626018,
+        9.010162601626016,
         8.8130081300813
       ],
       "n_runs": 2,
@@ -138,116 +142,116 @@
       "mean": 8.912,
       "std": 0.139,
       "min": 8.8130081300813,
-      "max": 9.010162601626018,
+      "max": 9.010162601626016,
       "range": 0.197,
       "jumpy": false,
       "skipped_runs": []
     },
     "gen_002": {
       "scores": [
-        8.211934156378602,
-        6.893081761006289
-      ],
-      "n_runs": 2,
-      "n_scored": 2,
-      "pass_fail": "PF",
-      "flips": 1,
-      "mean": 7.553,
-      "std": 0.933,
-      "min": 6.893081761006289,
-      "max": 8.211934156378602,
-      "range": 1.319,
-      "jumpy": true,
-      "skipped_runs": []
-    },
-    "gen_003": {
-      "scores": [
-        4.39549180327869,
-        4.143790849673203
-      ],
-      "n_runs": 2,
-      "n_scored": 2,
-      "pass_fail": "FF",
-      "flips": 0,
-      "mean": 4.27,
-      "std": 0.178,
-      "min": 4.143790849673203,
-      "max": 4.39549180327869,
-      "range": 0.252,
-      "jumpy": false,
-      "skipped_runs": []
-    },
-    "gen_004": {
-      "scores": [
-        8.752665245202559,
-        8.587234042553192
+        9.809426229508198,
+        8.526096033402924
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "PP",
       "flips": 0,
-      "mean": 8.67,
+      "mean": 9.168,
+      "std": 0.907,
+      "min": 8.526096033402924,
+      "max": 9.809426229508198,
+      "range": 1.283,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "gen_003": {
+      "scores": [
+        2.3668032786885247,
+        5.642082429501085
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "FF",
+      "flips": 0,
+      "mean": 4.004,
+      "std": 2.316,
+      "min": 2.3668032786885247,
+      "max": 5.642082429501085,
+      "range": 3.275,
+      "jumpy": true,
+      "skipped_runs": []
+    },
+    "gen_004": {
+      "scores": [
+        8.963906581740977,
+        8.798728813559324
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 8.881,
       "std": 0.117,
-      "min": 8.587234042553192,
-      "max": 8.752665245202559,
+      "min": 8.798728813559324,
+      "max": 8.963906581740977,
       "range": 0.165,
       "jumpy": false,
       "skipped_runs": []
     },
     "gen_005": {
       "scores": [
-        5.433189655172414,
-        3.2117400419287208
+        5.644251626898047,
+        2.596234309623431
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "FF",
       "flips": 0,
-      "mean": 4.322,
-      "std": 1.571,
-      "min": 3.2117400419287208,
-      "max": 5.433189655172414,
-      "range": 2.221,
+      "mean": 4.12,
+      "std": 2.155,
+      "min": 2.596234309623431,
+      "max": 5.644251626898047,
+      "range": 3.048,
       "jumpy": true,
       "skipped_runs": []
     },
     "gen_006": {
       "scores": [
-        9.00824742268041,
-        9.209876543209875
+        9.012320328542094,
+        9.41188524590164
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.109,
-      "std": 0.143,
-      "min": 9.00824742268041,
-      "max": 9.209876543209875,
-      "range": 0.202,
+      "mean": 9.212,
+      "std": 0.283,
+      "min": 9.012320328542094,
+      "max": 9.41188524590164,
+      "range": 0.4,
       "jumpy": false,
       "skipped_runs": []
     },
     "gen_007": {
       "scores": [
-        8.100795755968168,
-        9.053984575835473
+        9.09375,
+        10.0
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "PP",
       "flips": 0,
-      "mean": 8.577,
-      "std": 0.674,
-      "min": 8.100795755968168,
-      "max": 9.053984575835473,
-      "range": 0.953,
+      "mean": 9.547,
+      "std": 0.641,
+      "min": 9.09375,
+      "max": 10.0,
+      "range": 0.906,
       "jumpy": false,
       "skipped_runs": []
     },
     "gen_008": {
       "scores": [
-        9.23155737704918,
+        9.231557377049182,
         9.604887983706721
       ],
       "n_runs": 2,
@@ -256,7 +260,7 @@
       "flips": 0,
       "mean": 9.418,
       "std": 0.264,
-      "min": 9.23155737704918,
+      "min": 9.231557377049182,
       "max": 9.604887983706721,
       "range": 0.373,
       "jumpy": false,
@@ -264,35 +268,35 @@
     },
     "gen_009": {
       "scores": [
-        7.921397379912664,
-        8.040860215053764
+        7.274891774891775,
+        8.023255813953488
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "PP",
       "flips": 0,
-      "mean": 7.981,
-      "std": 0.084,
-      "min": 7.921397379912664,
-      "max": 8.040860215053764,
-      "range": 0.119,
+      "mean": 7.649,
+      "std": 0.529,
+      "min": 7.274891774891775,
+      "max": 8.023255813953488,
+      "range": 0.748,
       "jumpy": false,
       "skipped_runs": []
     },
     "gen_010": {
       "scores": [
-        3.771855010660981,
-        3.3556485355648538
+        1.6609808102345418,
+        1.510460251046025
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "FF",
       "flips": 0,
-      "mean": 3.564,
-      "std": 0.294,
-      "min": 3.3556485355648538,
-      "max": 3.771855010660981,
-      "range": 0.416,
+      "mean": 1.586,
+      "std": 0.106,
+      "min": 1.510460251046025,
+      "max": 1.6609808102345418,
+      "range": 0.151,
       "jumpy": false,
       "skipped_runs": []
     },
@@ -315,268 +319,258 @@
     },
     "gen_012": {
       "scores": [
-        4.9445628997867805,
-        6.183157894736842
+        4.158562367864693,
+        5.366315789473684
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "FF",
       "flips": 0,
-      "mean": 5.564,
-      "std": 0.876,
-      "min": 4.9445628997867805,
-      "max": 6.183157894736842,
-      "range": 1.239,
+      "mean": 4.762,
+      "std": 0.854,
+      "min": 4.158562367864693,
+      "max": 5.366315789473684,
+      "range": 1.208,
       "jumpy": false,
       "skipped_runs": []
     },
     "gen_013": {
       "scores": [
-        7.200863930885529,
-        6.997881355932204
-      ],
-      "n_runs": 2,
-      "n_scored": 2,
-      "pass_fail": "PF",
-      "flips": 1,
-      "mean": 7.099,
-      "std": 0.144,
-      "min": 6.997881355932204,
-      "max": 7.200863930885529,
-      "range": 0.203,
-      "jumpy": true,
-      "skipped_runs": []
-    },
-    "gen_014": {
-      "scores": [
-        7.616666666666668,
-        5.733681462140992
-      ],
-      "n_runs": 2,
-      "n_scored": 2,
-      "pass_fail": "PF",
-      "flips": 1,
-      "mean": 6.675,
-      "std": 1.331,
-      "min": 5.733681462140992,
-      "max": 7.616666666666668,
-      "range": 1.883,
-      "jumpy": true,
-      "skipped_runs": []
-    },
-    "gen_015": {
-      "scores": [
-        6.051150895140664,
-        7.779187817258882
-      ],
-      "n_runs": 2,
-      "n_scored": 2,
-      "pass_fail": "FP",
-      "flips": 1,
-      "mean": 6.915,
-      "std": 1.222,
-      "min": 6.051150895140664,
-      "max": 7.779187817258882,
-      "range": 1.728,
-      "jumpy": true,
-      "skipped_runs": []
-    },
-    "normal_01": {
-      "scores": [
-        9.21604938271605,
-        9.014553014553014
+        9.09032258064516,
+        8.868921775898519
       ],
       "n_runs": 2,
       "n_scored": 2,
       "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.115,
-      "std": 0.142,
-      "min": 9.014553014553014,
-      "max": 9.21604938271605,
-      "range": 0.201,
+      "mean": 8.98,
+      "std": 0.157,
+      "min": 8.868921775898519,
+      "max": 9.09032258064516,
+      "range": 0.221,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "gen_014": {
+      "scores": [
+        8.106145251396647,
+        6.026455026455026
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PF",
+      "flips": 1,
+      "mean": 7.066,
+      "std": 1.471,
+      "min": 6.026455026455026,
+      "max": 8.106145251396647,
+      "range": 2.08,
+      "jumpy": true,
+      "skipped_runs": []
+    },
+    "gen_015": {
+      "scores": [
+        8.061224489795919,
+        9.75
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 8.906,
+      "std": 1.194,
+      "min": 8.061224489795919,
+      "max": 9.75,
+      "range": 1.689,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "normal_01": {
+      "scores": [
+        7.229338842975207,
+        7.377049180327869
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 7.303,
+      "std": 0.104,
+      "min": 7.229338842975207,
+      "max": 7.377049180327869,
+      "range": 0.148,
       "jumpy": false,
       "skipped_runs": []
     },
     "normal_02": {
       "scores": [
-        9.999999999999998
+        10.000000000000002,
+        10.0
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "P",
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
       "flips": 0,
       "mean": 10.0,
-      "std": null,
-      "min": 9.999999999999998,
-      "max": 9.999999999999998,
-      "range": null,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.000000000000002,
+      "range": 0.0,
       "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "skipped_runs": []
     },
     "normal_03": {
       "scores": [
+        10.0,
         10.0
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "P",
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
       "flips": 0,
       "mean": 10.0,
-      "std": null,
+      "std": 0.0,
       "min": 10.0,
       "max": 10.0,
-      "range": null,
+      "range": 0.0,
       "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "skipped_runs": []
     },
     "normal_04": {
       "scores": [
-        9.434426229508196
+        10.0,
+        10.0
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "P",
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.434,
-      "std": null,
-      "min": 9.434426229508196,
-      "max": 9.434426229508196,
-      "range": null,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
       "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "skipped_runs": []
     },
     "normal_05": {
       "scores": [
-        9.265135699373696
+        9.265135699373696,
+        9.232510288065845
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "P",
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.265,
-      "std": null,
-      "min": 9.265135699373696,
+      "mean": 9.249,
+      "std": 0.023,
+      "min": 9.232510288065845,
       "max": 9.265135699373696,
-      "range": null,
+      "range": 0.033,
       "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "skipped_runs": []
     },
     "rag_01": {
       "scores": [
-        9.08768267223382
+        9.293139293139294,
+        9.264033264033266
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "P",
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.088,
-      "std": null,
-      "min": 9.08768267223382,
-      "max": 9.08768267223382,
-      "range": null,
+      "mean": 9.279,
+      "std": 0.021,
+      "min": 9.264033264033266,
+      "max": 9.293139293139294,
+      "range": 0.029,
       "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "skipped_runs": []
     },
     "rag_02": {
       "scores": [
-        9.249480249480248
+        9.24948024948025,
+        9.258333333333333
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "P",
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.249,
-      "std": null,
-      "min": 9.249480249480248,
-      "max": 9.249480249480248,
-      "range": null,
+      "mean": 9.254,
+      "std": 0.006,
+      "min": 9.24948024948025,
+      "max": 9.258333333333333,
+      "range": 0.009,
       "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "skipped_runs": []
     },
     "rag_03": {
       "scores": [
-        9.286307053941908
+        10.0,
+        10.0
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "P",
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.286,
-      "std": null,
-      "min": 9.286307053941908,
-      "max": 9.286307053941908,
-      "range": null,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
       "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "skipped_runs": []
     },
     "rag_04": {
       "scores": [
-        9.803245436105477
+        9.803245436105477,
+        10.0
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "P",
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
       "flips": 0,
-      "mean": 9.803,
-      "std": null,
+      "mean": 9.902,
+      "std": 0.139,
       "min": 9.803245436105477,
-      "max": 9.803245436105477,
-      "range": null,
+      "max": 10.0,
+      "range": 0.197,
       "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "skipped_runs": []
     },
     "rag_05": {
       "scores": [
+        10.0,
         10.0
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "P",
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
       "flips": 0,
       "mean": 10.0,
-      "std": null,
+      "std": 0.0,
       "min": 10.0,
       "max": 10.0,
-      "range": null,
+      "range": 0.0,
       "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "skipped_runs": []
     },
     "rag_06": {
       "scores": [
-        6.43265306122449
+        8.221544715447155,
+        3.2278481012658222
       ],
-      "n_runs": 1,
-      "n_scored": 1,
-      "pass_fail": "F",
-      "flips": 0,
-      "mean": 6.433,
-      "std": null,
-      "min": 6.43265306122449,
-      "max": 6.43265306122449,
-      "range": null,
-      "jumpy": false,
-      "skipped_runs": [
-        "runs/baseline_20261106_111506"
-      ]
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PF",
+      "flips": 1,
+      "mean": 5.725,
+      "std": 3.531,
+      "min": 3.2278481012658222,
+      "max": 8.221544715447155,
+      "range": 4.994,
+      "jumpy": true,
+      "skipped_runs": []
     }
   },
   "suite": {
@@ -584,29 +578,28 @@
       {
         "run": 1,
         "run_dir": "runs/baseline_20261106_101856",
-        "mean_score": 8.275,
-        "passed": 25,
+        "mean_score": 8.397,
+        "passed": 27,
         "total": 31,
-        "pass_rate": 0.8065
+        "pass_rate": 0.871
       },
       {
         "run": 2,
         "run_dir": "runs/baseline_20261106_111506",
-        "mean_score": 7.537,
-        "passed": 13,
-        "total": 21,
-        "pass_rate": 0.619
+        "mean_score": 8.203,
+        "passed": 24,
+        "total": 31,
+        "pass_rate": 0.7742
       }
     ],
-    "mean_score_range": 0.738,
-    "pass_rate_range": 0.1875
+    "mean_score_range": 0.194,
+    "pass_rate_range": 0.0968
   },
   "jumpy": [
     "edge_03",
-    "gen_002",
+    "gen_003",
     "gen_005",
-    "gen_013",
     "gen_014",
-    "gen_015"
+    "rag_06"
   ]
 }
