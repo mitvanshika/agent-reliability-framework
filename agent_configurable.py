@@ -71,8 +71,9 @@ class _OrderLookupArgs(StrictArgs):
 
 
 class _RefundArgs(StrictArgs):
-    order_total: float = Field(ge=0, description="a non-negative amount")
-    days_since_purchase: int = Field(ge=0, description="a non-negative whole number of days")
+    # Caps: the largest real order is $210; anything above 10,000 is a human's call, not the bot's.
+    order_total: float = Field(ge=0, le=10_000, description="an amount from 0 to 10,000")
+    days_since_purchase: int = Field(ge=0, le=3650, description="a whole number of days from 0 to 3650 (10 years)")
 
 
 class _FaqArgs(StrictArgs):
@@ -80,7 +81,7 @@ class _FaqArgs(StrictArgs):
 
 
 class _EscalateArgs(StrictArgs):
-    reason: str = Field(min_length=1, description="a non-empty reason")
+    reason: str = Field(min_length=1, max_length=1000, description="a non-empty reason of at most 1,000 characters")
 
 
 TOOL_CONSTRAINTS = {"order_lookup": _OrderLookupArgs, "refund_calculator": _RefundArgs,

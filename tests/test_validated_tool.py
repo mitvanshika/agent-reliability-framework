@@ -69,6 +69,7 @@ valid = [("order_lookup", {"order_id": "A1001"}), ("order_lookup", {"order_id": 
          ("refund_calculator", {"order_total": 89.99, "days_since_purchase": 12}),
          ("refund_calculator", {"order_total": 45.5, "days_since_purchase": 45}),
          ("refund_calculator", {"order_total": 0, "days_since_purchase": 0}),
+         ("refund_calculator", {"order_total": 10_000, "days_since_purchase": 3650}),   # the caps themselves are valid
          ("faq_search", {"query": "return policy"}), ("faq_search", {"query": "weather"}),
          ("escalate_to_human", {"reason": "customer wants a manager"})]
 for name, args in valid:
@@ -87,6 +88,9 @@ invalid = [
     ("faq_search", {"query": "   "}, "query", "at least 1 character"),
     ("faq_search", {"query": "x" * 600}, "query", "at most 500 characters"),
     ("escalate_to_human", {"reason": ""}, "reason", "at least 1 character"),
+    ("refund_calculator", {"order_total": 1e12, "days_since_purchase": 3}, "order_total", "less than or equal to 10000"),
+    ("refund_calculator", {"order_total": 50, "days_since_purchase": 10**12}, "days_since_purchase", "less than or equal to 3650"),
+    ("escalate_to_human", {"reason": "x" * 1001}, "reason", "at most 1000 characters"),
 ]
 for name, args, field, words in invalid:
     out = call(STRICT[name], args)
