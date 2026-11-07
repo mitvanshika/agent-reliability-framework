@@ -105,6 +105,9 @@ for kw, words in (({"pass_threshold": 12}, "0 to 10"), ({"judges": ["corectness"
     rep, by, rows = run(T(**kw))
     ok(f"{list(kw)[0]} -> {words}", rep.failed and any(words in d for s, c, d in rows if s == "FAIL"), rows)
 
+rep = check_target.check("t", False, None, [])   # what an empty targets.yaml loads as
+ok("empty targets.yaml -> clear failure, no crash", rep.failed and "empty or not a mapping" in rep.rows[0][2])
+
 print("import / signature:")
 for fn, words in (("missing_fn", "AttributeError"), ("not_callable", "not callable"), ("no_args", "takes no question"),
                   ("two_required", "must have defaults")):

@@ -147,6 +147,9 @@ def _call(fn, accepts, settings):
 def check(target, call=False, experiment=None, targets=None) -> Report:
     rep = Report()
     targets = targets if targets is not None else run_suite.load_targets()
+    if not isinstance(targets, dict):
+        rep.fail("targets.yaml", f"{run_suite.TARGETS_FILE} is empty or not a mapping of target names")
+        return rep
     if target not in targets:
         rep.fail("targets.yaml", f"no target '{target}'. Known: {', '.join(sorted(targets))}")
         return rep
