@@ -269,7 +269,8 @@ def main_experiment(args):
         except Exception as e:
             sys.exit(f"Settings error in {args.experiment}:\n{e}")
 
-    scenarios = run_suite.load_scenarios()
+    import target_config
+    scenarios = run_experiment.load_scenarios(target_config.get(exp["target"])["scenarios"])
     selected = _select([s["id"] for s in scenarios], args.scenarios)
     mode = "judge_only" if args.judge_only else "full"
     session_dir = os.path.join(NOISE_RUNS_DIR, exp["name"], f"{mode}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
@@ -327,7 +328,7 @@ def main_experiment(args):
               "judge_set": used_js, "mode": mode, "runs": args.runs,
               "created": datetime.now().isoformat(timespec="seconds"),
               "session_dir": session_dir, "scenario_ids": selected}
-    report.update(compute_noise(judged_dirs))
+    report.update(compute_noise(judged_dirs, target_config.threshold(exp["target"])))
     path = save_report(report, exp["target"])
     print_report(report)
     print(f"\nSaved {path}")
@@ -422,7 +423,9 @@ def main_from_runs(run_dirs):
               "note": (f"bands from {len(loaded)} existing runs (agent + judge noise). With few runs the range "
                        "underestimates the real spread; add runs with --from-runs a b c ... to improve it. "
                        "Do not evaluate these same runs against these bands (circular).")}
-    report.update(noise_from_records([(d, recs) for d, _, recs, _ in loaded]))
+    import target_config
+    report.update(noise_from_records([(d, recs) for d, _, recs, _ in loaded],
+                                     target_config.threshold(target)))
     path = save_report(report, compare.suite_key(target, report["scenario_suite"]))
     print_report(report)
     no_band = sorted(sid for sid, st in report["scenarios"].items() if st["range"] is None)

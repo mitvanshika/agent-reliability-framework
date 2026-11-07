@@ -40,3 +40,9 @@ configurable:
   # optional: a function returning this target's tools, for fuzz_tools.py.
   # Only list tools that are safe to call with junk input (no real writes/emails).
   tools: agent_configurable:build_tools
+  # tools that don't fetch information, so context_relevance ignores their output
+  non_retrieval_tools: [escalate_to_human]
+  # Per-target keys (all optional; see target_config.py). Defaults = the old behaviour:
+  #   judges: [...]        which judges apply (others N/A, not in final_score); default all
+  #   pass_threshold: 7    final_score >= this is a pass
+  #   scenarios: scenarios its main scenario folder

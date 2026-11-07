@@ -144,7 +144,7 @@ def diagnose(comparison) -> list[dict]:
 def _failed(record):
     if record["status"] == "agent_error":
         return True
-    return record["status"] == "ok" and not (record["final_score"] is not None and record["final_score"] >= PASS_THRESHOLD)
+    return record["status"] == "ok" and not record["passed"]   # passed uses the target's pass_threshold
 
 
 def fine_tune_candidates(target, runs_dir=None):

@@ -204,11 +204,16 @@ def load_scenarios(scenario_dir=None):
     return out
 
 
-def suite_name(scenario_dir=None) -> str:
-    """'main' for scenarios/, 'adversarial' for scenarios_adversarial/<target>, else the folder name.
+def suite_name(scenario_dir=None, target=None) -> str:
+    """'main' for the target's own scenario folder (targets.yaml `scenarios:`, default scenarios/),
+    'adversarial' for scenarios_adversarial/<target>, else the folder name.
     Baselines and noise files are kept per suite, so suites never mix."""
     if not scenario_dir or os.path.normpath(scenario_dir) == os.path.normpath(run_suite.SCENARIOS_DIR):
         return "main"
+    if target:
+        import target_config
+        if target_config.is_main_suite(target, scenario_dir):
+            return "main"
     parts = os.path.normpath(scenario_dir).replace("\\", "/").split("/")
     if "scenarios_adversarial" in parts:
         return "adversarial"
@@ -236,7 +241,7 @@ def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=Non
         "python": platform.python_version(),
         "scenario_ids": [s["id"] for s in scenarios],
         "scenario_dir": (scenario_dir or run_suite.SCENARIOS_DIR).replace("\\", "/"),
-        "suite": suite_name(scenario_dir),
+        "suite": suite_name(scenario_dir, exp["target"]),
         "status": "running",
     }
     _write_json(os.path.join(run_dir, "run_meta.json"), meta)
@@ -306,6 +311,9 @@ def main(argv=None):
         except ValueError as e:
             sys.exit(f"Settings error in {args.experiment}:\nsettings.prompt_addons: {e}")
 
+    if not args.scenario_dir:
+        import target_config
+        args.scenario_dir = target_config.get(exp["target"])["scenarios"]   # default: scenarios/
     try:
         scenarios = load_scenarios(args.scenario_dir)
     except FileNotFoundError as e:

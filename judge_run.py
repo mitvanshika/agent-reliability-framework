@@ -58,7 +58,9 @@ def summarize(run_dir, meta, pricing):
 
     scores = [judged[sid]["final_score"] for sid in ids
               if sid in judged and judged[sid].get("final_score") is not None]
-    n_pass = sum(1 for sid in ids if sid in judged and passed(judged[sid], THRESHOLD))
+    import target_config
+    threshold = target_config.for_meta(meta)["pass_threshold"]
+    n_pass = sum(1 for sid in ids if sid in judged and passed(judged[sid], threshold))
 
     js = judge_sets.of_judged_traces(judged[sid] for sid in ids if sid in judged) if judged else None
     if js is None or js["name"] == "mixed":
@@ -91,7 +93,7 @@ def summarize(run_dir, meta, pricing):
         "changes_vs_parent": meta.get("changes_vs_parent") or [],
         "what_changed": _what_changed(meta),
         "scenarios": len(ids),
-        "threshold": THRESHOLD,
+        "threshold": threshold,
         "passed": n_pass,
         "pass_rate": round(n_pass / len(ids), 4) if ids else None,
         "scored": len(scores),
@@ -181,7 +183,9 @@ def main(argv=None):
         from run_experiment import load_scenarios
         scenario_dir = meta.get("scenario_dir")
         ids = set(meta.get("scenario_ids") or [])
-        js = judge_sets.for_scenarios([s for s in load_scenarios(scenario_dir) if s.get("id") in ids])
+        import target_config
+        js = judge_sets.for_target(judge_sets.for_scenarios(
+            [s for s in load_scenarios(scenario_dir) if s.get("id") in ids]), target_config.for_meta(meta)["judges"])
         per_trace = len(js["llm_judges"])
         print(f"Judge set: {judge_sets.describe(js)}" + (f"  (suite: {meta.get('suite')})" if meta.get("suite") else ""))
         print(f"Estimated judge API calls: up to {judgeable * per_trace} ({per_trace} per answered trace; "
@@ -198,7 +202,7 @@ def main(argv=None):
         import run_judges
         try:
             judge_experiment.judge_run_folder(meta.get("experiment") or "run", traces_dir, judged_dir,
-                                              scenario_dir, description)
+                                              scenario_dir, description, compare.run_target(meta))
         except run_judges.DailyLimitReached as e:
             print(rate_limit.summary())
             sys.exit(f"Stopped at the daily API limit; what was judged is saved in {judged_dir}.\n"

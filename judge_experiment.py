@@ -56,6 +56,7 @@ class ExperimentJudgeState(TypedDict, total=False):
     expected_tools: list
     attack: str
     description: str
+    non_retrieval_tools: list
     safety_result: dict
     correctness_gt_result: dict
     completeness_result: dict
@@ -100,7 +101,8 @@ def run_tool_efficiency(state):
 
 def run_context_relevance(state):
     verdict = judge_context_relevance(state["question"], state.get("tools_used", []),
-                                      state.get("tool_outputs", []), state.get("expected_answer"))
+                                      state.get("tool_outputs", []), state.get("expected_answer"),
+                                      non_retrieval=state.get("non_retrieval_tools"))
     if verdict is None:
         return {"context_relevance_result": _na("no retrieval happened (no tool outputs from retrieval tools)")}
     return {"context_relevance_result": verdict.model_dump()}
@@ -151,7 +153,8 @@ def _node(js, name):
 
 def app_for(js):
     """The fan-out / fan-in graph for a judge set (built once per set)."""
-    if js["name"] not in _APPS:
+    cache_key = judge_sets.key(js)
+    if cache_key not in _APPS:
         judges, checks = list(js["llm_judges"]), list(js.get("checks") or [])
         graph = StateGraph(ExperimentJudgeState)
         graph.add_node("start", lambda state: {})
@@ -162,28 +165,32 @@ def app_for(js):
             graph.add_edge("start", node_name)
             graph.add_edge(node_name, "combine")
         graph.add_edge("combine", END)
-        _APPS[js["name"]] = graph.compile()
-    return _APPS[js["name"]]
+        _APPS[cache_key] = graph.compile()
+    return _APPS[cache_key]
 
 
 app = app_for(judge_sets.EXPERIMENT)
 
 
-def evaluate(trace: dict, scenario: dict, js=None, description=None) -> dict:
+def evaluate(trace: dict, scenario: dict, js=None, description=None, non_retrieval_tools=None) -> dict:
     """All judged fields for one answered trace (experiment judge set by default)."""
     js = js or judge_sets.EXPERIMENT
-    result = app_for(js).invoke(_state(trace, scenario, description))
+    result = app_for(js).invoke(_state(trace, scenario, description, non_retrieval_tools))
     fields = {k: result.get(k) for k in ("final_score", "disagreement", "low_confidence_judges", "na_judges")}
     for name in list(js["llm_judges"]) + list(js.get("checks") or []):
         fields[f"{name}_result"] = result.get(f"{name}_result")
+    for name in js.get("not_applicable") or []:      # targets.yaml judges: not called, not in final_score
+        fields[f"{name}_result"] = _na("not applicable to this target (targets.yaml judges)")
+        fields["na_judges"] = list(fields.get("na_judges") or []) + [name]
     fields["answer_key_hash"] = answer_key_hash(scenario)
     if fields["final_score"] is None:
         raise RuntimeError("every judge was N/A, nothing to score")
     return fields
 
 
-def _state(trace, scenario, description=None):
+def _state(trace, scenario, description=None, non_retrieval_tools=None):
     return {
+        "non_retrieval_tools": non_retrieval_tools,
         "question": trace["question"], "answer": trace["answer"],
         "tools_used": trace.get("tools_used", []), "tool_outputs": trace.get("tool_outputs", []),
         "expected_answer": scenario.get("expected_answer"), "expected_tools": scenario.get("expected_tools"),
@@ -206,18 +213,23 @@ def rejudge(judged_trace: dict, scenario: dict, js, only, description=None) -> d
     return fields
 
 
-def judge_run_folder(name: str, traces_dir: str, judged_dir: str, scenario_dir=None, description=None):
+def judge_run_folder(name: str, traces_dir: str, judged_dir: str, scenario_dir=None, description=None,
+                     target=None):
     """Judge one run folder, reusing run_judges.judge_all_traces (latest trace per scenario,
     crashed-trace handling, judge-error handling, pacing). The answer key comes from the
     run's own scenario folder; an adversarial suite gets the adversarial judge set."""
     import run_experiment
     scenario_list = run_experiment.load_scenarios(scenario_dir)
     scenarios = {s["id"]: s for s in scenario_list}
-    base = judge_sets.for_scenarios(scenario_list)
+    import target_config
+    cfg = target_config.get(target)
+    base = judge_sets.for_target(judge_sets.for_scenarios(scenario_list), cfg["judges"])
     js = judge_set(base)
+    description = description if description is not None else cfg["description"]
+    non_retrieval = cfg["non_retrieval_tools"] if target else None
 
     def evaluator(trace):
-        return evaluate(trace, scenarios.get(trace["scenario_id"], {}), base, description)
+        return evaluate(trace, scenarios.get(trace["scenario_id"], {}), base, description, non_retrieval)
 
     run_judges.judge_all_traces(name, traces_dir=traces_dir, judged_dir=judged_dir,
                                 evaluator=evaluator, extra_fields={"judge_set": js}, skip_judged=True)

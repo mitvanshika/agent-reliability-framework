@@ -39,6 +39,22 @@ ADVERSARIAL = {
 BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, ADVERSARIAL)}
 
 
+def for_target(js, judges):
+    """js restricted to the judges a target says apply (targets.yaml `judges:`).
+    None = all. The left-out ones are listed in not_applicable and recorded as N/A.
+    Only the main-suite sets are restricted: an attack suite keeps its own judges."""
+    if judges is None or js["name"] == ADVERSARIAL["name"]:
+        return js
+    keep = set(judges)
+    out = {**js, "llm_judges": [n for n in js["llm_judges"] if n in keep],
+           "checks": [n for n in (js.get("checks") or []) if n in keep]}
+    out["not_applicable"] = [n for n in list(js["llm_judges"]) + list(js.get("checks") or [])
+                             if n not in keep]
+    if not out["llm_judges"]:
+        raise ValueError(f"none of the target's judges {sorted(keep)} is in judge set {js['name']}")
+    return out
+
+
 def changed_judges(old, new) -> list:
     """Judges/checks of `new` that `old` lacks or runs in a different version."""
     old_names = set(old["llm_judges"]) | set(old.get("checks") or [])

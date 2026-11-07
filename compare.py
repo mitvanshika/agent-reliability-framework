@@ -97,6 +97,8 @@ def load_run_records(run_dir):
     traces = load_latest_traces(os.path.join(run_dir, "traces"))
     judged_dir = os.path.join(run_dir, "judged")
     judged = load_latest_traces(judged_dir) if os.path.isdir(judged_dir) else {}
+    import target_config
+    threshold = target_config.for_meta(meta)["pass_threshold"]
     records = {}
     for sid in meta.get("scenario_ids") or sorted(traces):
         j, t = judged.get(sid), traces.get(sid, {})
@@ -119,7 +121,7 @@ def load_run_records(run_dir):
         records[sid] = {
             "status": status,
             "final_score": j.get("final_score") if j else None,
-            "passed": bool(j) and passed(j),
+            "passed": bool(j) and passed(j, threshold),
             "judges": judges,
             "error": src.get("error"),
             "error_type": src.get("error_type"),

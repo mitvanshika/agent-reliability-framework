@@ -114,6 +114,9 @@ def main(argv=None):
     import run_suite
     import compare
     meta = _load_meta(run_dir)
+    import target_config
+    global THRESHOLD
+    THRESHOLD = target_config.for_meta(meta)["pass_threshold"]
     scenarios = {s["id"]: s for s in run_experiment.load_scenarios(meta.get("scenario_dir"))}
     description = (run_suite.load_targets().get(compare.run_target(meta)) or {}).get("description")
     new_js = judge_experiment.judge_set(new_base)
@@ -158,8 +161,11 @@ def main(argv=None):
     return summary
 
 
+THRESHOLD = 7   # replaced per run from the target's pass_threshold in main()
+
+
 def _pass_rate(files):
-    ok = sum(1 for _, t in files.values() if passed(t))
+    ok = sum(1 for _, t in files.values() if passed(t, THRESHOLD))
     return f"{ok}/{len(files)}"
 
 
@@ -176,8 +182,8 @@ def print_table(before, after, changed, old_name, new_name):
     for sid in sorted(after):
         b, a = before.get(sid, (None, {}))[1], after[sid][1]
         js = " ".join(f"{fmt(judge(b, n)) + ' -> ' + fmt(judge(a, n)):>22}" for n in changed)
-        pb = passed(b) if b.get("final_score") is not None else None
-        pa = passed(a) if a.get("final_score") is not None else None
+        pb = passed(b, THRESHOLD) if b.get("final_score") is not None else None
+        pa = passed(a, THRESHOLD) if a.get("final_score") is not None else None
         pf = {True: "pass", False: "FAIL", None: "-"}
         mark = "  <-- flip" if pb is not None and pa is not None and pb != pa else ""
         print(f"{sid:12} {js} {fmt(b.get('final_score')) + ' -> ' + fmt(a.get('final_score')):>16} "
