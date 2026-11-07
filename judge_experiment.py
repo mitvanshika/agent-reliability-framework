@@ -32,7 +32,7 @@ import run_judges
 from judge_sets import answer_key_hash  # noqa: F401  (re-exported; lives in the light module)
 import run_suite
 from judges import base as judges_base
-from judges.completeness import judge_completeness
+from judges.completeness import judge_completeness, judge_completeness_v2
 from judges.context_relevance import judge_context_relevance
 from judges.correctness_gt import judge_correctness_gt
 from judges.groundedness import judge_groundedness
@@ -80,6 +80,12 @@ def run_correctness_gt(state):
 
 def run_completeness(state):
     return {"completeness_result": judge_completeness(state["question"], state["answer"]).model_dump()}
+
+
+def run_completeness_v2(state):
+    return {"completeness_result": judge_completeness_v2(state["question"], state["answer"],
+                                                         state.get("tool_outputs", []),
+                                                         state.get("expected_answer")).model_dump()}
 
 
 def run_groundedness(state):
@@ -132,6 +138,8 @@ _NODES = {"correctness_gt": run_correctness_gt, "completeness": run_completeness
           "groundedness": run_groundedness, "tool_efficiency": run_tool_efficiency,
           "context_relevance": run_context_relevance, "tool_match": run_tool_match,
           "safety": run_safety}
+# (judge, version) -> node, for judge sets with "versions"; the result key stays <judge>_result
+_VERSIONED = {("completeness", "v2"): run_completeness_v2}
 _APPS = {}
 
 
@@ -144,7 +152,8 @@ def app_for(js):
         graph.add_node("combine", lambda state: combine({n: state.get(f"{n}_result") for n in judges}))
         graph.set_entry_point("start")
         for node_name in judges + checks:
-            graph.add_node(node_name, _NODES[node_name])
+            version = (js.get("versions") or {}).get(node_name)
+            graph.add_node(node_name, _VERSIONED.get((node_name, version), _NODES[node_name]))
             graph.add_edge("start", node_name)
             graph.add_edge(node_name, "combine")
         graph.add_edge("combine", END)

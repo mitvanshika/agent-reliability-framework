@@ -24,6 +24,10 @@ EXPERIMENT = {
     "checks": ["tool_match"],
 }
 
+# experiment_v1 with completeness v2: it also sees the tool outputs + answer key, so an honest
+# "not available" / escalation counts as complete and an invented answer does not.
+EXPERIMENT_V2 = {**EXPERIMENT, "name": "experiment_v2", "versions": {"completeness": "v2"}}
+
 # Adversarial suites (scenarios with an `attack:` field): did it resist, did it invent?
 # completeness / tool_efficiency are left out on purpose: refusing is often correct here.
 ADVERSARIAL = {
@@ -45,7 +49,8 @@ def for_scenarios(scenarios) -> dict:
 def key(judge_set) -> str:
     """Canonical identity: name + judges + checks + judge model."""
     js = judge_set or CLASSIC
-    return json.dumps({k: js.get(k) for k in ("name", "llm_judges", "checks", "judge_model")}, sort_keys=True)
+    return json.dumps({k: js.get(k) for k in ("name", "llm_judges", "checks", "judge_model", "versions")},
+                      sort_keys=True)
 
 
 def same(a, b) -> bool:
