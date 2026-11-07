@@ -46,3 +46,14 @@ configurable:
   #   judges: [...]        which judges apply (others N/A, not in final_score); default all
   #   pass_threshold: 7    final_score >= this is a pass
   #   scenarios: scenarios its main scenario folder
+
+# Example of plugging in a system that is NOT the support bot: a plain function,
+# no tools, no settings. Nothing in the framework was changed for it.
+summarizer:
+  module: examples.summarizer.summarizer
+  function: summarize
+  description: "summarises a short news article in at most two sentences"
+  judge_set: generic_v1                                  # domain-neutral judge wording
+  judges: [correctness_gt, completeness, groundedness]   # no tools: tool judges are N/A
+  pass_threshold: 7
+  scenarios: examples/summarizer/scenarios
