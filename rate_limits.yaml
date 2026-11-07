@@ -1,0 +1,25 @@
+# Client-side rate limits for every LLM API call (rate_limit.py). One section per provider;
+# `default` is used for a provider without its own section.
+#
+# Kept UNDER the provider's real limits on purpose: the token count of a request is only
+# estimated before it is sent, and something else may be using the same key.
+# Lower = slower but fewer 429s; at 100% you get slightly more throughput and some 429s back.
+#
+# Groq free tier, openai/gpt-oss-120b: 30 requests/min, 8,000 tokens/min, 200,000 tokens/day.
+groq:
+  max_concurrent: 2          # requests in flight at once (the 5 parallel judges queue behind this)
+  requests_per_minute: 24    # 80% of 30
+  tokens_per_minute: 6500    # ~80% of 8,000
+  reply_tokens: 600          # room added to a request's estimate for the reply
+  max_retries: 4             # retries per request on 429 / 5xx / connection errors
+  max_wait_s: 120            # a server wait longer than this = a daily limit: stop instead of waiting
+  jitter_s: 0.5              # random extra wait so parallel callers don't retry at the same instant
+
+default:
+  max_concurrent: 2
+  requests_per_minute: 30
+  tokens_per_minute: 20000
+  reply_tokens: 600
+  max_retries: 4
+  max_wait_s: 120
+  jitter_s: 0.5

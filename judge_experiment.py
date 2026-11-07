@@ -196,5 +196,5 @@ def judge_run_folder(name: str, traces_dir: str, judged_dir: str, scenario_dir=N
         return evaluate(trace, scenarios.get(trace["scenario_id"], {}), base, description)
 
     run_judges.judge_all_traces(name, traces_dir=traces_dir, judged_dir=judged_dir,
-                                evaluator=evaluator, extra_fields={"judge_set": js})
+                                evaluator=evaluator, extra_fields={"judge_set": js}, skip_judged=True)
     return js

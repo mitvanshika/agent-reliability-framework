@@ -27,7 +27,8 @@ import statistics
 import sys
 
 import judge_sets
-from calibrate_noise import JUDGE_SLEEP_SECONDS, confirm
+from calibrate_noise import EST_TOKENS_PER_JUDGE_CALL, confirm
+import rate_limit
 from detect_regressions import passed
 from experiment_config import format_changes
 from run_experiment import compute_totals, estimate_cost, load_pricing
@@ -185,7 +186,8 @@ def main(argv=None):
         print(f"Judge set: {judge_sets.describe(js)}" + (f"  (suite: {meta.get('suite')})" if meta.get("suite") else ""))
         print(f"Estimated judge API calls: up to {judgeable * per_trace} ({per_trace} per answered trace; "
               f"fewer when a judge is N/A), plus retries. "
-              f"Takes at least ~{round(len(latest) * JUDGE_SLEEP_SECONDS / 60, 1)} min.")
+              f"Takes at least ~{rate_limit.min_minutes(judgeable * per_trace * EST_TOKENS_PER_JUDGE_CALL):.0f} min "
+              f"(token budget in rate_limits.yaml).")
         if not confirm("Proceed?", args.yes):
             print("Aborted. No API calls were made.")
             return None
@@ -193,8 +195,16 @@ def main(argv=None):
         import compare
         import run_suite
         description = (run_suite.load_targets().get(compare.run_target(meta)) or {}).get("description")
-        judge_experiment.judge_run_folder(meta.get("experiment") or "run", traces_dir, judged_dir,
-                                          scenario_dir, description)
+        import run_judges
+        try:
+            judge_experiment.judge_run_folder(meta.get("experiment") or "run", traces_dir, judged_dir,
+                                              scenario_dir, description)
+        except run_judges.DailyLimitReached as e:
+            print(rate_limit.summary())
+            sys.exit(f"Stopped at the daily API limit; what was judged is saved in {judged_dir}.\n"
+                     f"Continue later (already-judged traces are skipped): python judge_run.py {run_dir} --yes\n"
+                     f"Provider said: {e}")
+        print(rate_limit.summary())
 
     summary = summarize(run_dir, meta, load_pricing())
     with open(os.path.join(run_dir, "summary.json"), "w", encoding="utf-8") as f:

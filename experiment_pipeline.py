@@ -25,6 +25,7 @@ import traceback
 import compare
 import diagnose
 import judge_run
+import rate_limit
 import run_experiment
 
 STEPS = ["run", "judge", "compare", "diagnose"]
@@ -113,6 +114,7 @@ def run_pipeline(argv=None) -> int:
         record["steps"][e.step] = f"failed: {e.message}"
         record["resume"] = e.resume
         print(f"\nPipeline stopped at step {n}/4 ({e.step}): {e.message}", file=sys.stderr)
+        print(rate_limit.summary(), file=sys.stderr)
         if run_dir:
             print("The run itself is saved." + (f" Resume with: {e.resume}" if e.resume else ""), file=sys.stderr)
         return _finish(record, run_dir, 2, quiet=True, summary_md=args.summary_md)
@@ -182,6 +184,7 @@ def _finish(record, run_dir, code, quiet=False, summary_md=None):
         if record.get("pass_rate") is not None:
             print(f"Pass rate: {record['pass_rate'] * 100:.0f}%   mean final_score: {record['mean_final_score']}")
         print(f"VERDICT: {record.get('verdict') or 'no baseline yet (not compared)'}")
+        print(rate_limit.summary() + "  (agent + judges, whole pipeline)")
         if record.get("down"):
             print(f"Down: {' '.join(record['down'])}")
             for sid, cause in record.get("causes", {}).items():

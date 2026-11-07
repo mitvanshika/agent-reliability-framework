@@ -145,13 +145,31 @@ def evaluate_trace(question: str, answer: str, tools_used: list[str], tool_outpu
     })
 
 
+class DailyLimitReached(Exception):
+    """The judge API's daily quota is used up; what was judged so far is saved."""
+
+
+def _already_judged(path, extra_fields):
+    """True if path holds a successful judgement made with the same judge set."""
+    try:
+        with open(path) as f:
+            old = json.load(f)
+    except (OSError, ValueError):
+        return False
+    import judge_sets
+    return (old.get("judge_error") is None and old.get("final_score") is not None
+            and judge_sets.same(old.get("judge_set"), (extra_fields or {}).get("judge_set")))
+
+
 def judge_all_traces(variant: str, traces_dir: str | None = None, judged_dir: str | None = None,
-                     evaluator=None, extra_fields: dict | None = None):
+                     evaluator=None, extra_fields: dict | None = None, skip_judged: bool = False):
     # traces_dir / judged_dir are optional (used by calibrate_noise.py).
     # Left as None, the variant's normal folders are used, as before.
     # evaluator / extra_fields are optional (used by judge_experiment.py):
     # evaluator(trace) -> dict of judged fields replaces the classic 4 judges,
     # extra_fields is added to every judged file. Left as None: unchanged.
+    # skip_judged=True keeps traces already judged OK with the same judge set (so a
+    # re-run after a judge error or a daily-limit stop only judges what's missing).
     if traces_dir is None or judged_dir is None:
         if variant not in VARIANTS:
             raise ValueError(f"Unknown variant '{variant}'. Use 'strong' or 'weak'.")
@@ -179,6 +197,10 @@ def judge_all_traces(variant: str, traces_dir: str | None = None, judged_dir: st
                 json.dump(trace, f, indent=2)
             continue  # no API call was made, so no sleep needed
 
+        if skip_judged and _already_judged(os.path.join(config["judged_dir"], filename), extra_fields):
+            print(f"[{variant}] {filename}: already judged, skipped")
+            continue
+
         print(f"[{variant}] Judging {filename}...")
         try:
             if evaluator is not None:
@@ -197,6 +219,11 @@ def judge_all_traces(variant: str, traces_dir: str | None = None, judged_dir: st
                 trace["groundedness_result"] = judge_result["groundedness_result"]
             trace["judge_error"] = None
         except Exception as e:
+            import rate_limit
+            if rate_limit.is_daily_limit_error(e):
+                # Not saved, so the next judge_run.py judges it (and the rest) again.
+                print(f"  DAILY API LIMIT reached: stopping. {filename} and later traces are not judged yet.")
+                raise DailyLimitReached(rate_limit.STATS.daily_limit_message or str(e)) from None
             print(f"  Judging failed after retries: {e}")
             trace["final_score"] = None
             trace["disagreement"] = None
@@ -206,7 +233,7 @@ def judge_all_traces(variant: str, traces_dir: str | None = None, judged_dir: st
         with open(os.path.join(config["judged_dir"], filename), "w") as f:
             json.dump(trace, f, indent=2)
         print(f"  Saved to {config['judged_dir']}/{filename}")
-        time.sleep(5)
+        # (no fixed sleep here any more: rate_limit.py paces every request)
 
 
 if __name__ == "__main__":

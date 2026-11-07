@@ -57,7 +57,10 @@ THRESHOLD = 7             # same pass rule as detect_regressions.passed()
 JUMPY_RANGE = 2.0         # a scenario whose score spans >= this is "jumpy"
 JUDGES_PER_TRACE = 4
 EST_AGENT_CALLS = 3       # typical LLM calls per agent run (question -> tool -> answer)
-JUDGE_SLEEP_SECONDS = 5   # run_judges.py pauses this long after each judged trace
+# Measured on the baseline run: ~1,300 agent tokens per scenario, ~450 tokens per judge call.
+# With rate_limit.py the tokens-per-minute budget sets the minimum run time.
+EST_TOKENS_PER_SCENARIO = 1300
+EST_TOKENS_PER_JUDGE_CALL = 450
 NOISE_RUNS_DIR = "noise_runs"
 NOISE_DIR = "noise"
 
@@ -194,7 +197,13 @@ def estimate_calls(n_scenarios, runs, judge_only, n_judgeable=None, judges_per_t
         judge = n_scenarios * runs * judges_per_trace
         traces_judged = n_scenarios * runs
     return {"agent": agent, "judge": judge, "total": agent + judge,
-            "min_minutes": round(traces_judged * JUDGE_SLEEP_SECONDS / 60, 1)}
+            "min_minutes": round(_min_minutes(agent // max(EST_AGENT_CALLS, 1) * EST_TOKENS_PER_SCENARIO
+                                              + judge * EST_TOKENS_PER_JUDGE_CALL), 1)}
+
+
+def _min_minutes(tokens):
+    import rate_limit
+    return rate_limit.min_minutes(tokens)
 
 
 def confirm(message, assume_yes):

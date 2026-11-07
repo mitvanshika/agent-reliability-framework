@@ -40,6 +40,7 @@ import yaml
 import run_suite
 import judge_sets
 import prompt_addons
+import rate_limit
 from calibrate_noise import EST_AGENT_CALLS, confirm
 from experiment_config import ExperimentConfigError, format_changes, load_experiment
 
@@ -241,8 +242,16 @@ def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=Non
     _write_json(os.path.join(run_dir, "run_meta.json"), meta)
 
     traces = []
+    stopped = None
     for i, scenario in enumerate(scenarios, 1):
         trace = run_scenario(fn, accepts, exp["settings"], scenario, timestamp, exp["name"])
+        if trace.get("error_type") == "rate_limit_daily" or rate_limit.STATS.daily_limit:
+            # Not saved: a quota stop is not an answer and must not be judged as a fail.
+            stopped = {"after": i - 1, "not_run": [s["id"] for s in scenarios[i - 1:]],
+                       "message": rate_limit.STATS.daily_limit_message or trace.get("error")}
+            print(f"[{i}/{n}] {scenario['id']:15} DAILY API LIMIT reached: stopping. "
+                  f"{i - 1} of {n} scenarios saved.")
+            break
         _write_json(os.path.join(run_dir, "traces", f"{scenario['id']}.json"), trace)
         traces.append(trace)
         status = f"ERROR {trace['error_type']}" if trace["error"] is not None else "ok"
@@ -253,8 +262,12 @@ def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=Non
     cost, cost_note = estimate_cost(totals, exp["settings"], load_pricing())
     totals["estimated_cost_usd"] = cost
     totals["cost_note"] = cost_note
-    meta.update(totals=totals, status="complete")
+    if stopped:
+        meta.update(totals=totals, status="stopped_daily_limit", stopped=stopped)
+    else:
+        meta.update(totals=totals, status="complete")
     _write_json(os.path.join(run_dir, "run_meta.json"), meta)
+    totals["stopped"] = stopped
     return totals
 
 
@@ -338,6 +351,11 @@ def main(argv=None):
     if cost is not None:
         print(f"Estimated cost: ${cost:.6f} ({cost_note})")
     print(f"Saved {run_dir}")
+    print(rate_limit.summary())
+    if totals.get("stopped"):
+        st = totals["stopped"]
+        sys.exit(f"Stopped at the daily API limit after {st['after']} of {n} scenarios ({run_dir}).\n"
+                 f"Not run: {' '.join(st['not_run'])}\nProvider said: {st['message']}")
     print(f"Next: python judge_run.py {run_dir}")
     return run_dir
 

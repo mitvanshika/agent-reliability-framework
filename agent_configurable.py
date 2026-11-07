@@ -47,6 +47,7 @@ from langgraph.prebuilt import ToolNode
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 import prompt_addons
+import rate_limit
 import retrieval
 from validated_tool import StrictArgs, validated_tool
 import test_agent
@@ -186,7 +187,8 @@ def validate_settings(settings) -> AgentSettings:
 
 def _make_llm(model: str, temperature: float):
     # Separate function so tests can replace it with a fake LLM.
-    return ChatGroq(model=model, temperature=temperature)
+    # rate_limit.py paces requests and owns 429 / 5xx retries (shared budget with the judges).
+    return ChatGroq(model=model, temperature=temperature, http_client=rate_limit.http_client("groq"), max_retries=0)
 
 
 def _faq_function(r: RetrievalSettings):

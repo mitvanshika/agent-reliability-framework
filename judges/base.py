@@ -17,13 +17,17 @@ from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 from pydantic import ValidationError
 from judges.schema import JudgeVerdict
+import rate_limit
 
 load_dotenv()
 
 # temperature=0 so judges score the same answer (nearly) the same way
 # every run. ChatGroq defaults to 0.7 otherwise. Only the judges are
 # pinned here; the agents keep their own settings.
-llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0)
+# rate_limit.py paces every request (rate_limits.yaml) and owns the retries for
+# 429 / 5xx / connection errors, so the SDK's own hidden retries are switched off.
+llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0,
+               http_client=rate_limit.http_client("groq"), max_retries=0)
 structured_llm = llm.with_structured_output(JudgeVerdict, method="json_mode")
 
 # Temporary problems on Groq's side or the network: worth waiting and
@@ -82,9 +86,9 @@ def call_judge(prompt: str, max_retries: int = 2) -> JudgeVerdict:
             kind = _classify(e)
             retry = f"retry {attempt + 1}/{max_retries}"
             if kind == "transient":
-                wait = _backoff_seconds(attempt)
-                print(f"  [judge] {type(e).__name__} (rate limit/timeout/connection), {retry} in {wait:.1f}s")
-                time.sleep(wait)
+                # rate_limit.py already waited (as long as the server asked) and retried this
+                # request; retrying the judge on top would only waste calls.
+                break
             elif kind == "bad_output":
                 print(f"  [judge] {type(e).__name__} (invalid verdict from model), {retry} now")
             else:
