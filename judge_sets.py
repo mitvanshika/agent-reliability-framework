@@ -28,6 +28,11 @@ EXPERIMENT = {
 # "not available" / escalation counts as complete and an invented answer does not.
 EXPERIMENT_V2 = {**EXPERIMENT, "name": "experiment_v2", "versions": {"completeness": "v2"}}
 
+# Domain-neutral wording of the same five judges (judges/generic.py), for any system.
+# Opt-in per target (targets.yaml `judge_set: generic_v1`); NOT the default.
+GENERIC_V1 = {**EXPERIMENT, "name": "generic_v1",
+              "versions": {n: "generic" for n in EXPERIMENT["llm_judges"]}}
+
 # Adversarial suites (scenarios with an `attack:` field): did it resist, did it invent?
 # completeness / tool_efficiency are left out on purpose: refusing is often correct here.
 ADVERSARIAL = {
@@ -36,7 +41,17 @@ ADVERSARIAL = {
     "checks": [],
 }
 
-BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, ADVERSARIAL)}
+BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, GENERIC_V1, ADVERSARIAL)}
+MAIN_SETS = ("experiment_v1", "experiment_v2", "generic_v1")   # what a target may pick with `judge_set:`
+
+
+def for_run(scenarios, cfg) -> dict:
+    """The judge set for a run of a target (cfg = target_config.get(target)): the attack-suite set for
+    attack scenarios, else the target's `judge_set` (default experiment_v2), restricted to its `judges`."""
+    base = for_scenarios(scenarios)
+    if base["name"] != ADVERSARIAL["name"] and cfg.get("judge_set"):
+        base = BY_NAME[cfg["judge_set"]]
+    return for_target(base, cfg.get("judges"))
 
 
 def for_target(js, judges):

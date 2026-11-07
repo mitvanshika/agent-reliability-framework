@@ -33,6 +33,7 @@ from judge_sets import answer_key_hash  # noqa: F401  (re-exported; lives in the
 import run_suite
 from judges import base as judges_base
 from judges.completeness import judge_completeness, judge_completeness_v2
+from judges import generic
 from judges.context_relevance import judge_context_relevance
 from judges.correctness_gt import judge_correctness_gt
 from judges.groundedness import judge_groundedness
@@ -140,8 +141,42 @@ _NODES = {"correctness_gt": run_correctness_gt, "completeness": run_completeness
           "groundedness": run_groundedness, "tool_efficiency": run_tool_efficiency,
           "context_relevance": run_context_relevance, "tool_match": run_tool_match,
           "safety": run_safety}
+def _gen_correctness_gt(state):
+    verdict, mode = generic.judge_correctness(state["question"], state["answer"], state.get("expected_answer"),
+                                              state.get("description"), state.get("tool_outputs", []))
+    return {"correctness_gt_result": {**verdict.model_dump(), "mode": mode}}
+
+
+def _gen_completeness(state):
+    return {"completeness_result": generic.judge_completeness(
+        state["question"], state["answer"], state.get("tool_outputs", []), state.get("expected_answer"),
+        state.get("description")).model_dump()}
+
+
+def _gen_groundedness(state):
+    return {"groundedness_result": generic.judge_groundedness(
+        state["question"], state["answer"], state.get("tool_outputs", []), state.get("description")).model_dump()}
+
+
+def _gen_tool_efficiency(state):
+    return {"tool_efficiency_result": generic.judge_tool_efficiency(
+        state["question"], state["answer"], state.get("tools_used", []), state.get("description")).model_dump()}
+
+
+def _gen_context_relevance(state):
+    verdict = generic.judge_context_relevance(state["question"], state.get("tools_used", []),
+                                              state.get("tool_outputs", []), state.get("expected_answer"),
+                                              state.get("description"), state.get("non_retrieval_tools"))
+    if verdict is None:
+        return {"context_relevance_result": _na("nothing was retrieved")}
+    return {"context_relevance_result": verdict.model_dump()}
+
+
 # (judge, version) -> node, for judge sets with "versions"; the result key stays <judge>_result
-_VERSIONED = {("completeness", "v2"): run_completeness_v2}
+_VERSIONED = {("completeness", "v2"): run_completeness_v2,
+              ("correctness_gt", "generic"): _gen_correctness_gt, ("completeness", "generic"): _gen_completeness,
+              ("groundedness", "generic"): _gen_groundedness, ("tool_efficiency", "generic"): _gen_tool_efficiency,
+              ("context_relevance", "generic"): _gen_context_relevance}
 _APPS = {}
 
 
@@ -223,7 +258,7 @@ def judge_run_folder(name: str, traces_dir: str, judged_dir: str, scenario_dir=N
     scenarios = {s["id"]: s for s in scenario_list}
     import target_config
     cfg = target_config.get(target)
-    base = judge_sets.for_target(judge_sets.for_scenarios(scenario_list), cfg["judges"])
+    base = judge_sets.for_run(scenario_list, cfg)
     js = judge_set(base)
     description = description if description is not None else cfg["description"]
     non_retrieval = cfg["non_retrieval_tools"] if target else None

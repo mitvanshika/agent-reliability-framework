@@ -23,6 +23,7 @@ _MODULES = {
     "tool_efficiency": "judges.tool_efficiency",
     "context_relevance": "judges.context_relevance",
     "safety": "judges.safety",
+    "generic": "judges.generic",   # all five generic judges: tell them apart by the prompt's first line
 }
 
 

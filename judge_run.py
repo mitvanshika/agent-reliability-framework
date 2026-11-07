@@ -184,8 +184,8 @@ def main(argv=None):
         scenario_dir = meta.get("scenario_dir")
         ids = set(meta.get("scenario_ids") or [])
         import target_config
-        js = judge_sets.for_target(judge_sets.for_scenarios(
-            [s for s in load_scenarios(scenario_dir) if s.get("id") in ids]), target_config.for_meta(meta)["judges"])
+        js = judge_sets.for_run([s for s in load_scenarios(scenario_dir) if s.get("id") in ids],
+                                target_config.for_meta(meta))
         per_trace = len(js["llm_judges"])
         print(f"Judge set: {judge_sets.describe(js)}" + (f"  (suite: {meta.get('suite')})" if meta.get("suite") else ""))
         print(f"Estimated judge API calls: up to {judgeable * per_trace} ({per_trace} per answered trace; "

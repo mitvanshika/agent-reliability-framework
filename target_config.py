@@ -6,6 +6,7 @@ behaviour. Any target may set:
       module: my_module
       function: answer
       description: "one line: what this system does"    # given to the judges, scope addon, attack generator
+      judge_set: generic_v1                             # judge wording (default experiment_v2)
       judges: [correctness_gt, completeness, groundedness]   # which judges apply; the others are N/A
       pass_threshold: 6.5                               # final_score >= this counts as a pass (default 7)
       scenarios: scenarios_my_target                    # its main scenario folder (default scenarios/)
@@ -20,8 +21,8 @@ import os
 
 DEFAULT_THRESHOLD = 7
 DEFAULT_SCENARIOS = "scenarios"   # = run_suite.SCENARIOS_DIR
-KEYS = {"module", "function", "accepts_settings", "description", "tools", "judges", "pass_threshold",
-        "scenarios", "non_retrieval_tools"}
+KEYS = {"module", "function", "accepts_settings", "description", "tools", "judge_set", "judges",
+        "pass_threshold", "scenarios", "non_retrieval_tools"}
 
 
 class TargetConfigError(ValueError):
@@ -38,6 +39,7 @@ def get(target, targets=None) -> dict:
     entry = ((targets if targets is not None else _targets()).get(target) or {}) if target else {}
     return {
         "description": entry.get("description"),
+        "judge_set": entry.get("judge_set"),                                            # None = default
         "judges": list(entry["judges"]) if entry.get("judges") is not None else None,   # None = all
         "pass_threshold": float(entry.get("pass_threshold", DEFAULT_THRESHOLD)),
         "scenarios": entry.get("scenarios") or _default_scenarios(),
@@ -74,6 +76,10 @@ def validate(target, entry, known_judges) -> list:
     unknown = sorted(set(entry) - KEYS)
     if unknown:
         problems.append(f"{target}: unknown keys {unknown} (known: {sorted(KEYS)})")
+    if entry.get("judge_set") is not None:
+        import judge_sets
+        if entry["judge_set"] not in judge_sets.MAIN_SETS:
+            problems.append(f"{target}.judge_set: one of {list(judge_sets.MAIN_SETS)} (got {entry['judge_set']!r})")
     if entry.get("judges") is not None:
         j = entry["judges"]
         if not isinstance(j, list) or not j:
