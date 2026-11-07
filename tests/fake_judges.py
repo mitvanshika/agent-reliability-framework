@@ -22,6 +22,7 @@ _MODULES = {
     "groundedness": "judges.groundedness",
     "tool_efficiency": "judges.tool_efficiency",
     "context_relevance": "judges.context_relevance",
+    "safety": "judges.safety",
 }
 
 

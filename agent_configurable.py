@@ -46,7 +46,9 @@ from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
+import prompt_addons
 import retrieval
+from validated_tool import StrictArgs, validated_tool
 import test_agent
 from agent_retry import classify_agent_error, retry_delay
 
@@ -59,6 +61,29 @@ class SettingsError(ValueError):
 
 
 NO_MATCH = "No matching FAQ found for this query"   # same text as test_agent.faq_search
+
+
+# Argument rules for this bot's tools, used only with tool_validation: strict
+# (validated_tool.py does the generic work). Default "off" = the tools exactly as before.
+class _OrderLookupArgs(StrictArgs):
+    order_id: str = Field(pattern=r"^[A-Za-z][0-9]{4}$", description="like A1234: one letter and four digits")
+
+
+class _RefundArgs(StrictArgs):
+    order_total: float = Field(ge=0, description="a non-negative amount")
+    days_since_purchase: int = Field(ge=0, description="a non-negative whole number of days")
+
+
+class _FaqArgs(StrictArgs):
+    query: str = Field(min_length=1, max_length=500, description="a non-empty search of at most 500 characters")
+
+
+class _EscalateArgs(StrictArgs):
+    reason: str = Field(min_length=1, description="a non-empty reason")
+
+
+TOOL_CONSTRAINTS = {"order_lookup": _OrderLookupArgs, "refund_calculator": _RefundArgs,
+                    "faq_search": _FaqArgs, "escalate_to_human": _EscalateArgs}
 
 
 class RetrievalSettings(BaseModel):
@@ -85,6 +110,8 @@ class AgentSettings(BaseModel):
     docstrings: str
     retrieval: RetrievalSettings
     recursion_limit: int = Field(ge=1)
+    prompt_addons: list[str] = []   # framework rules appended to the prompt (prompt_addons/); default none
+    tool_validation: Literal["off", "strict"] = "off"   # strict: validated_tool() on every tool; default off
 
 
 def _repo_path(path: str) -> str:
@@ -143,6 +170,10 @@ def validate_settings(settings) -> AgentSettings:
         raise SettingsError(_explain(e)) from None
     _load_prompt(cfg.prompt)
     _load_docstrings(cfg.docstrings)
+    try:
+        prompt_addons.validate(cfg.prompt_addons, _description())
+    except ValueError as e:
+        raise SettingsError(f"settings.prompt_addons: {e}") from None
     if cfg.retrieval.method == "embeddings":
         if not retrieval.embeddings_available():
             raise SettingsError("settings.retrieval.method 'embeddings' needs fastembed: "
@@ -165,7 +196,8 @@ def _faq_function(r: RetrievalSettings):
     return faq_search
 
 
-def _build(cfg: AgentSettings):
+def _tools(cfg: AgentSettings):
+    """The exact tool list the agent binds for these settings."""
     descriptions = _load_docstrings(cfg.docstrings)
     # Same tool objects as the strong agent, only the description differs.
     tools = [t.model_copy(update={"description": descriptions[t.name]}) for t in test_agent.tools]
@@ -173,6 +205,19 @@ def _build(cfg: AgentSettings):
         # Same name, argument schema and description; only the search function changes.
         tools = [t.model_copy(update={"func": _faq_function(cfg.retrieval)}) if t.name == "faq_search" else t
                  for t in tools]
+    if cfg.tool_validation == "strict":
+        # Same name, description and schema the model sees; arguments checked inside, never raises.
+        tools = [validated_tool(t, TOOL_CONSTRAINTS[t.name]) for t in tools]
+    return tools
+
+
+def build_tools(settings: dict):
+    """Public: the tools for these settings, for fuzz_tools.py (targets.yaml `tools:`)."""
+    return _tools(validate_settings(settings))
+
+
+def _build(cfg: AgentSettings):
+    tools = _tools(cfg)
     llm = _make_llm(cfg.model, cfg.temperature).bind_tools(tools)
 
     def call_model(state):
@@ -184,7 +229,14 @@ def _build(cfg: AgentSettings):
     graph.set_entry_point("agent")
     graph.add_conditional_edges("agent", test_agent.should_continue, {"tools": "tools", END: END})
     graph.add_edge("tools", "agent")
-    return graph.compile(), _load_prompt(cfg.prompt)
+    prompt = prompt_addons.apply(_load_prompt(cfg.prompt), {"prompt_addons": cfg.prompt_addons}, _description())
+    return graph.compile(), prompt
+
+
+def _description():
+    """This target's one-line description from targets.yaml (used by the scope addon)."""
+    import run_suite
+    return (run_suite.load_targets().get("configurable") or {}).get("description")
 
 
 def _get_app(settings: dict, cfg: AgentSettings):

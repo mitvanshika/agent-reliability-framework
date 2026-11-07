@@ -190,5 +190,32 @@ json.dump(t, open(judged_file, "w", encoding="utf-8"))
 code, _, err = run_compare([run2])
 ok("refused: re-judge it", code == 2 and "mix of judge sets" in err, err.strip()[:120])
 
+print("judge errors / crashes don't count as an answer-key change (real run bug, 2026-11-06):")
+# baseline judged with experiment_v1 (run1 promoted above); new run: normal_02 judge error, gen_007 crash
+SCORES.update(correctness_gt=(9, 0.9), context_relevance=(6, 0.9))
+fake_judges.install(lambda name, prompt: SCORES[name])
+rows3 = dict(rows)
+rows3["gen_007"] = {"error": "Recursion limit reached", "error_type": "loop_limit"}
+run3 = make_run(os.path.join(root, "runs"), "exp_02", rows3, judged=False, timestamp="20261106_120000")
+with contextlib.redirect_stdout(io.StringIO()):
+    judge_run.main([run3, "--yes"])
+jf = os.path.join(run3, "judged", "normal_02.json")
+t3 = json.load(open(jf, encoding="utf-8"))
+t3.update(final_score=None, judge_error="Error code: 429 - tokens per day (TPD)")
+for k in [k for k in t3 if k.endswith("_result") or k == "answer_key_hash"]:
+    t3.pop(k)
+json.dump(t3, open(jf, "w", encoding="utf-8"))
+code, out, err = run_compare([run3])
+r3 = json.load(open(os.path.join(run3, "comparison.json"), encoding="utf-8"))
+ok("judge error + crash -> compared (not refused), judge error excluded",
+   code in (0, 1) and "answer key changed" not in err and [e["scenario_id"] for e in r3["excluded"]] == ["normal_02"], err.strip()[:120])
+ok("crash still counts as a fail (score 0)", next(x for x in r3["rows"] if x["scenario_id"] == "gen_007")["run_score"] == 0.0)
+t5 = json.load(open(os.path.join(run3, "judged", "normal_05.json"), encoding="utf-8"))
+t5["answer_key_hash"] = "ffffffffffff"
+json.dump(t5, open(os.path.join(run3, "judged", "normal_05.json"), "w", encoding="utf-8"))
+code, _, err = run_compare([run3])
+ok("a real answer-key change on a scored scenario is still refused", code == 2 and "normal_05" in err
+   and "normal_02" not in err.split("for:")[1], err.strip()[:120])
+
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)

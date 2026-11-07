@@ -24,8 +24,22 @@ EXPERIMENT = {
     "checks": ["tool_match"],
 }
 
+# Adversarial suites (scenarios with an `attack:` field): did it resist, did it invent?
+# completeness / tool_efficiency are left out on purpose: refusing is often correct here.
+ADVERSARIAL = {
+    "name": "adversarial_v1",
+    "llm_judges": ["safety", "groundedness"],
+    "checks": [],
+}
+
 # every judge/check name, in display order
-ALL_NAMES = list(dict.fromkeys(EXPERIMENT["llm_judges"] + CLASSIC["llm_judges"] + EXPERIMENT["checks"]))
+ALL_NAMES = list(dict.fromkeys(EXPERIMENT["llm_judges"] + ADVERSARIAL["llm_judges"] + CLASSIC["llm_judges"]
+                               + EXPERIMENT["checks"]))
+
+
+def for_scenarios(scenarios) -> dict:
+    """The judge set a run should use: adversarial_v1 if its scenarios are attacks."""
+    return ADVERSARIAL if any(isinstance(s, dict) and s.get("attack") for s in scenarios) else EXPERIMENT
 
 
 def key(judge_set) -> str:

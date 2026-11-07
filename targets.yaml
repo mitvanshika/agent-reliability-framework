@@ -34,3 +34,9 @@ configurable:
   module: agent_configurable
   function: run_agent
   accepts_settings: true
+  # one line about what this system is for; used by the scope prompt addon
+  # and the adversarial scenario templates
+  description: "customer support for an online store: order status, refunds, shipping, returns and payment methods"
+  # optional: a function returning this target's tools, for fuzz_tools.py.
+  # Only list tools that are safe to call with junk input (no real writes/emails).
+  tools: agent_configurable:build_tools

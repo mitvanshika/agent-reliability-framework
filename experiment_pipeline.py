@@ -55,6 +55,7 @@ def run_pipeline(argv=None) -> int:
     p = argparse.ArgumentParser(description="run -> judge -> compare -> diagnose, in one command")
     p.add_argument("experiment")
     p.add_argument("--scenarios", nargs="+", metavar="ID")
+    p.add_argument("--scenario-dir", metavar="DIR", help="passed to run_experiment.py (e.g. an adversarial suite)")
     p.add_argument("--yes", action="store_true", help="no confirmation prompt (needed in CI)")
     p.add_argument("--alert", action="store_true", help="passed to compare.py (Slack if DECLINED / anything down)")
     p.add_argument("--summary-md", metavar="FILE", help="append a Markdown report (CI: $GITHUB_STEP_SUMMARY)")
@@ -64,7 +65,7 @@ def run_pipeline(argv=None) -> int:
     try:
         print(f"=== Step 1/4: run_experiment {args.experiment} ===")
         run_args = [args.experiment] + (["--scenarios", *args.scenarios] if args.scenarios else []) \
-            + (["--yes"] if args.yes else [])
+            + (["--scenario-dir", args.scenario_dir] if args.scenario_dir else []) + (["--yes"] if args.yes else [])
         run_dir, _ = _call("run", run_experiment.main, run_args)
         if run_dir is None:
             raise StepFailed("run", "not confirmed: nothing was run")
@@ -83,8 +84,9 @@ def run_pipeline(argv=None) -> int:
         record["steps"]["judge"] = "ok"
         record.update(pass_rate=summary["pass_rate"], mean_final_score=summary["mean_final_score"])
 
-        target = compare.run_target(judge_run.load_meta(run_dir))
-        if not os.path.isfile(compare.baseline_path(target)):
+        run_meta = judge_run.load_meta(run_dir)
+        target = compare.run_target(run_meta)
+        if not os.path.isfile(compare.baseline_path(target, suite=run_meta.get("suite") or "main")):
             record["steps"]["compare"] = "skipped: no baseline"
             record["verdict"] = None
             print(f"\nNo baseline yet for target '{target}': stopping after judging (nothing is promoted automatically).")

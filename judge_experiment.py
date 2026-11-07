@@ -36,14 +36,15 @@ from judges.completeness import judge_completeness
 from judges.context_relevance import judge_context_relevance
 from judges.correctness_gt import judge_correctness_gt
 from judges.groundedness import judge_groundedness
+from judges.safety import judge_safety
 from judges.tool_efficiency import judge_tool_efficiency
 from judges.tool_match import tool_match
 
 LLM_JUDGES = judge_sets.EXPERIMENT["llm_judges"]
 
 
-def judge_set():
-    return {**judge_sets.EXPERIMENT, "judge_model": judges_base.llm.model_name}
+def judge_set(base=None):
+    return {**(base or judge_sets.EXPERIMENT), "judge_model": judges_base.llm.model_name}
 
 
 class ExperimentJudgeState(TypedDict, total=False):
@@ -53,6 +54,9 @@ class ExperimentJudgeState(TypedDict, total=False):
     tool_outputs: list
     expected_answer: str
     expected_tools: list
+    attack: str
+    description: str
+    safety_result: dict
     correctness_gt_result: dict
     completeness_result: dict
     groundedness_result: dict
@@ -96,6 +100,12 @@ def run_context_relevance(state):
     return {"context_relevance_result": verdict.model_dump()}
 
 
+def run_safety(state):
+    return {"safety_result": judge_safety(state["question"], state["answer"], state.get("tool_outputs", []),
+                                          state.get("attack"), state.get("expected_answer"),
+                                          state.get("description")).model_dump()}
+
+
 def run_tool_match(state):
     return {"tool_match_result": tool_match(state.get("tools_used", []), state.get("expected_tools"))}
 
@@ -118,35 +128,44 @@ def combine(verdicts: dict) -> dict:
     }
 
 
-def combine_node(state):
-    return combine({n: state.get(f"{n}_result") for n in LLM_JUDGES})
-
-
 _NODES = {"correctness_gt": run_correctness_gt, "completeness": run_completeness,
           "groundedness": run_groundedness, "tool_efficiency": run_tool_efficiency,
-          "context_relevance": run_context_relevance, "tool_match": run_tool_match}
-
-graph = StateGraph(ExperimentJudgeState)
-graph.add_node("start", lambda state: {})
-graph.add_node("combine", combine_node)
-graph.set_entry_point("start")
-for node_name, fn in _NODES.items():
-    graph.add_node(node_name, fn)
-    graph.add_edge("start", node_name)
-    graph.add_edge(node_name, "combine")
-graph.add_edge("combine", END)
-app = graph.compile()
+          "context_relevance": run_context_relevance, "tool_match": run_tool_match,
+          "safety": run_safety}
+_APPS = {}
 
 
-def evaluate(trace: dict, scenario: dict) -> dict:
-    """All judged fields for one answered trace."""
-    result = app.invoke({
+def app_for(js):
+    """The fan-out / fan-in graph for a judge set (built once per set)."""
+    if js["name"] not in _APPS:
+        judges, checks = list(js["llm_judges"]), list(js.get("checks") or [])
+        graph = StateGraph(ExperimentJudgeState)
+        graph.add_node("start", lambda state: {})
+        graph.add_node("combine", lambda state: combine({n: state.get(f"{n}_result") for n in judges}))
+        graph.set_entry_point("start")
+        for node_name in judges + checks:
+            graph.add_node(node_name, _NODES[node_name])
+            graph.add_edge("start", node_name)
+            graph.add_edge(node_name, "combine")
+        graph.add_edge("combine", END)
+        _APPS[js["name"]] = graph.compile()
+    return _APPS[js["name"]]
+
+
+app = app_for(judge_sets.EXPERIMENT)
+
+
+def evaluate(trace: dict, scenario: dict, js=None, description=None) -> dict:
+    """All judged fields for one answered trace (experiment judge set by default)."""
+    js = js or judge_sets.EXPERIMENT
+    result = app_for(js).invoke({
         "question": trace["question"], "answer": trace["answer"],
         "tools_used": trace.get("tools_used", []), "tool_outputs": trace.get("tool_outputs", []),
         "expected_answer": scenario.get("expected_answer"), "expected_tools": scenario.get("expected_tools"),
+        "attack": scenario.get("attack"), "description": description,
     })
     fields = {k: result.get(k) for k in ("final_score", "disagreement", "low_confidence_judges", "na_judges")}
-    for name in LLM_JUDGES + judge_sets.EXPERIMENT["checks"]:
+    for name in list(js["llm_judges"]) + list(js.get("checks") or []):
         fields[f"{name}_result"] = result.get(f"{name}_result")
     fields["answer_key_hash"] = answer_key_hash(scenario)
     if fields["final_score"] is None:
@@ -154,14 +173,18 @@ def evaluate(trace: dict, scenario: dict) -> dict:
     return fields
 
 
-def judge_run_folder(name: str, traces_dir: str, judged_dir: str):
-    """Judge one run folder with this judge set, reusing run_judges.judge_all_traces
-    (latest trace per scenario, crashed-trace handling, judge-error handling, pacing)."""
-    scenarios = {s["id"]: s for s in run_suite.load_scenarios()}
-    js = judge_set()
+def judge_run_folder(name: str, traces_dir: str, judged_dir: str, scenario_dir=None, description=None):
+    """Judge one run folder, reusing run_judges.judge_all_traces (latest trace per scenario,
+    crashed-trace handling, judge-error handling, pacing). The answer key comes from the
+    run's own scenario folder; an adversarial suite gets the adversarial judge set."""
+    import run_experiment
+    scenario_list = run_experiment.load_scenarios(scenario_dir)
+    scenarios = {s["id"]: s for s in scenario_list}
+    base = judge_sets.for_scenarios(scenario_list)
+    js = judge_set(base)
 
     def evaluator(trace):
-        return evaluate(trace, scenarios.get(trace["scenario_id"], {}))
+        return evaluate(trace, scenarios.get(trace["scenario_id"], {}), base, description)
 
     run_judges.judge_all_traces(name, traces_dir=traces_dir, judged_dir=judged_dir,
                                 evaluator=evaluator, extra_fields={"judge_set": js})

@@ -39,6 +39,7 @@ import yaml
 
 import run_suite
 import judge_sets
+import prompt_addons
 from calibrate_noise import EST_AGENT_CALLS, confirm
 from experiment_config import ExperimentConfigError, format_changes, load_experiment
 
@@ -188,7 +189,32 @@ def new_run_dir(name, timestamp):
     return path
 
 
-def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=None):
+def load_scenarios(scenario_dir=None):
+    """Scenarios from scenario_dir (default: run_suite's scenarios/, exactly as before)."""
+    if not scenario_dir or os.path.normpath(scenario_dir) == os.path.normpath(run_suite.SCENARIOS_DIR):
+        return run_suite.load_scenarios()
+    if not os.path.isdir(scenario_dir):
+        raise FileNotFoundError(f"scenario folder not found: {scenario_dir}")
+    out = []
+    for filename in sorted(os.listdir(scenario_dir)):
+        if filename.endswith(".yaml"):
+            with open(os.path.join(scenario_dir, filename), encoding="utf-8") as f:
+                out.append(yaml.safe_load(f))
+    return out
+
+
+def suite_name(scenario_dir=None) -> str:
+    """'main' for scenarios/, 'adversarial' for scenarios_adversarial/<target>, else the folder name.
+    Baselines and noise files are kept per suite, so suites never mix."""
+    if not scenario_dir or os.path.normpath(scenario_dir) == os.path.normpath(run_suite.SCENARIOS_DIR):
+        return "main"
+    parts = os.path.normpath(scenario_dir).replace("\\", "/").split("/")
+    if "scenarios_adversarial" in parts:
+        return "adversarial"
+    return parts[-1]
+
+
+def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=None, scenario_dir=None):
     """Run every scenario into run_dir (traces/ + run_meta.json). Used by main()
     and by calibrate_noise.py --experiment, so there is one experiment runner."""
     timestamp = timestamp or datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -208,6 +234,8 @@ def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=Non
         "timestamp": timestamp,
         "python": platform.python_version(),
         "scenario_ids": [s["id"] for s in scenarios],
+        "scenario_dir": (scenario_dir or run_suite.SCENARIOS_DIR).replace("\\", "/"),
+        "suite": suite_name(scenario_dir),
         "status": "running",
     }
     _write_json(os.path.join(run_dir, "run_meta.json"), meta)
@@ -236,6 +264,8 @@ def parse_args(argv=None):
     p = argparse.ArgumentParser(description="Run one experiment over the scenario suite.")
     p.add_argument("experiment", help="path to experiments/<name>.yaml")
     p.add_argument("--scenarios", nargs="+", metavar="ID", help="only these scenario ids")
+    p.add_argument("--scenario-dir", metavar="DIR",
+                   help="run another scenario folder, e.g. scenarios_adversarial/<target> (default: scenarios/)")
     p.add_argument("--yes", action="store_true", help="skip the API-call confirmation")
     return p.parse_args(argv)
 
@@ -255,8 +285,20 @@ def main(argv=None):
             validate(exp["settings"])
         except Exception as e:
             sys.exit(f"Settings error in {args.experiment}:\n{e}")
+    if accepts and exp["settings"].get("prompt_addons"):
+        # framework feature, checked for every target before any API call
+        try:
+            prompt_addons.validate(exp["settings"]["prompt_addons"],
+                                   (run_suite.load_targets().get(exp["target"]) or {}).get("description"))
+        except ValueError as e:
+            sys.exit(f"Settings error in {args.experiment}:\nsettings.prompt_addons: {e}")
 
-    scenarios = run_suite.load_scenarios()
+    try:
+        scenarios = load_scenarios(args.scenario_dir)
+    except FileNotFoundError as e:
+        sys.exit(str(e))
+    if not scenarios:
+        sys.exit(f"No scenarios found in {args.scenario_dir or run_suite.SCENARIOS_DIR}")
     if args.scenarios:
         known = {s["id"] for s in scenarios}
         unknown = sorted(set(args.scenarios) - known)
@@ -286,7 +328,7 @@ def main(argv=None):
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_dir = new_run_dir(exp["name"], timestamp)
-    totals = execute(exp, fn, accepts, scenarios, run_dir, args.experiment, timestamp)
+    totals = execute(exp, fn, accepts, scenarios, run_dir, args.experiment, timestamp, args.scenario_dir)
     cost, cost_note = totals["estimated_cost_usd"], totals["cost_note"]
 
     tok = (f"{totals['total_tokens']:,} tokens ({totals['input_tokens']:,} in / {totals['output_tokens']:,} out)"

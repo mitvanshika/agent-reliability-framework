@@ -208,11 +208,12 @@ def _run_path(run_id):
 
 
 def _current_baselines():
+    """{(target, suite): baseline}: one baseline per target and suite."""
     out = {}
     for f in sorted(os.listdir(BASELINES_DIR)) if os.path.isdir(BASELINES_DIR) else []:
         b = _read_json(os.path.join(BASELINES_DIR, f)) if f.endswith(".json") else None
         if b:
-            out[b.get("target")] = b
+            out[(b.get("target"), b.get("suite") or "main")] = b
     return out
 
 
@@ -223,7 +224,7 @@ def _run_row(run_id, baselines):
     comparison = _read_json(os.path.join(path, "comparison.json")) or {}
     totals = meta.get("totals") or {}
     target = (meta.get("resolved_config") or {}).get("target")
-    base = baselines.get(target) or {}
+    base = baselines.get((target, meta.get("suite") or "main")) or {}
     return {
         "run_id": run_id, "experiment": meta.get("experiment"), "timestamp": meta.get("timestamp"),
         "target": target,
@@ -234,6 +235,7 @@ def _run_row(run_id, baselines):
         "scenarios": summary.get("scenarios") or len(meta.get("scenario_ids") or []),
         "total_tokens": totals.get("total_tokens"), "estimated_cost_usd": totals.get("estimated_cost_usd"),
         "verdict": comparison.get("verdict"),
+        "suite": meta.get("suite") or "main",
         "is_baseline": (base.get("run_dir") or "").replace("\\", "/").rstrip("/").split("/")[-1] == run_id,
     }
 
@@ -269,8 +271,8 @@ def api_experiment_run(run_id):
 
 @app.route("/api/experiments/baselines")
 def api_experiment_baselines():
-    return jsonify([{k: b.get(k) for k in ("target", "experiment", "run_dir", "promoted_at", "note")}
-                    for b in _current_baselines().values()])
+    return jsonify([{**{k: b.get(k) for k in ("target", "experiment", "run_dir", "promoted_at", "note")},
+                     "suite": b.get("suite") or "main"} for b in _current_baselines().values()])
 
 
 if __name__ == "__main__":

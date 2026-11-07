@@ -154,7 +154,7 @@ def print_summary(s):
 def next_step_hint(run_dir, meta):
     import compare   # imported here because compare.py imports this module
     target = compare.run_target(meta)
-    if target and os.path.isfile(compare.baseline_path(target)):
+    if target and os.path.isfile(compare.baseline_path(target, suite=meta.get("suite") or "main")):
         return f"Compare with: python compare.py {run_dir}"
     return f"No baseline yet: python promote_baseline.py {run_dir}"
 
@@ -177,16 +177,24 @@ def main(argv=None):
         print(f"Experiment: {meta.get('experiment')}")
         print(f"What changed: {_what_changed(meta)}")
         print(f"Traces: {len(latest)} ({len(latest) - judgeable} crashed: recorded as fails, no judge calls)")
-        per_trace = len(judge_sets.EXPERIMENT["llm_judges"])
-        print(f"Judge set: {judge_sets.describe(judge_sets.EXPERIMENT)}")
+        from run_experiment import load_scenarios
+        scenario_dir = meta.get("scenario_dir")
+        ids = set(meta.get("scenario_ids") or [])
+        js = judge_sets.for_scenarios([s for s in load_scenarios(scenario_dir) if s.get("id") in ids])
+        per_trace = len(js["llm_judges"])
+        print(f"Judge set: {judge_sets.describe(js)}" + (f"  (suite: {meta.get('suite')})" if meta.get("suite") else ""))
         print(f"Estimated judge API calls: up to {judgeable * per_trace} ({per_trace} per answered trace; "
-              f"fewer when context_relevance is N/A), plus retries. "
+              f"fewer when a judge is N/A), plus retries. "
               f"Takes at least ~{round(len(latest) * JUDGE_SLEEP_SECONDS / 60, 1)} min.")
         if not confirm("Proceed?", args.yes):
             print("Aborted. No API calls were made.")
             return None
         import judge_experiment   # imported late: loads the judges + Groq client
-        judge_experiment.judge_run_folder(meta.get("experiment") or "run", traces_dir, judged_dir)
+        import compare
+        import run_suite
+        description = (run_suite.load_targets().get(compare.run_target(meta)) or {}).get("description")
+        judge_experiment.judge_run_folder(meta.get("experiment") or "run", traces_dir, judged_dir,
+                                          scenario_dir, description)
 
     summary = summarize(run_dir, meta, load_pricing())
     with open(os.path.join(run_dir, "summary.json"), "w", encoding="utf-8") as f:
