@@ -16,3 +16,5 @@ runs/
 # export_finetune.py output (review it before using it)
 finetune/
 agent-reliability-framework/
+# idempotent.py / approval.py action store (runtime data)
+actions.db
