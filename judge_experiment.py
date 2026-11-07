@@ -143,6 +143,12 @@ _VERSIONED = {("completeness", "v2"): run_completeness_v2}
 _APPS = {}
 
 
+def _node(js, name):
+    """The node function for one judge of a judge set (its version, if the set pins one)."""
+    version = (js.get("versions") or {}).get(name)
+    return _VERSIONED.get((name, version), _NODES[name])
+
+
 def app_for(js):
     """The fan-out / fan-in graph for a judge set (built once per set)."""
     if js["name"] not in _APPS:
@@ -152,8 +158,7 @@ def app_for(js):
         graph.add_node("combine", lambda state: combine({n: state.get(f"{n}_result") for n in judges}))
         graph.set_entry_point("start")
         for node_name in judges + checks:
-            version = (js.get("versions") or {}).get(node_name)
-            graph.add_node(node_name, _VERSIONED.get((node_name, version), _NODES[node_name]))
+            graph.add_node(node_name, _node(js, node_name))
             graph.add_edge("start", node_name)
             graph.add_edge(node_name, "combine")
         graph.add_edge("combine", END)
@@ -167,16 +172,35 @@ app = app_for(judge_sets.EXPERIMENT)
 def evaluate(trace: dict, scenario: dict, js=None, description=None) -> dict:
     """All judged fields for one answered trace (experiment judge set by default)."""
     js = js or judge_sets.EXPERIMENT
-    result = app_for(js).invoke({
-        "question": trace["question"], "answer": trace["answer"],
-        "tools_used": trace.get("tools_used", []), "tool_outputs": trace.get("tool_outputs", []),
-        "expected_answer": scenario.get("expected_answer"), "expected_tools": scenario.get("expected_tools"),
-        "attack": scenario.get("attack"), "description": description,
-    })
+    result = app_for(js).invoke(_state(trace, scenario, description))
     fields = {k: result.get(k) for k in ("final_score", "disagreement", "low_confidence_judges", "na_judges")}
     for name in list(js["llm_judges"]) + list(js.get("checks") or []):
         fields[f"{name}_result"] = result.get(f"{name}_result")
     fields["answer_key_hash"] = answer_key_hash(scenario)
+    if fields["final_score"] is None:
+        raise RuntimeError("every judge was N/A, nothing to score")
+    return fields
+
+
+def _state(trace, scenario, description=None):
+    return {
+        "question": trace["question"], "answer": trace["answer"],
+        "tools_used": trace.get("tools_used", []), "tool_outputs": trace.get("tool_outputs", []),
+        "expected_answer": scenario.get("expected_answer"), "expected_tools": scenario.get("expected_tools"),
+        "attack": scenario.get("attack"), "description": description,
+    }
+
+
+def rejudge(judged_trace: dict, scenario: dict, js, only, description=None) -> dict:
+    """Re-run only the judges in `only` on an already-judged trace; every other judge's
+    result is kept as it is, and final_score etc. are recomputed with the same combine()."""
+    state = _state(judged_trace, scenario, description)
+    fresh = {}
+    for name in only:
+        fresh.update(_node(js, name)(state))
+    verdicts = {n: fresh.get(f"{n}_result", judged_trace.get(f"{n}_result")) for n in js["llm_judges"]}
+    fields = combine(verdicts)
+    fields.update(fresh)
     if fields["final_score"] is None:
         raise RuntimeError("every judge was N/A, nothing to score")
     return fields

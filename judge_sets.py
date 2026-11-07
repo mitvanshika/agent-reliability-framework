@@ -36,6 +36,17 @@ ADVERSARIAL = {
     "checks": [],
 }
 
+BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, ADVERSARIAL)}
+
+
+def changed_judges(old, new) -> list:
+    """Judges/checks of `new` that `old` lacks or runs in a different version."""
+    old_names = set(old["llm_judges"]) | set(old.get("checks") or [])
+    ov, nv = old.get("versions") or {}, new.get("versions") or {}
+    return [n for n in list(new["llm_judges"]) + list(new.get("checks") or [])
+            if n not in old_names or ov.get(n) != nv.get(n)]
+
+
 # every judge/check name, in display order
 ALL_NAMES = list(dict.fromkeys(EXPERIMENT["llm_judges"] + ADVERSARIAL["llm_judges"] + CLASSIC["llm_judges"]
                                + EXPERIMENT["checks"]))
