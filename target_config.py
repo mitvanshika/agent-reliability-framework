@@ -13,6 +13,7 @@ behaviour. Any target may set:
       non_retrieval_tools: [send_email]                 # tools that don't fetch information (context_relevance)
       action_tools: [send_email]                        # tools that ACT: must be approval.safe_action (check_actions.py)
       actions_sandbox: my_module:sandbox                # fn(tmpdir) -> restore(): point side effects at tmpdir
+      max_steps: 8                                      # step_checks.py: more LLM turns / tool calls = a finding
 
 Left out, each key means exactly what the framework did before: no
 description, every judge of the judge set, threshold 7, scenarios/, and
@@ -24,7 +25,7 @@ import os
 DEFAULT_THRESHOLD = 7
 DEFAULT_SCENARIOS = "scenarios"   # = run_suite.SCENARIOS_DIR
 KEYS = {"module", "function", "accepts_settings", "description", "tools", "judge_set", "judges",
-        "pass_threshold", "scenarios", "non_retrieval_tools", "action_tools", "actions_sandbox"}
+        "pass_threshold", "scenarios", "non_retrieval_tools", "action_tools", "actions_sandbox", "max_steps"}
 
 
 class TargetConfigError(ValueError):
@@ -119,6 +120,9 @@ def validate(target, entry, known_judges) -> list:
             problems.append(f"{target}.action_tools: a list of tool names, or of {{name: ..., test_args: {{...}}}}")
         elif a and not entry.get("tools"):
             problems.append(f"{target}.action_tools needs `tools:` too (how to get the target's tools)")
+    if "max_steps" in entry and (isinstance(entry["max_steps"], bool) or not isinstance(entry["max_steps"], int)
+                                 or entry["max_steps"] < 1):
+        problems.append(f"{target}.max_steps: a whole number >= 1")
     if "actions_sandbox" in entry and not (isinstance(entry["actions_sandbox"], str) and ":" in entry["actions_sandbox"]):
         problems.append(f"{target}.actions_sandbox: module:function")
     if "description" in entry and not (isinstance(entry["description"], str) and entry["description"].strip()):

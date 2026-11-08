@@ -245,6 +245,7 @@ If your system reports `tool_outputs`, the context_relevance judge scores your r
 | `non_retrieval_tools` | tools whose output is not retrieved information (ignored by context_relevance) | none |
 | `tools` | `module:function` returning the tools, opts in to `fuzz_tools.py` | not fuzzed |
 | `action_tools` | tools that act: must be `approval.safe_action`, checked by `check_actions.py`, never fuzzed | none |
+| `max_steps` | `step_checks.py`: more LLM turns or tool calls per answer than this is a finding | 8 |
 | `actions_sandbox` | `module:function(tmpdir)` that points side effects at a temp folder during `check_actions.py` | none |
 
 `python check_target.py <target>` checks all of this before you spend a token.
