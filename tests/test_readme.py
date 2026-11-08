@@ -96,12 +96,17 @@ ok("the actions yaml example is a valid target entry", not target_config.validat
                                                        if "action_tools" in b)["my_target"]}, []))
 ok("the support-bot experiment it names exists", os.path.isfile("experiments/exp_09_actions.yaml"))
 
+print("DeepEval section matches the code:")
+ok("requirements-deepeval.txt exists and pins deepeval", "deepeval==" in open("requirements-deepeval.txt").read())
+ok("the judge names it gives exist in deepeval_v1", all(n in text for n in __import__("judge_sets").DEEPEVAL_V1[
+   "llm_judges"]))
+
 print("sections:")
 for h in ["Architecture: two tracks", "How it works (Track 1)", "The experiment workflow (Track 2)", "Experiments",
           "Judges and the answer key", "Baselines and comparison", "Diagnosis", "Plug in your own system",
           "Fine-tuning data", "CI", "Dashboards", "Key features", "Tech stack", "Project structure", "Setup",
           "Results", "Known limitations / future work", "The headline finding", "Plug in your system in 4 steps",
-          "Making any agent's actions safe"]:
+          "Making any agent's actions safe", "Using DeepEval metrics inside this framework"]:
     ok(f"## {h}", f"\n## {h}\n" in text)
 
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")

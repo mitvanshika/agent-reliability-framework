@@ -238,7 +238,7 @@ If your system reports `tool_outputs`, the context_relevance judge scores your r
 | key | what it does | default |
 |---|---|---|
 | `description` | one line about the system; given to the judges (generic_v1, safety), the `scope` addon and `generate_adversarial.py` | none |
-| `judge_set` | judge wording: `generic_v1` (domain-neutral, for most systems) or `experiment_v2` (the support-bot wording) | `experiment_v2` |
+| `judge_set` | judge wording: `generic_v1` (domain-neutral, for most systems), `experiment_v2` (the support-bot wording) or `deepeval_v1` (DeepEval metrics, separate environment) | `experiment_v2` |
 | `judges` | which judges apply; the others are recorded N/A and left out of final_score | all of the set |
 | `pass_threshold` | final_score at or above this counts as a pass | 7 |
 | `scenarios` | the target's own scenario folder (its main suite, baseline `baselines/<target>.json`) | `scenarios/` |
@@ -315,6 +315,46 @@ adds `issue_refund(order_id)` from `support_actions.py`: it refuses orders older
 `dashboard`). The baseline has no action tool and is unchanged. `python check_actions.py configurable` passes every
 check. Limits: a LangGraph pause lasts while the process runs (MemorySaver; install `langgraph-checkpoint-sqlite` to
 survive restarts), and an action interrupted by a crash stays "in progress" and is refused until cleared by hand.
+
+## Using DeepEval metrics inside this framework
+
+[DeepEval](https://github.com/confident-ai/deepeval) metrics can be used as judges through the judge set
+`deepeval_v1`: **`de_faithfulness`** (DeepEval's FaithfulnessMetric: are the answer's claims supported by the
+retrieved context, i.e. the tool outputs? N/A without tool outputs) and **`de_answer_relevancy`**
+(AnswerRelevancyMetric: do the answer's statements address the question?). They run on Groq through DeepEval's
+custom-model interface (`GroqModel` in `deepeval_worker.py`), with the same groq client and rate limiter as
+everything else, at temperature 0.
+
+**DeepEval lives in its own environment.** It pulls in 22 packages (OpenAI SDK, pytest + 5 plugins, OpenTelemetry,
+posthog telemetry) and would downgrade click, rich and tabulate, so it is never installed into the main Python. The
+framework talks to `deepeval_worker.py` in that environment over stdin/stdout (`judges/deepeval_bridge.py`).
+One-time setup (about 170 MB):
+```
+python -m venv .venv-deepeval
+.venv-deepeval/Scripts/python -m pip install -r requirements-deepeval.txt
+```
+(`.venv-deepeval/bin/python` on Linux/macOS, or point `DEEPEVAL_PYTHON` at any Python that has it.)
+
+**Telemetry is off.** The worker sets `DEEPEVAL_TELEMETRY_OPT_OUT=1` before importing DeepEval (unless you set that
+variable yourself), and keeps DeepEval's local state (`DEEPEVAL_HOME`, which holds its anonymous id) inside
+`.venv-deepeval/` instead of your home folder. `tests/deepeval_env/check_deepeval_env.py` runs the real metrics
+with all network access blocked and checks that nothing connects.
+
+**Use it for a target** (opt-in; the default stays `experiment_v2`):
+```yaml
+my_rag:
+  module: my_rag.entry
+  function: answer
+  judge_set: deepeval_v1
+  judges: [de_faithfulness, de_answer_relevancy]
+```
+DeepEval scores 0-1 and gives no confidence: scores are scaled to 0-10 and weighted with a fixed confidence (0.8)
+in `final_score`. A run judged with `deepeval_v1` is only compared with a baseline judged the same way (compare.py
+refuses to mix judge sets).
+
+**Cost:** DeepEval's metrics make several LLM calls each (faithfulness: truths, claims, verdicts, reason; answer
+relevancy: statements, verdicts, reason), so about 7 calls per answer, against 5 for `experiment_v2`. The worker
+has its own rate limiter (it is a separate process), so its calls are not in the main run's request count.
 
 ## Fine-tuning data
 
