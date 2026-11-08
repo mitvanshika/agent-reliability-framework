@@ -301,15 +301,18 @@ def run_agent(question: str, settings: dict | None = None, max_retries: int = 2)
     # One request id for this question, kept across the retries below, so an action tool
     # (actions: enabled) never acts twice because the graph was re-run after an API error.
     request_id = idempotent.current_request_id() or f"run_agent/{uuid.uuid4().hex}"
+    from trajectory import TrajectoryRecorder
+    recorder = TrajectoryRecorder()      # observes every LLM / tool step (trace["trajectory"]); changes nothing
 
     last_error = None
     error_type = None
     for attempt in range(max_retries + 1):
         try:
+            recorder.attempt = attempt
             with idempotent.request_context(request_id):
                 result = app.invoke(
                     {"messages": [SystemMessage(content=system_prompt), HumanMessage(content=question)]},
-                    config={"recursion_limit": cfg.recursion_limit},
+                    config={"recursion_limit": cfg.recursion_limit, "callbacks": [recorder]},
                 )
             tools_used, tool_outputs = [], []
             for msg in result["messages"]:
@@ -326,6 +329,7 @@ def run_agent(question: str, settings: dict | None = None, max_retries: int = 2)
                 "retries_needed": attempt,
                 "usage": _sum_usage(result["messages"]),
                 "messages": _chat_messages(result["messages"]),
+                "trajectory": recorder.steps(),
             }
         except Exception as e:
             last_error = str(e)
@@ -344,4 +348,5 @@ def run_agent(question: str, settings: dict | None = None, max_retries: int = 2)
         "error_type": error_type,
         "retries_needed": attempt,
         "usage": None,
+        "trajectory": recorder.steps(),
     }

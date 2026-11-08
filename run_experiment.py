@@ -75,7 +75,7 @@ def _clean_usage(usage):
 
 def run_scenario(fn, accepts_settings, settings, scenario, timestamp, experiment):
     start = time.perf_counter()
-    usage = messages = None
+    usage = messages = trajectory = None
     import idempotent
     try:
         # one request id per scenario of this run: an action tool acts at most once for it
@@ -85,6 +85,7 @@ def run_scenario(fn, accepts_settings, settings, scenario, timestamp, experiment
         if isinstance(raw, dict):
             usage = _clean_usage(raw.get("usage"))
             messages = raw.get("messages") if isinstance(raw.get("messages"), list) else None
+            trajectory = raw.get("trajectory") if isinstance(raw.get("trajectory"), list) else None
     except Exception as e:
         normalized = {"answer": None, "tools_used": [], "tool_outputs": [], "retries_needed": 0,
                       "error": str(e), "error_type": "crash"}
@@ -104,6 +105,7 @@ def run_scenario(fn, accepts_settings, settings, scenario, timestamp, experiment
         "latency_s": latency,
         "usage": usage,
         "messages": messages,   # optional full conversation (None if the target doesn't return one)
+        "trajectory": trajectory,   # optional step list (trajectory.py); None if the target doesn't record one
     }
 
 

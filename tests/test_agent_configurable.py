@@ -81,8 +81,9 @@ ok("tools reuse test_agent's functions (no re-implementation)",
    all(c.func is o.func for c, o in zip(llm.bound_tools, test_agent.tools)))
 ok("the real tool ran (store.db)", any("A1002" in o for o in r["tool_outputs"]), r["tool_outputs"])
 ok("usage summed over 2 LLM calls", r["usage"] == usage(250, 35), r["usage"])
-ok("same dict shape as test_agent.run_agent + usage + messages",
-   set(r) == {"answer", "tools_used", "tool_outputs", "error", "error_type", "retries_needed", "usage", "messages"}, sorted(r))
+ok("same dict shape as test_agent.run_agent + usage + messages + trajectory (additive)",
+   set(r) == {"answer", "tools_used", "tool_outputs", "error", "error_type", "retries_needed", "usage", "messages",
+              "trajectory"}, sorted(r))
 roles = [m["role"] for m in r["messages"]]
 call = r["messages"][2]["tool_calls"][0]
 ok("messages: full chat history incl. tool call + tool result", roles == ["system", "user", "assistant", "tool", "assistant"]
