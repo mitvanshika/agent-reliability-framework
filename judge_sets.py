@@ -45,8 +45,12 @@ ADVERSARIAL = {
 # Separate and opt-in: results go to runs/<run>/judged_steps/, never into judged/ or final_score.
 STEPS_V1 = {"name": "steps_v1", "llm_judges": ["step_quality"], "checks": [], "unit": "tool step"}
 
-BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, GENERIC_V1, ADVERSARIAL)}
-MAIN_SETS = ("experiment_v1", "experiment_v2", "generic_v1")   # what a target may pick with `judge_set:`
+# DeepEval metrics (judges/deepeval_bridge.py; DeepEval runs in its own environment, .venv-deepeval).
+# Opt-in per target (`judge_set: deepeval_v1`), not the default.
+DEEPEVAL_V1 = {"name": "deepeval_v1", "llm_judges": ["de_faithfulness", "de_answer_relevancy"], "checks": []}
+
+BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, GENERIC_V1, DEEPEVAL_V1, ADVERSARIAL)}
+MAIN_SETS = ("experiment_v1", "experiment_v2", "generic_v1", "deepeval_v1")   # what a target may pick
 
 
 def for_run(scenarios, cfg) -> dict:
@@ -84,7 +88,7 @@ def changed_judges(old, new) -> list:
 
 # every judge/check name, in display order
 ALL_NAMES = list(dict.fromkeys(EXPERIMENT["llm_judges"] + ADVERSARIAL["llm_judges"] + CLASSIC["llm_judges"]
-                               + EXPERIMENT["checks"]))
+                               + EXPERIMENT["checks"] + DEEPEVAL_V1["llm_judges"]))
 
 
 def for_scenarios(scenarios) -> dict:

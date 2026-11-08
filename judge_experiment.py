@@ -64,6 +64,8 @@ class ExperimentJudgeState(TypedDict, total=False):
     groundedness_result: dict
     tool_efficiency_result: dict
     context_relevance_result: dict
+    de_faithfulness_result: dict
+    de_answer_relevancy_result: dict
     tool_match_result: dict
     final_score: float
     disagreement: bool
@@ -140,7 +142,18 @@ def combine(verdicts: dict) -> dict:
 _NODES = {"correctness_gt": run_correctness_gt, "completeness": run_completeness,
           "groundedness": run_groundedness, "tool_efficiency": run_tool_efficiency,
           "context_relevance": run_context_relevance, "tool_match": run_tool_match,
-          "safety": run_safety}
+          "safety": run_safety,
+          "de_faithfulness": lambda s: _deepeval("faithfulness", s),
+          "de_answer_relevancy": lambda s: _deepeval("answer_relevancy", s)}
+
+
+def _deepeval(metric, state):
+    """DeepEval metrics via judges/deepeval_bridge.py (imported only when a deepeval_v1 run needs it)."""
+    from judges import deepeval_bridge as de
+    if metric == "faithfulness":
+        v = de.judge_faithfulness(state["question"], state["answer"], state.get("tool_outputs", []))
+        return {"de_faithfulness_result": _na("no retrieved context (no tool outputs)") if v is None else v.model_dump()}
+    return {"de_answer_relevancy_result": de.judge_answer_relevancy(state["question"], state["answer"]).model_dump()}
 def _gen_correctness_gt(state):
     verdict, mode = generic.judge_correctness(state["question"], state["answer"], state.get("expected_answer"),
                                               state.get("description"), state.get("tool_outputs", []))

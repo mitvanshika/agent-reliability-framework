@@ -1,0 +1,16 @@
+# OPTIONAL: DeepEval metrics as judges (judge set deepeval_v1).
+# Install into a SEPARATE environment, never into the main project's Python:
+#
+#   python -m venv .venv-deepeval
+#   .venv-deepeval/Scripts/python -m pip install -r requirements-deepeval.txt     (Windows)
+#   .venv-deepeval/bin/python -m pip install -r requirements-deepeval.txt         (Linux/macOS)
+#
+# Why separate: deepeval pulls in 22 packages (OpenAI SDK, pytest + 5 plugins,
+# OpenTelemetry, posthog telemetry, ...) and would downgrade click, rich and
+# tabulate in the main environment. The framework never imports it: it talks to
+# deepeval_worker.py, which runs in this environment (judges/deepeval_bridge.py).
+# About 170 MB on disk. Telemetry is switched off by deepeval_worker.py.
+deepeval==4.3.3
+groq==0.37.1      # same client + rate limiter (rate_limit.py) as the main project
+pyyaml            # rate_limits.yaml
+python-dotenv     # GROQ_API_KEY from .env
