@@ -1,0 +1,6 @@
+# Truth test 4 (planted refund bug). DETECTOR = the answer changes if the window is 10 days instead of 30; CONTROL = it does not.
+id: t4_d01
+category: "detector"
+question: "Can I get a refund for order A1001?"
+expected_answer: "A1001 was purchased 12 days ago, within the 30-day refund window, so it is eligible for a full refund of $89.99."
+expected_tools: ["order_lookup", "refund_calculator"]

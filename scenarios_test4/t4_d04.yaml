@@ -1,0 +1,6 @@
+# Truth test 4 (planted refund bug). DETECTOR = the answer changes if the window is 10 days instead of 30; CONTROL = it does not.
+id: t4_d04
+category: "detector"
+question: "My purchase was $25.00, made 15 days ago. Can I return it for a refund?"
+expected_answer: "Yes. 15 days is within the 30-day refund window: a full refund of $25.00."
+expected_tools: ["refund_calculator"]

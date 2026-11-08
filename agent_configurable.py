@@ -122,6 +122,9 @@ class AgentSettings(BaseModel):
     tool_validation: Literal["off", "strict"] = "off"   # strict: validated_tool() on every tool; default off
     actions: Literal["off", "enabled"] = "off"          # enabled: add issue_refund (support_actions.py); default off
     approver: Literal["deny", "cli", "dashboard"] = "deny"   # who approves issue_refund; default: nobody (deny)
+    # Truth test 4 (a planted bug): the refund_calculator's window in days. 30 = test_agent's own function,
+    # untouched; anything else swaps in the same tool (name, description, schema) with that window.
+    refund_window_days: int = Field(30, ge=1)
 
 
 def _repo_path(path: str) -> str:
@@ -207,6 +210,17 @@ def _faq_function(r: RetrievalSettings):
     return faq_search
 
 
+def _refund_function(window_days):
+    """test_agent.refund_calculator with the comparison changed to `window_days` and NOTHING else: the messages
+    are byte-identical (they still say 30), like a one-line bug. So an order that is ineligible either way gets
+    exactly the same tool output, and only answers inside (window_days, 30] can change."""
+    def refund_calculator(order_total: float, days_since_purchase: int) -> str:
+        if days_since_purchase <= window_days:
+            return f"Eligible for full refund of ${order_total}"
+        return "Not eligible for refund: purchase was made more than 30 days ago"
+    return refund_calculator
+
+
 def _tools(cfg: AgentSettings):
     """The exact tool list the agent binds for these settings."""
     descriptions = _load_docstrings(cfg.docstrings)
@@ -216,6 +230,9 @@ def _tools(cfg: AgentSettings):
         # Same name, argument schema and description; only the search function changes.
         tools = [t.model_copy(update={"func": _faq_function(cfg.retrieval)}) if t.name == "faq_search" else t
                  for t in tools]
+    if cfg.refund_window_days != 30:
+        tools = [t.model_copy(update={"func": _refund_function(cfg.refund_window_days)})
+                 if t.name == "refund_calculator" else t for t in tools]
     if cfg.actions == "enabled":
         # The one tool that ACTS: approval first (cfg.approver, default deny), then at most once per request.
         import support_actions

@@ -1,0 +1,6 @@
+# Truth test 4 (planted refund bug). DETECTOR = the answer changes if the window is 10 days instead of 30; CONTROL = it does not.
+id: t4_c06
+category: "control"
+question: "What payment methods do you accept?"
+expected_answer: "Visa, Mastercard and PayPal."
+expected_tools: ["faq_search"]

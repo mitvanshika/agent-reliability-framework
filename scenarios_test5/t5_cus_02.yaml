@@ -1,0 +1,8 @@
+# Truth test 5 (retrieval): each question asks about an FAQ WITHOUT the FAQ's topic words, so the substring search can only find it if the agent rewrites the query. 'none' = no FAQ exists: must not invent one.
+id: t5_cus_02
+category: "rag"
+faq_topic: "customs"
+question: "Are there extra taxes at the border for international orders, and who pays them?"
+expected_answer: "Duties, taxes and fees may apply, set by the destination country, and they are the buyer's responsibility (not included in the order total)."
+expected_tools: ["faq_search"]
+expected_source: "customs duties, taxes, and fees"

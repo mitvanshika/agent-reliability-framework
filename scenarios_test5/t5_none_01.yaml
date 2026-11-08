@@ -1,0 +1,8 @@
+# Truth test 5 (retrieval): each question asks about an FAQ WITHOUT the FAQ's topic words, so the substring search can only find it if the agent rewrites the query. 'none' = no FAQ exists: must not invent one.
+id: t5_none_01
+category: "edge"
+faq_topic: "none"
+question: "Do you offer gift wrapping for orders?"
+expected_answer: "No information about gift wrapping is available. Must not invent a gift-wrapping service. Say it is not known or escalate."
+expected_tools: null
+expected_source: "none"

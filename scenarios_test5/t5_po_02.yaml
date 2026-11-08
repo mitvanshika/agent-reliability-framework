@@ -1,0 +1,8 @@
+# Truth test 5 (retrieval): each question asks about an FAQ WITHOUT the FAQ's topic words, so the substring search can only find it if the agent rewrites the query. 'none' = no FAQ exists: must not invent one.
+id: t5_po_02
+category: "rag"
+faq_topic: "po box"
+question: "I only have a P.O. Box address. Will FedEx be able to deliver there?"
+expected_answer: "No: expedited couriers (FedEx, UPS) can't deliver to PO boxes; standard postal service can, in 7-10 business days."
+expected_tools: ["faq_search"]
+expected_source: "cannot deliver to PO boxes"

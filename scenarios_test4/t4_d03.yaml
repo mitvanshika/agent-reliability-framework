@@ -1,0 +1,6 @@
+# Truth test 4 (planted refund bug). DETECTOR = the answer changes if the window is 10 days instead of 30; CONTROL = it does not.
+id: t4_d03
+category: "detector"
+question: "I paid $15.50 for something 13 days ago. Am I still eligible for a refund?"
+expected_answer: "Yes. 13 days is within the 30-day refund window: a full refund of $15.50."
+expected_tools: ["refund_calculator"]
