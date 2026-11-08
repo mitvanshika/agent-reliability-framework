@@ -79,15 +79,29 @@ ok("its targets.yaml block = the real summarizer entry (can't go stale)", shown[
 ok("the example experiment it runs exists", os.path.isfile("examples/summarizer/summarizer_baseline.yaml"))
 sys.path.insert(0, REPO)
 import target_config  # noqa: E402
-ok("every per-target key in the README table is a real key", all(
-   k in target_config.KEYS for k in re.findall(r"^\| `(\w+)` \|", text, re.M)),
-   re.findall(r"^\| `(\w+)` \|", text, re.M))
+key_table = text.split("**Per-target settings in `targets.yaml`**", 1)[-1].split("\n\n", 2)[1]
+table_keys = re.findall(r"^\| `(\w+)` \|", key_table, re.M)
+ok("every per-target key in the README table is a real key", table_keys and all(
+   k in target_config.KEYS for k in table_keys), table_keys)
+ok("...and every real key is in the table", set(target_config.KEYS) - {"module", "function", "accepts_settings"}
+   <= set(table_keys), set(target_config.KEYS) - set(table_keys))
+
+print("actions section matches the code:")
+act = text.split("\n## Making any agent's actions safe\n", 1)[-1].split("\n## ", 1)[0]
+import approval  # noqa: E402
+names = re.findall(r"^\| `(\w+)` (?:\(default\) )?\|", act, re.M)
+ok("every approver in the table exists", names and all(n in approval.APPROVERS for n in names), names)
+ok("the actions yaml example is a valid target entry", not target_config.validate(
+   "my_target", {"module": "m", "function": "f", **next(yaml.safe_load(b) for b in blocks
+                                                       if "action_tools" in b)["my_target"]}, []))
+ok("the support-bot experiment it names exists", os.path.isfile("experiments/exp_09_actions.yaml"))
 
 print("sections:")
 for h in ["Architecture: two tracks", "How it works (Track 1)", "The experiment workflow (Track 2)", "Experiments",
           "Judges and the answer key", "Baselines and comparison", "Diagnosis", "Plug in your own system",
           "Fine-tuning data", "CI", "Dashboards", "Key features", "Tech stack", "Project structure", "Setup",
-          "Results", "Known limitations / future work", "The headline finding", "Plug in your system in 4 steps"]:
+          "Results", "Known limitations / future work", "The headline finding", "Plug in your system in 4 steps",
+          "Making any agent's actions safe"]:
     ok(f"## {h}", f"\n## {h}\n" in text)
 
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")

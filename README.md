@@ -244,13 +244,76 @@ If your system reports `tool_outputs`, the context_relevance judge scores your r
 | `scenarios` | the target's own scenario folder (its main suite, baseline `baselines/<target>.json`) | `scenarios/` |
 | `non_retrieval_tools` | tools whose output is not retrieved information (ignored by context_relevance) | none |
 | `tools` | `module:function` returning the tools, opts in to `fuzz_tools.py` | not fuzzed |
+| `action_tools` | tools that act: must be `approval.safe_action`, checked by `check_actions.py`, never fuzzed | none |
+| `actions_sandbox` | `module:function(tmpdir)` that points side effects at a temp folder during `check_actions.py` | none |
 
 `python check_target.py <target>` checks all of this before you spend a token.
 
 **Sample-agent only.** These files belong to the demo support bot and are support-specific on purpose; your system does
 not need them: `test_agent.py`, `agent_v2_weak.py`, `agent_configurable.py` (with `prompts/`, `docstrings/`,
-`scenarios/`), `store.py`, `retrieval.py`, `generate.py`, `export_finetune.py`, and the Track 1 scripts (`pipeline.py`,
+`scenarios/`), `store.py`, `retrieval.py`, `support_actions.py`, `generate.py`, `export_finetune.py`, and the Track 1 scripts (`pipeline.py`,
 `run_judges.py`, `find_failed.py`, `export_for_dashboard.py`, `rejudge_specific.py`, the Track 1 dashboard).
+
+## Making any agent's actions safe
+
+Reading tools are harmless if they run twice. Tools that ACT (send an email, refund, pay, delete) are not: agents
+re-run graphs after API errors, models call the same tool twice, users double-click. Two reusable guards, for any
+plain function or LangChain tool, nothing tool-specific:
+
+- **`@idempotent`** (`idempotent.py`): acts at most once per request. Key = tool name + normalized arguments +
+  request id, claimed in SQLite before acting, so even simultaneous callers can't both act; a repeat gets the stored
+  result.
+- **`requires_approval` / `safe_action`** (`approval.py`): ask an approver before acting. `safe_action` = approval +
+  idempotency in the only safe order:
+  1. already done for this request? return the stored result (nobody is asked twice)
+  2. ask the approver; a reject is passed to the model ("not approved ... Nothing was done") and NOT stored
+  3. claim the key, act once, store the result
+
+```python
+from approval import safe_action
+refund = safe_action(issue_refund_tool, approver="dashboard",          # or "cli", "deny", a function, "langgraph"
+                     describe=lambda a: f"Refund order {a['order_id']}")
+```
+
+| approver | how it decides |
+|---|---|
+| `deny` (default) | always no: an unattended run never acts |
+| `cli` | asks on the terminal; only `y` / `yes` approves |
+| `dashboard` | shows it on `/approvals` (Approve / Reject); no decision within the timeout = reject. Deciding needs `APPROVALS_TOKEN` (header `X-Approval-Token`) or a request from the same machine |
+| a function | `fn(request) -> bool` or `Decision`: a chat bot, a policy check |
+| `langgraph` | pauses a LangGraph run at a checkpoint (`interrupt`); `run_with_approvals(app, input, approver, config)` asks the approver and resumes |
+
+Anything unclear fails closed: an approver that raises or answers "maybe" is a reject. Every decision is logged
+(`approval_log`), including replays that needed none. The request id comes from `request_context(...)`,
+`run_experiment.py` sets one per scenario, and inside LangGraph the run's `request_id` / `thread_id` is used.
+
+**LangGraph detail that matters:** LangGraph hands resume values to `interrupt()` by position within a step, and an
+action that is already done no longer interrupts, so positions shift: in testing, a rejected refund received another
+action's approval and was executed. Fixed: every decision carries its action's key, is filed by key, and each action
+looks up its own; resume values without a key are refused. Stress-tested on all 8 approve/reject patterns of 3
+parallel actions.
+
+**Declare and check them per target:**
+```yaml
+my_target:
+  tools: my_module:get_tools
+  action_tools:
+    - name: send_email
+      test_args: {to: "test@example.com", body: "hi"}
+  actions_sandbox: my_module:sandbox     # fn(tmpdir) -> restore(): side effects go to a temp folder during checks
+```
+```
+python check_actions.py my_target       # no LLM: protected, blocked by deny, reject = nothing, approve = once,
+                                        # retry = still once, new request = again, 5 concurrent = once, LangGraph
+```
+`fuzz_tools.py` never calls an action tool: junk input must not trigger a real action.
+
+**First user: the support bot.** `experiments/exp_09_actions.yaml` (`actions: enabled`, one change from the baseline)
+adds `issue_refund(order_id)` from `support_actions.py`: it refuses orders older than 30 days and writes to its own
+`refunds.db` ledger, never to `store.db`. Its approver is the `approver` setting (`deny` by default, `cli` or
+`dashboard`). The baseline has no action tool and is unchanged. `python check_actions.py configurable` passes every
+check. Limits: a LangGraph pause lasts while the process runs (MemorySaver; install `langgraph-checkpoint-sqlite` to
+survive restarts), and an action interrupted by a crash stays "in progress" and is refused until cleared by hand.
 
 ## Fine-tuning data
 
