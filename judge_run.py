@@ -27,7 +27,8 @@ import statistics
 import sys
 
 import judge_sets
-from calibrate_noise import JUDGE_SLEEP_SECONDS, confirm
+from calibrate_noise import EST_TOKENS_PER_JUDGE_CALL, confirm
+import rate_limit
 from detect_regressions import passed
 from experiment_config import format_changes
 from run_experiment import compute_totals, estimate_cost, load_pricing
@@ -57,7 +58,9 @@ def summarize(run_dir, meta, pricing):
 
     scores = [judged[sid]["final_score"] for sid in ids
               if sid in judged and judged[sid].get("final_score") is not None]
-    n_pass = sum(1 for sid in ids if sid in judged and passed(judged[sid], THRESHOLD))
+    import target_config
+    threshold = target_config.for_meta(meta)["pass_threshold"]
+    n_pass = sum(1 for sid in ids if sid in judged and passed(judged[sid], threshold))
 
     js = judge_sets.of_judged_traces(judged[sid] for sid in ids if sid in judged) if judged else None
     if js is None or js["name"] == "mixed":
@@ -90,7 +93,7 @@ def summarize(run_dir, meta, pricing):
         "changes_vs_parent": meta.get("changes_vs_parent") or [],
         "what_changed": _what_changed(meta),
         "scenarios": len(ids),
-        "threshold": THRESHOLD,
+        "threshold": threshold,
         "passed": n_pass,
         "pass_rate": round(n_pass / len(ids), 4) if ids else None,
         "scored": len(scores),
@@ -154,7 +157,7 @@ def print_summary(s):
 def next_step_hint(run_dir, meta):
     import compare   # imported here because compare.py imports this module
     target = compare.run_target(meta)
-    if target and os.path.isfile(compare.baseline_path(target)):
+    if target and os.path.isfile(compare.baseline_path(target, suite=meta.get("suite") or "main")):
         return f"Compare with: python compare.py {run_dir}"
     return f"No baseline yet: python promote_baseline.py {run_dir}"
 
@@ -177,16 +180,35 @@ def main(argv=None):
         print(f"Experiment: {meta.get('experiment')}")
         print(f"What changed: {_what_changed(meta)}")
         print(f"Traces: {len(latest)} ({len(latest) - judgeable} crashed: recorded as fails, no judge calls)")
-        per_trace = len(judge_sets.EXPERIMENT["llm_judges"])
-        print(f"Judge set: {judge_sets.describe(judge_sets.EXPERIMENT)}")
+        from run_experiment import load_scenarios
+        scenario_dir = meta.get("scenario_dir")
+        ids = set(meta.get("scenario_ids") or [])
+        import target_config
+        js = judge_sets.for_run([s for s in load_scenarios(scenario_dir) if s.get("id") in ids],
+                                target_config.for_meta(meta))
+        per_trace = len(js["llm_judges"])
+        print(f"Judge set: {judge_sets.describe(js)}" + (f"  (suite: {meta.get('suite')})" if meta.get("suite") else ""))
         print(f"Estimated judge API calls: up to {judgeable * per_trace} ({per_trace} per answered trace; "
-              f"fewer when context_relevance is N/A), plus retries. "
-              f"Takes at least ~{round(len(latest) * JUDGE_SLEEP_SECONDS / 60, 1)} min.")
+              f"fewer when a judge is N/A), plus retries. "
+              f"Takes at least ~{rate_limit.min_minutes(judgeable * per_trace * EST_TOKENS_PER_JUDGE_CALL):.0f} min "
+              f"(token budget in rate_limits.yaml).")
         if not confirm("Proceed?", args.yes):
             print("Aborted. No API calls were made.")
             return None
         import judge_experiment   # imported late: loads the judges + Groq client
-        judge_experiment.judge_run_folder(meta.get("experiment") or "run", traces_dir, judged_dir)
+        import compare
+        import run_suite
+        description = (run_suite.load_targets().get(compare.run_target(meta)) or {}).get("description")
+        import run_judges
+        try:
+            judge_experiment.judge_run_folder(meta.get("experiment") or "run", traces_dir, judged_dir,
+                                              scenario_dir, description, compare.run_target(meta))
+        except run_judges.DailyLimitReached as e:
+            print(rate_limit.summary())
+            sys.exit(f"Stopped at the daily API limit; what was judged is saved in {judged_dir}.\n"
+                     f"Continue later (already-judged traces are skipped): python judge_run.py {run_dir} --yes\n"
+                     f"Provider said: {e}")
+        print(rate_limit.summary())
 
     summary = summarize(run_dir, meta, load_pricing())
     with open(os.path.join(run_dir, "summary.json"), "w", encoding="utf-8") as f:

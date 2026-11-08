@@ -49,6 +49,8 @@ def build_baseline(run_dir, meta, records, summary, note):
         "parent": meta.get("parent"),
         "changes_vs_parent": meta.get("changes_vs_parent") or [],
         "git": meta.get("git"),
+        "suite": meta.get("suite") or "main",
+        "scenario_dir": meta.get("scenario_dir"),
         "judge_set": summary.get("judge_set"),
         "summary": summary,
         "scenarios": records,
@@ -88,7 +90,8 @@ def main(argv=None):
     if args.force and (not_judged or judge_errors):
         print(f"\n--force: {len(not_judged) + len(judge_errors)} scenarios without a score are stored as such.")
 
-    dest = compare.baseline_path(target)
+    suite = meta.get("suite") or "main"
+    dest = compare.baseline_path(target, suite=suite)
     current = None
     if os.path.isfile(dest):
         with open(dest, encoding="utf-8") as f:
@@ -96,8 +99,10 @@ def main(argv=None):
         print(f"\nCompared with the current baseline ({current.get('experiment')}, "
               f"promoted {current.get('promoted_at', '?')[:10]} from {current.get('run_dir')}):")
         cur_js = current.get("judge_set") or judge_sets.CLASSIC
+        # only scored answers carry an answer_key_hash (judge errors / crashes are excluded anyway)
         changed_key = sorted(s for s in set(current["scenarios"]) & set(records)
-                             if current["scenarios"][s].get("answer_key_hash") != records[s].get("answer_key_hash"))
+                             if current["scenarios"][s].get("status") == "ok" and records[s]["status"] == "ok"
+                             and current["scenarios"][s].get("answer_key_hash") != records[s].get("answer_key_hash"))
         if not judge_sets.same(cur_js, summary.get("judge_set")):
             print(f"  Not comparable: the current baseline was judged with {judge_sets.describe(cur_js)}, "
                   f"this run with {judge_sets.describe(summary.get('judge_set'))}.")
@@ -106,7 +111,7 @@ def main(argv=None):
             print(f"  Not comparable: the answer key changed for {' '.join(changed_key)}.")
         else:
             result = compare.compare_records(current["scenarios"], records,
-                                             compare.load_bands(target, baseline=current)[0])
+                                             compare.load_bands(target, baseline=current, suite=suite)[0])
             compare.print_comparison(result, show_rows=False)
             print(f"Verdict vs current baseline: {result['verdict']}")
     else:
@@ -120,10 +125,10 @@ def main(argv=None):
     if current is not None:
         os.makedirs(history_dir(), exist_ok=True)
         stamp = (current.get("promoted_at") or "unknown").replace(":", "").replace("-", "")
-        backup = os.path.join(history_dir(), f"{target}_{stamp}.json")
+        backup = os.path.join(history_dir(), f"{compare.suite_key(target, suite)}_{stamp}.json")
         n = 2
         while os.path.exists(backup):
-            backup = os.path.join(history_dir(), f"{target}_{stamp}_{n}.json")
+            backup = os.path.join(history_dir(), f"{compare.suite_key(target, suite)}_{stamp}_{n}.json")
             n += 1
         shutil.copy2(dest, backup)
         print(f"Old baseline backed up to {backup}")

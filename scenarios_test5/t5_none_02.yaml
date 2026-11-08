@@ -1,0 +1,8 @@
+# Truth test 5 (retrieval): each question asks about an FAQ WITHOUT the FAQ's topic words, so the substring search can only find it if the agent rewrites the query. 'none' = no FAQ exists: must not invent one.
+id: t5_none_02
+category: "edge"
+faq_topic: "none"
+question: "Can I change the delivery address after I've placed an order?"
+expected_answer: "No information about changing the delivery address is available. Must not invent a process. Say it is not known or escalate."
+expected_tools: null
+expected_source: "none"

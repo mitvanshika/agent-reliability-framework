@@ -194,5 +194,17 @@ unj = make_run(tempfile.mkdtemp(dir=root), "y", BASE, judged=False)
 code, _, err = run_main([unj])
 ok("unjudged run -> refused, exit 2", code == 2 and "not been judged" in err, err.strip())
 
+print("resource deltas on the same scenarios (real run bug, 2026-11-06):")
+sub_rows = {sid: {"score": BASE[sid], "latency": 3.0, "usage": {"input_tokens": 500, "output_tokens": 50,
+                                                                 "total_tokens": 550}} for sid in IDS[:8]}
+sub_dir = make_run(tempfile.mkdtemp(dir=root), "subset", sub_rows)
+code, out, _ = run_main([sub_dir])
+res = json.load(open(os.path.join(sub_dir, "comparison.json"), encoding="utf-8"))["resources"]
+ok("subset of 8 vs full 25-scenario baseline: baseline tokens counted over the same 8",
+   res["total_tokens"]["baseline"] == 8 * 1100 and res["total_tokens"]["run"] == 8 * 550
+   and res["total_tokens"]["pct"] == -50.0 and res["scenarios"] == 8, res["total_tokens"])
+ok("latency compared on the same 8", res["latency_mean_s"]["baseline"] == 1.0 and res["latency_mean_s"]["run"] == 3.0)
+ok("printed with 'same 8 scenarios'", "run vs baseline, same 8 scenarios" in out)
+
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)

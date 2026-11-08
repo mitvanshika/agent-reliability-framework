@@ -1,0 +1,5 @@
+name: exp_07_hardened_prompt
+description: "Baseline + the three universal prompt addons (no_invention, injection_resistance, scope)"
+extends: baseline
+settings:
+  prompt_addons: [no_invention, injection_resistance, scope]

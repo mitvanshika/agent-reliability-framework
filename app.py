@@ -51,6 +51,9 @@ _ask_lock = threading.Lock()
 
 # Fixed instructions for the "ask" box. Built here on the server (moved
 # from index.html) so a visitor can't swap in their own system prompt.
+# This is the Track 1 demo dashboard: it only shows the sample support bot
+# (strong vs weak), so the wording below is about that bot on purpose. The
+# experiments page (/experiments) is target-neutral.
 ASK_INSTRUCTIONS = """You are analyzing results from an AI agent reliability testing framework. Two versions of a customer-support agent (a "strong" baseline and a "weak" degraded-prompt variant) were each run against the same set of test questions and scored 0-10 by 4 LLM judges (correctness, tool_efficiency, completeness, groundedness), averaged into final_score. A score >= 7 counts as a pass.
 
 Explain findings in plain, simple language — the way you'd explain it to a friend who isn't deep into ML, not like an academic report. Avoid jargon-heavy phrasing; say "makes stuff up" instead of "hallucinates," "guesses confidently" instead of "fabricates unsupported claims," etc. Keep it to a couple of short, easy sentences up front stating the core finding in one clear line, then 2-4 sentences of specific evidence (cite real scenario_ids and scores, short quotes ok).
@@ -208,11 +211,12 @@ def _run_path(run_id):
 
 
 def _current_baselines():
+    """{(target, suite): baseline}: one baseline per target and suite."""
     out = {}
     for f in sorted(os.listdir(BASELINES_DIR)) if os.path.isdir(BASELINES_DIR) else []:
         b = _read_json(os.path.join(BASELINES_DIR, f)) if f.endswith(".json") else None
         if b:
-            out[b.get("target")] = b
+            out[(b.get("target"), b.get("suite") or "main")] = b
     return out
 
 
@@ -223,7 +227,7 @@ def _run_row(run_id, baselines):
     comparison = _read_json(os.path.join(path, "comparison.json")) or {}
     totals = meta.get("totals") or {}
     target = (meta.get("resolved_config") or {}).get("target")
-    base = baselines.get(target) or {}
+    base = baselines.get((target, meta.get("suite") or "main")) or {}
     return {
         "run_id": run_id, "experiment": meta.get("experiment"), "timestamp": meta.get("timestamp"),
         "target": target,
@@ -234,6 +238,7 @@ def _run_row(run_id, baselines):
         "scenarios": summary.get("scenarios") or len(meta.get("scenario_ids") or []),
         "total_tokens": totals.get("total_tokens"), "estimated_cost_usd": totals.get("estimated_cost_usd"),
         "verdict": comparison.get("verdict"),
+        "suite": meta.get("suite") or "main",
         "is_baseline": (base.get("run_dir") or "").replace("\\", "/").rstrip("/").split("/")[-1] == run_id,
     }
 
@@ -264,13 +269,118 @@ def api_experiment_run(run_id):
                     "tool_match_mean": summary.get("tool_match_mean"),
                     "errors_by_type": summary.get("errors_by_type"), "comparison": comparison,
                     "diagnosis": (comparison or {}).get("diagnosis") or diagnosis.get("diagnoses") or [],
-                    "fine_tune_candidates": diagnosis.get("fine_tune_candidates") or {}})
+                    "fine_tune_candidates": diagnosis.get("fine_tune_candidates") or {},
+                    "scenarios": _scenario_steps(path)})
+
+
+SCENARIO_ID = re.compile(r"^[A-Za-z0-9_.\-]+$")
+
+
+def _scenario_steps(path):
+    """[{scenario_id, steps, tool_calls, findings, source}] for the run's step-timeline links."""
+    import step_checks
+    import trajectory
+    out = []
+    for sid, t in sorted(load_latest_traces(os.path.join(path, "traces")).items()):
+        steps, source = trajectory.of_trace(t)
+        out.append({"scenario_id": sid, "steps": len(steps), "source": source,
+                    "tool_calls": sum(1 for s in steps if s.get("type") == "tool"),
+                    "findings": len(step_checks.check_steps(steps)) if steps else 0, "error": t.get("error")})
+    return out
+
+
+@app.route("/runs/<run_id>/<scenario_id>")
+def timeline_page(run_id, scenario_id):
+    return render_template("timeline.html")
+
+
+@app.route("/api/experiments/runs/<run_id>/steps/<scenario_id>")
+def api_steps(run_id, scenario_id):
+    """One answer, step by step: the steps (recorded or rebuilt), step-check findings,
+    the answer's judge scores and, if judge_steps.py ran, the per-step scores."""
+    import step_checks
+    import trajectory
+    path = _run_path(run_id)
+    if path is None or not SCENARIO_ID.match(scenario_id or ""):
+        return jsonify({"error": "unknown run or scenario"}), 404
+    trace = load_latest_traces(os.path.join(path, "traces")).get(scenario_id)
+    if trace is None:
+        return jsonify({"error": "unknown scenario"}), 404
+    steps, source = trajectory.of_trace(trace)
+    judged = load_latest_traces(os.path.join(path, "judged")).get(scenario_id) if os.path.isdir(
+        os.path.join(path, "judged")) else None
+    judges = {}
+    for k, v in (judged or {}).items():
+        if k.endswith("_result") and isinstance(v, dict):
+            judges[k[:-7]] = {"score": v.get("score"), "na": bool(v.get("na")), "reason": v.get("reason")}
+    step_scores = None
+    js_dir = os.path.join(path, "judged_steps")
+    if os.path.isdir(js_dir):
+        rec = load_latest_traces(js_dir).get(scenario_id)
+        if rec and not rec.get("na"):
+            step_scores = {str(s["index"]): {"score": s["score"], "reason": s["reason"]} for s in rec.get("steps") or []}
+    return jsonify({
+        "run_id": run_id, "scenario_id": scenario_id, "question": trace.get("question"),
+        "answer": trace.get("answer"), "error": trace.get("error"), "latency_s": trace.get("latency_s"),
+        "usage": trace.get("usage"), "steps": steps, "source": source,
+        "findings": step_checks.check_steps(steps) if steps else [],
+        "final_score": (judged or {}).get("final_score"), "judges": judges, "step_scores": step_scores})
 
 
 @app.route("/api/experiments/baselines")
 def api_experiment_baselines():
-    return jsonify([{k: b.get(k) for k in ("target", "experiment", "run_dir", "promoted_at", "note")}
-                    for b in _current_baselines().values()])
+    return jsonify([{**{k: b.get(k) for k in ("target", "experiment", "run_dir", "promoted_at", "note")},
+                     "suite": b.get("suite") or "main"} for b in _current_baselines().values()])
+
+
+# ---------------------------------------------------------------- approvals (approval.py)
+# Pending actions waiting for a human (DashboardApprover). Deciding is protected:
+# with APPROVALS_TOKEN set, the request must send it (X-Approval-Token header);
+# without it, decisions are accepted only from this machine, because the app
+# listens on 0.0.0.0 and approving an action is not something any visitor may do.
+
+def _approvals_store():
+    import idempotent
+    return idempotent.default_store()
+
+
+def _may_decide():
+    token = os.environ.get("APPROVALS_TOKEN")
+    if token:
+        import hmac
+        return hmac.compare_digest(request.headers.get("X-Approval-Token") or "", token)
+    return request.remote_addr in ("127.0.0.1", "::1")
+
+
+@app.route("/approvals")
+def approvals_page():
+    return render_template("approvals.html")
+
+
+@app.route("/api/approvals")
+def api_approvals():
+    import approval
+    st = _approvals_store()
+    return jsonify({"pending": approval.queue(st, "pending"), "recent": approval.queue(st, limit=50),
+                    "token_required": bool(os.environ.get("APPROVALS_TOKEN"))})
+
+
+@app.route("/api/approvals/<qid>", methods=["POST"])
+def api_decide(qid):
+    import approval
+    if not _may_decide():
+        return jsonify({"error": "not allowed to decide: set APPROVALS_TOKEN and send it as X-Approval-Token, "
+                                 "or decide from this machine"}), 403
+    body = request.get_json(silent=True) or {}
+    by = str(body.get("by") or "").strip()
+    if not isinstance(body.get("approved"), bool) or not by:
+        return jsonify({"error": "send {\"approved\": true|false, \"by\": \"your name\", \"reason\": \"...\"}"}), 400
+    st = _approvals_store()
+    if approval.queue_item(st, qid) is None:
+        return jsonify({"error": "no such request"}), 404
+    if not approval.decide_pending(st, qid, body["approved"], by, str(body.get("reason") or "")[:500]):
+        return jsonify({"error": "already decided or expired", "item": approval.queue_item(st, qid)}), 409
+    return jsonify({"ok": True, "item": approval.queue_item(st, qid)})
 
 
 if __name__ == "__main__":

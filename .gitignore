@@ -16,3 +16,9 @@ runs/
 # export_finetune.py output (review it before using it)
 finetune/
 agent-reliability-framework/
+# idempotent.py / approval.py action store (runtime data)
+actions.db
+# optional DeepEval environment (requirements-deepeval.txt), kept out of the main Python
+.venv-deepeval/
+# support_actions.py refund ledger (sample agent, runtime data)
+refunds.db

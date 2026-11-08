@@ -54,7 +54,7 @@ import judge_sets
 from alerts import send_slack_alert
 from detect_regressions import passed
 from experiment_config import config_hash, diff_configs
-from run_experiment import estimate_cost, load_pricing
+from run_experiment import estimate_cost, load_pricing, p95
 from trace_utils import load_latest_traces
 
 BASELINES_DIR = "baselines"
@@ -78,8 +78,13 @@ def run_target(meta):
     return (meta.get("resolved_config") or {}).get("target")
 
 
-def baseline_path(target, baselines_dir=None):
-    return os.path.join(baselines_dir or BASELINES_DIR, f"{target}.json")
+def suite_key(target, suite="main"):
+    """File key per (target, suite): the main suite keeps the plain target name."""
+    return target if (suite or "main") == "main" else f"{target}__{suite}"
+
+
+def baseline_path(target, baselines_dir=None, suite="main"):
+    return os.path.join(baselines_dir or BASELINES_DIR, f"{suite_key(target, suite)}.json")
 
 
 def load_run_records(run_dir):
@@ -92,6 +97,8 @@ def load_run_records(run_dir):
     traces = load_latest_traces(os.path.join(run_dir, "traces"))
     judged_dir = os.path.join(run_dir, "judged")
     judged = load_latest_traces(judged_dir) if os.path.isdir(judged_dir) else {}
+    import target_config
+    threshold = target_config.for_meta(meta)["pass_threshold"]
     records = {}
     for sid in meta.get("scenario_ids") or sorted(traces):
         j, t = judged.get(sid), traces.get(sid, {})
@@ -114,7 +121,7 @@ def load_run_records(run_dir):
         records[sid] = {
             "status": status,
             "final_score": j.get("final_score") if j else None,
-            "passed": bool(j) and passed(j),
+            "passed": bool(j) and passed(j, threshold),
             "judges": judges,
             "error": src.get("error"),
             "error_type": src.get("error_type"),
@@ -154,10 +161,10 @@ def noise_staleness(report, baseline):
     return reasons
 
 
-def load_bands(target, noise_dir=None, baseline=None):
+def load_bands(target, noise_dir=None, baseline=None, suite="main"):
     """({scenario_id: band}, description). Empty dict -> default band everywhere.
     With baseline given, a noise file whose config_hash / judge_set don't match it is stale."""
-    path = os.path.join(noise_dir or NOISE_DIR, f"{target}_noise.json")
+    path = os.path.join(noise_dir or NOISE_DIR, f"{suite_key(target, suite)}_noise.json")
     if not os.path.isfile(path):
         return {}, f"no {path}: using default band {DEFAULT_BAND} for every scenario"
     with open(path, encoding="utf-8") as f:
@@ -376,8 +383,32 @@ def print_comparison(result, header_lines=(), show_rows=True):
         print(f"  warning: {w['note']}")
 
 
+def subset_summary(records, ids):
+    """Tokens / latency / errors over just these scenarios, from per-scenario records, so a
+    --scenarios subset run is compared with the SAME scenarios of a full baseline."""
+    recs = [records[s] for s in ids if s in records]
+    usage = [r["usage"] for r in recs if r.get("usage")]
+    latencies = [r["latency_s"] for r in recs if r.get("latency_s") is not None]
+    errors = {}
+    for r in recs:
+        if r["status"] == "agent_error":
+            kind = r.get("error_type") or "unknown"
+            errors[kind] = errors.get(kind, 0) + 1
+    return {
+        "scenarios": len(recs),
+        "scenarios_with_usage": len(usage),
+        "tokens": {k: sum(u.get(k, 0) for u in usage) if usage else None
+                   for k in ("input_tokens", "output_tokens", "total_tokens")},
+        "latency_mean_s": round(statistics.fmean(latencies), 3) if latencies else None,
+        "latency_p95_s": p95(latencies),
+        "agent_errors": sum(errors.values()),
+        "errors_by_type": dict(sorted(errors.items())),
+    }
+
+
 def print_resources(res):
-    print("\nCost / latency / errors (run vs baseline):")
+    n = res.get("scenarios")
+    print(f"\nCost / latency / errors (run vs baseline{f', same {n} scenarios' if n else ''}):")
     for key, label, fmt in [("total_tokens", "tokens", "{:,.0f}"), ("latency_mean_s", "latency mean", "{:.2f}s"),
                             ("latency_p95_s", "latency p95", "{:.2f}s"), ("agent_errors", "agent errors", "{:.0f}"),
                             ("estimated_cost_usd", "est. cost", "${:.4f}")]:
@@ -418,11 +449,15 @@ def main(argv=None):
     try:
         meta, run_records = load_run_records(run_dir)
         target = run_target(meta)
-        bpath = args.baseline or baseline_path(target)
+        suite = meta.get("suite") or "main"
+        bpath = args.baseline or baseline_path(target, suite=suite)
         if not os.path.isfile(bpath):
             raise CompareError(f"No baseline at {bpath}. Promote one first: python promote_baseline.py runs/<run>")
         with open(bpath, encoding="utf-8") as f:
             base = json.load(f)
+        if (base.get("suite") or "main") != suite:
+            raise CompareError(f"Different suites: this run is the '{suite}' suite, baseline {bpath} is the "
+                               f"'{base.get('suite') or 'main'}' suite. Promote a baseline for this suite first.")
         if base.get("target") != target:
             raise CompareError(f"Targets differ: run is '{target}', baseline {bpath} is '{base.get('target')}'. "
                                "Comparing different systems scenario by scenario is meaningless.")
@@ -438,8 +473,11 @@ def main(argv=None):
                 f"{judge_sets.describe(run_js)}. Old and new scores aren't comparable: re-judge or re-promote "
                 f"the baseline (python judge_run.py {base.get('run_dir')} --yes, then "
                 f"python promote_baseline.py {base.get('run_dir')}).")
+        # Only scored answers carry an answer_key_hash. Judge errors, crashes and unjudged
+        # scenarios are left out of the comparison anyway, so they can't count as "changed".
         changed_key = sorted(sid for sid in set(base["scenarios"]) & set(run_records)
-                             if base["scenarios"][sid].get("answer_key_hash") != run_records[sid].get("answer_key_hash"))
+                             if base["scenarios"][sid].get("status") == "ok" and run_records[sid]["status"] == "ok"
+                             and base["scenarios"][sid].get("answer_key_hash") != run_records[sid].get("answer_key_hash"))
         if changed_key:
             raise CompareError(
                 f"The answer key changed between the baseline and this run for: {' '.join(changed_key)}. "
@@ -448,7 +486,7 @@ def main(argv=None):
         print(f"Refused: {e}", file=sys.stderr)
         sys.exit(2)
 
-    bands, band_note = load_bands(target, baseline=base)
+    bands, band_note = load_bands(target, baseline=base, suite=suite)
     if band_note.startswith("WARNING"):
         print(band_note, file=sys.stderr)
     result = compare_records(base["scenarios"], run_records, bands, args.alpha)
@@ -458,8 +496,11 @@ def main(argv=None):
     config_diff = diff_configs(base_cfg, run_cfg)
     pricing = load_pricing()
     run_summary = judge_run.summarize(run_dir, meta, pricing)
-    resources = resource_deltas(base["summary"], base_cfg.get("settings") or {},
-                                run_summary, run_cfg.get("settings") or {}, pricing)
+    # Same scenarios on both sides: a --scenarios subset is not compared with a full baseline.
+    shared = [x["scenario_id"] for x in result["rows"]] + [e["scenario_id"] for e in result["excluded"]]
+    resources = resource_deltas(subset_summary(base["scenarios"], shared), base_cfg.get("settings") or {},
+                                subset_summary(run_records, shared), run_cfg.get("settings") or {}, pricing)
+    resources["scenarios"] = len(shared)
 
     print_comparison(result, header_lines=[
         f"Comparing   {meta.get('experiment')}  ({run_dir})",

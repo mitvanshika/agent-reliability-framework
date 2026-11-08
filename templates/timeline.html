@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step timeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060913; --panel: #0e1424; --border: #202a44; --text: #e8edf7; --text-dim: #7c88a8;
+    --accent: #5b8dff; --fail: #ec6f63; --pass: #5fc99a; --warn: #e8b85a; --tool: #b48cff;
+    --font-display: 'Space Grotesk', sans-serif; --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; }
+  header { display: flex; align-items: baseline; gap: 16px; padding: 20px 28px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  header h1 { font-family: var(--font-display); font-size: 20px; margin: 0; }
+  header a { color: var(--text-dim); text-decoration: none; font-size: 13px; }
+  main { padding: 20px 28px 60px; display: grid; gap: 18px; max-width: 1000px; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .panel h2 { font-family: var(--font-display); font-size: 15px; margin: 0 0 10px; }
+  .mono { font-family: var(--font-mono); font-size: 12.5px; }
+  .dim { color: var(--text-dim); }
+  .kv { display: grid; grid-template-columns: 140px 1fr; gap: 4px 12px; }
+  .judges span { display: inline-block; margin: 0 10px 4px 0; }
+  .timeline { position: relative; margin-left: 14px; border-left: 2px solid var(--border); padding-left: 22px; }
+  .step { position: relative; margin-bottom: 14px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
+  .step::before { content: ""; position: absolute; left: -31px; top: 14px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); }
+  .step.tool::before { background: var(--tool); }
+  .step.err { border-color: var(--fail); } .step.err::before { background: var(--fail); }
+  .step .head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .step .kind { font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: .05em; color: var(--accent); }
+  .step.tool .kind { color: var(--tool); }
+  .bar { height: 6px; border-radius: 3px; background: var(--accent); opacity: .7; margin-top: 8px; }
+  .step.tool .bar { background: var(--tool); }
+  pre { white-space: pre-wrap; word-break: break-word; margin: 6px 0 0; font-family: var(--font-mono); font-size: 12.5px; color: #c9d3ea; }
+  .badge { display: inline-block; border-radius: 10px; padding: 1px 8px; font-size: 11.5px; }
+  .warnb { background: #3a2f14; color: var(--warn); } .failb { background: #3a1714; color: var(--fail); }
+  .okb { background: #12301f; color: var(--pass); } .midb { background: #3a2f14; color: var(--warn); }
+  .finding { color: var(--warn); margin: 3px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Step timeline</h1>
+  <a href="/experiments">&larr; Experiments</a>
+  <span class="mono dim" id="where"></span>
+</header>
+<main>
+  <section class="panel" id="summary">loading...</section>
+  <section class="panel" id="findings-panel" hidden><h2>Step checks</h2><div id="findings"></div></section>
+  <section><div class="timeline" id="timeline"></div></section>
+</main>
+<script>
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const parts = location.pathname.split("/").filter(Boolean);       // runs / <run> / <scenario>
+const runId = decodeURIComponent(parts[1] || ""), sid = decodeURIComponent(parts[2] || "");
+document.getElementById("where").textContent = runId + " / " + sid;
+
+function scoreBadge(v) {
+  if (v === null || v === undefined) return "";
+  const cls = v >= 7 ? "okb" : v >= 5 ? "midb" : "failb";
+  return `<span class="badge ${cls}">${esc(v)}</span>`;
+}
+
+async function load() {
+  const r = await fetch(`/api/experiments/runs/${encodeURIComponent(runId)}/steps/${encodeURIComponent(sid)}`);
+  if (!r.ok) { document.getElementById("summary").innerHTML = '<span class="dim">Not found.</span>'; return; }
+  const d = await r.json();
+  const judges = Object.entries(d.judges || {}).map(([k, v]) => `<span>${esc(k)} ${v.na ? '<span class="dim">N/A</span>' : scoreBadge(v.score)}</span>`).join("");
+  const timing = d.source === "recorded" ? "recorded (per-step timing and tokens)"
+    : d.source === "messages" ? "rebuilt from the saved conversation (no per-step timing)" : "no steps saved";
+  document.getElementById("summary").innerHTML = `
+    <div class="kv">
+      <span class="dim">question</span><span>${esc(d.question)}</span>
+      <span class="dim">answer</span><span>${esc(d.answer || "")}${d.error ? ` <span class="badge failb">${esc(d.error)}</span>` : ""}</span>
+      <span class="dim">final_score</span><span>${scoreBadge(d.final_score === null ? null : Math.round(d.final_score * 10) / 10) || '<span class="dim">not judged</span>'}</span>
+      <span class="dim">judges</span><span class="judges">${judges || '<span class="dim">-</span>'}</span>
+      <span class="dim">latency / tokens</span><span class="mono">${esc(d.latency_s)}s / ${esc((d.usage || {}).total_tokens ?? "-")}</span>
+      <span class="dim">steps</span><span>${esc(d.steps.length)} &middot; ${esc(timing)}</span>
+    </div>`;
+  if (d.findings.length) {
+    document.getElementById("findings-panel").hidden = false;
+    document.getElementById("findings").innerHTML = d.findings.map(f => `<div class="finding"><b>${esc(f.check)}</b>: ${esc(f.detail)}</div>`).join("");
+  }
+  const maxLat = Math.max(0.001, ...d.steps.map(s => s.latency_s || 0));
+  const flagged = new Set(d.findings.filter(f => f.step !== undefined).map(f => f.step));
+  document.getElementById("timeline").innerHTML = d.steps.map(s => {
+    const isTool = s.type === "tool";
+    const ss = (d.step_scores || {})[String(s.index)];
+    const what = isTool
+      ? `<span class="mono">${esc(s.name)}(${esc(JSON.stringify(s.args))})</span>`
+      : (s.tool_calls || []).length ? `asks for <span class="mono">${s.tool_calls.map(c => esc(c.name) + "(" + esc(JSON.stringify(c.args)) + ")").join(", ")}</span>` : "answers";
+    const meta = [s.latency_s !== null && s.latency_s !== undefined ? `${s.latency_s.toFixed(2)}s` : null,
+                  s.tokens ? `${esc(s.tokens.total)} tokens` : null].filter(Boolean).join(" &middot; ");
+    return `<div class="step ${isTool ? "tool" : "llm"} ${s.error ? "err" : ""}">
+      <div class="head"><span class="kind">${isTool ? "tool" : "model"}</span><span class="dim mono">#${esc(s.index)}</span>
+        ${what} <span class="dim mono">${meta}</span>
+        ${ss ? `step judge ${scoreBadge(ss.score)}` : ""}${flagged.has(s.index) ? ' <span class="badge warnb">flagged</span>' : ""}</div>
+      ${s.output ? `<pre>${esc(s.output)}</pre>` : ""}
+      ${s.error ? `<pre style="color:var(--fail)">${esc(s.error)}</pre>` : ""}
+      ${ss ? `<div class="dim" style="margin-top:4px">${esc(ss.reason)}</div>` : ""}
+      ${s.latency_s ? `<div class="bar" style="width:${Math.max(2, 100 * s.latency_s / maxLat)}%"></div>` : ""}
+    </div>`;
+  }).join("") || '<div class="dim">No steps were saved for this answer.</div>';
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+name: exp_09_actions
+description: "Baseline + the issue_refund action tool (approval: deny unless settings.approver says otherwise)"
+extends: baseline
+settings:
+  actions: enabled

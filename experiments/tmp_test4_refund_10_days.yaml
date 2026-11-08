@@ -1,0 +1,7 @@
+# TEMPORARY (truth test 4): a planted bug, the refund window is 10 days instead of 30.
+# Run it only on scenarios_test4/, then delete this file (evidence/test4_test5_plan.md).
+name: tmp_test4_refund_10_days
+description: "Planted bug for truth test 4: refund_calculator allows refunds only up to 10 days (policy: 30)"
+extends: baseline
+settings:
+  refund_window_days: 10

@@ -37,6 +37,7 @@ import difflib
 import json
 import os
 import time
+import uuid
 from typing import Literal
 
 import yaml
@@ -46,7 +47,10 @@ from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
+import prompt_addons
+import rate_limit
 import retrieval
+from validated_tool import StrictArgs, validated_tool
 import test_agent
 from agent_retry import classify_agent_error, retry_delay
 
@@ -59,6 +63,35 @@ class SettingsError(ValueError):
 
 
 NO_MATCH = "No matching FAQ found for this query"   # same text as test_agent.faq_search
+
+
+# Argument rules for this bot's tools, used only with tool_validation: strict
+# (validated_tool.py does the generic work). Default "off" = the tools exactly as before.
+class _OrderLookupArgs(StrictArgs):
+    order_id: str = Field(pattern=r"^[A-Za-z][0-9]{4}$", description="like A1234: one letter and four digits")
+
+
+class _RefundArgs(StrictArgs):
+    # Caps: the largest real order is $210; anything above 10,000 is a human's call, not the bot's.
+    order_total: float = Field(ge=0, le=10_000, description="an amount from 0 to 10,000")
+    days_since_purchase: int = Field(ge=0, le=3650, description="a whole number of days from 0 to 3650 (10 years)")
+
+
+class _FaqArgs(StrictArgs):
+    query: str = Field(min_length=1, max_length=500, description="a non-empty search of at most 500 characters")
+
+
+class _IssueRefundArgs(StrictArgs):
+    order_id: str = Field(pattern=r"^[A-Za-z][0-9]{4}$", description="like A1234: one letter and four digits")
+
+
+class _EscalateArgs(StrictArgs):
+    reason: str = Field(min_length=1, max_length=1000, description="a non-empty reason of at most 1,000 characters")
+
+
+TOOL_CONSTRAINTS = {"order_lookup": _OrderLookupArgs, "refund_calculator": _RefundArgs,
+                    "faq_search": _FaqArgs, "escalate_to_human": _EscalateArgs,
+                    "issue_refund": _IssueRefundArgs}
 
 
 class RetrievalSettings(BaseModel):
@@ -85,6 +118,13 @@ class AgentSettings(BaseModel):
     docstrings: str
     retrieval: RetrievalSettings
     recursion_limit: int = Field(ge=1)
+    prompt_addons: list[str] = []   # framework rules appended to the prompt (prompt_addons/); default none
+    tool_validation: Literal["off", "strict"] = "off"   # strict: validated_tool() on every tool; default off
+    actions: Literal["off", "enabled"] = "off"          # enabled: add issue_refund (support_actions.py); default off
+    approver: Literal["deny", "cli", "dashboard"] = "deny"   # who approves issue_refund; default: nobody (deny)
+    # Truth test 4 (a planted bug): the refund_calculator's window in days. 30 = test_agent's own function,
+    # untouched; anything else swaps in the same tool (name, description, schema) with that window.
+    refund_window_days: int = Field(30, ge=1)
 
 
 def _repo_path(path: str) -> str:
@@ -143,6 +183,10 @@ def validate_settings(settings) -> AgentSettings:
         raise SettingsError(_explain(e)) from None
     _load_prompt(cfg.prompt)
     _load_docstrings(cfg.docstrings)
+    try:
+        prompt_addons.validate(cfg.prompt_addons, _description())
+    except ValueError as e:
+        raise SettingsError(f"settings.prompt_addons: {e}") from None
     if cfg.retrieval.method == "embeddings":
         if not retrieval.embeddings_available():
             raise SettingsError("settings.retrieval.method 'embeddings' needs fastembed: "
@@ -155,7 +199,8 @@ def validate_settings(settings) -> AgentSettings:
 
 def _make_llm(model: str, temperature: float):
     # Separate function so tests can replace it with a fake LLM.
-    return ChatGroq(model=model, temperature=temperature)
+    # rate_limit.py paces requests and owns 429 / 5xx retries (shared budget with the judges).
+    return ChatGroq(model=model, temperature=temperature, http_client=rate_limit.http_client("groq"), max_retries=0)
 
 
 def _faq_function(r: RetrievalSettings):
@@ -165,7 +210,19 @@ def _faq_function(r: RetrievalSettings):
     return faq_search
 
 
-def _build(cfg: AgentSettings):
+def _refund_function(window_days):
+    """test_agent.refund_calculator with the comparison changed to `window_days` and NOTHING else: the messages
+    are byte-identical (they still say 30), like a one-line bug. So an order that is ineligible either way gets
+    exactly the same tool output, and only answers inside (window_days, 30] can change."""
+    def refund_calculator(order_total: float, days_since_purchase: int) -> str:
+        if days_since_purchase <= window_days:
+            return f"Eligible for full refund of ${order_total}"
+        return "Not eligible for refund: purchase was made more than 30 days ago"
+    return refund_calculator
+
+
+def _tools(cfg: AgentSettings):
+    """The exact tool list the agent binds for these settings."""
     descriptions = _load_docstrings(cfg.docstrings)
     # Same tool objects as the strong agent, only the description differs.
     tools = [t.model_copy(update={"description": descriptions[t.name]}) for t in test_agent.tools]
@@ -173,6 +230,26 @@ def _build(cfg: AgentSettings):
         # Same name, argument schema and description; only the search function changes.
         tools = [t.model_copy(update={"func": _faq_function(cfg.retrieval)}) if t.name == "faq_search" else t
                  for t in tools]
+    if cfg.refund_window_days != 30:
+        tools = [t.model_copy(update={"func": _refund_function(cfg.refund_window_days)})
+                 if t.name == "refund_calculator" else t for t in tools]
+    if cfg.actions == "enabled":
+        # The one tool that ACTS: approval first (cfg.approver, default deny), then at most once per request.
+        import support_actions
+        tools = tools + [support_actions.guarded(cfg.approver)]
+    if cfg.tool_validation == "strict":
+        # Same name, description and schema the model sees; arguments checked inside, never raises.
+        tools = [validated_tool(t, TOOL_CONSTRAINTS[t.name]) for t in tools]
+    return tools
+
+
+def build_tools(settings: dict):
+    """Public: the tools for these settings, for fuzz_tools.py (targets.yaml `tools:`)."""
+    return _tools(validate_settings(settings))
+
+
+def _build(cfg: AgentSettings):
+    tools = _tools(cfg)
     llm = _make_llm(cfg.model, cfg.temperature).bind_tools(tools)
 
     def call_model(state):
@@ -184,7 +261,14 @@ def _build(cfg: AgentSettings):
     graph.set_entry_point("agent")
     graph.add_conditional_edges("agent", test_agent.should_continue, {"tools": "tools", END: END})
     graph.add_edge("tools", "agent")
-    return graph.compile(), _load_prompt(cfg.prompt)
+    prompt = prompt_addons.apply(_load_prompt(cfg.prompt), {"prompt_addons": cfg.prompt_addons}, _description())
+    return graph.compile(), prompt
+
+
+def _description():
+    """This target's one-line description from targets.yaml (used by the scope addon)."""
+    import run_suite
+    return (run_suite.load_targets().get("configurable") or {}).get("description")
 
 
 def _get_app(settings: dict, cfg: AgentSettings):
@@ -230,15 +314,23 @@ def run_agent(question: str, settings: dict | None = None, max_retries: int = 2)
                             "not run_suite.py / calibrate_noise.py.")
     cfg = validate_settings(settings)
     app, system_prompt = _get_app(settings, cfg)
+    import idempotent
+    # One request id for this question, kept across the retries below, so an action tool
+    # (actions: enabled) never acts twice because the graph was re-run after an API error.
+    request_id = idempotent.current_request_id() or f"run_agent/{uuid.uuid4().hex}"
+    from trajectory import TrajectoryRecorder
+    recorder = TrajectoryRecorder()      # observes every LLM / tool step (trace["trajectory"]); changes nothing
 
     last_error = None
     error_type = None
     for attempt in range(max_retries + 1):
         try:
-            result = app.invoke(
-                {"messages": [SystemMessage(content=system_prompt), HumanMessage(content=question)]},
-                config={"recursion_limit": cfg.recursion_limit},
-            )
+            recorder.attempt = attempt
+            with idempotent.request_context(request_id):
+                result = app.invoke(
+                    {"messages": [SystemMessage(content=system_prompt), HumanMessage(content=question)]},
+                    config={"recursion_limit": cfg.recursion_limit, "callbacks": [recorder]},
+                )
             tools_used, tool_outputs = [], []
             for msg in result["messages"]:
                 if hasattr(msg, "tool_calls") and msg.tool_calls:
@@ -254,6 +346,7 @@ def run_agent(question: str, settings: dict | None = None, max_retries: int = 2)
                 "retries_needed": attempt,
                 "usage": _sum_usage(result["messages"]),
                 "messages": _chat_messages(result["messages"]),
+                "trajectory": recorder.steps(),
             }
         except Exception as e:
             last_error = str(e)
@@ -272,4 +365,5 @@ def run_agent(question: str, settings: dict | None = None, max_retries: int = 2)
         "error_type": error_type,
         "retries_needed": attempt,
         "usage": None,
+        "trajectory": recorder.steps(),
     }

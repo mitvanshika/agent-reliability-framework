@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approvals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060913; --panel: #0e1424; --border: #202a44; --text: #e8edf7; --text-dim: #7c88a8;
+    --accent: #5b8dff; --fail: #ec6f63; --pass: #5fc99a; --warn: #e8b85a;
+    --font-display: 'Space Grotesk', sans-serif; --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; }
+  header { display: flex; align-items: baseline; gap: 16px; padding: 20px 28px; border-bottom: 1px solid var(--border); }
+  header h1 { font-family: var(--font-display); font-size: 20px; margin: 0; }
+  header a { color: var(--text-dim); text-decoration: none; font-size: 13px; }
+  header .sub { color: var(--text-dim); font-size: 13px; margin-left: auto; }
+  main { padding: 20px 28px 60px; display: grid; gap: 20px; max-width: 1100px; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; }
+  .panel h2 { font-family: var(--font-display); font-size: 15px; margin: 0 0 12px; }
+  .card { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+  .tool { font-family: var(--font-mono); color: var(--accent); }
+  .desc { margin: 6px 0; font-size: 15px; }
+  .meta { color: var(--text-dim); font-size: 12px; font-family: var(--font-mono); }
+  input { background: #0a1020; color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
+  button { border: 0; border-radius: 6px; padding: 7px 14px; font-weight: 600; cursor: pointer; }
+  .approve { background: var(--pass); color: #04130c; } .reject { background: var(--fail); color: #1a0503; }
+  .row { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--text-dim); font-weight: 500; font-size: 12px; text-transform: uppercase; }
+  .approved { color: var(--pass); } .rejected, .expired { color: var(--fail); } .pending { color: var(--warn); }
+  .empty { color: var(--text-dim); }
+  #msg { color: var(--warn); min-height: 18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Approvals</h1>
+  <a href="/experiments">Experiments</a>
+  <a href="/">Track 1 dashboard</a>
+  <span class="sub">actions waiting for a human (approval.py DashboardApprover); refreshes every 2 s</span>
+</header>
+<main>
+  <section class="panel">
+    <h2>Waiting for a decision</h2>
+    <div class="row">
+      <label>Your name <input id="who" placeholder="e.g. alice"></label>
+      <label id="tokenbox" style="display:none">Token <input id="token" type="password"></label>
+    </div>
+    <div id="msg"></div>
+    <div id="pending" class="empty">loading...</div>
+  </section>
+  <section class="panel">
+    <h2>Recent</h2>
+    <table><thead><tr><th>when</th><th>action</th><th>status</th><th>by</th><th>reason</th><th>request</th></tr></thead>
+    <tbody id="recent"></tbody></table>
+  </section>
+</main>
+<script>
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const when = t => t ? new Date(t * 1000).toLocaleTimeString() : "";
+
+async function decide(id, approved) {
+  const by = document.getElementById("who").value.trim();
+  if (!by) { document.getElementById("msg").textContent = "Enter your name first (it goes into the log)."; return; }
+  const reason = document.getElementById("reason-" + id).value;
+  const headers = {"Content-Type": "application/json"};
+  const token = document.getElementById("token").value;
+  if (token) headers["X-Approval-Token"] = token;
+  const r = await fetch("/api/approvals/" + id, {method: "POST", headers, body: JSON.stringify({approved, by, reason})});
+  const body = await r.json();
+  document.getElementById("msg").textContent = r.ok ? "" : body.error;
+  load();
+}
+
+async function load() {
+  const d = await (await fetch("/api/approvals")).json();
+  document.getElementById("tokenbox").style.display = d.token_required ? "" : "none";
+  const p = document.getElementById("pending");
+  p.className = d.pending.length ? "" : "empty";
+  p.innerHTML = d.pending.length ? d.pending.map(x => `
+    <div class="card">
+      <div><span class="tool">${esc(x.tool)}</span> <span class="meta">${esc(x.args)}</span></div>
+      <div class="desc">${esc(x.description || "(no description)")}</div>
+      <div class="meta">request ${esc(x.request_id)} &middot; waiting since ${when(x.created)}</div>
+      <div class="row">
+        <input id="reason-${esc(x.id)}" placeholder="reason (optional)" size="40">
+        <button class="approve" onclick="decide('${esc(x.id)}', true)">Approve</button>
+        <button class="reject" onclick="decide('${esc(x.id)}', false)">Reject</button>
+      </div>
+    </div>`).join("") : "Nothing is waiting.";
+  document.getElementById("recent").innerHTML = d.recent.map(x => `<tr>
+    <td>${when(x.decided || x.created)}</td><td><span class="tool">${esc(x.tool)}</span> ${esc(x.description)}</td>
+    <td class="${esc(x.status)}">${esc(x.status)}</td><td>${esc(x.by_whom)}</td><td>${esc(x.reason)}</td>
+    <td class="meta">${esc(x.request_id)}</td></tr>`).join("");
+}
+load();
+setInterval(load, 2000);
+</script>
+</body>
+</html>

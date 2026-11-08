@@ -18,17 +18,18 @@ import groq
 from langgraph.errors import GraphRecursionError
 
 RETRYABLE_WITH_BACKOFF = {"rate_limit", "timeout"}
-NEVER_RETRY = {"loop_limit", "auth"}
+NEVER_RETRY = {"loop_limit", "auth", "rate_limit_daily"}   # daily quota used up: waiting minutes won't help
 
 
 def classify_agent_error(e: Exception) -> str:
-    """Returns one of: loop_limit, auth, rate_limit, timeout, crash."""
+    """Returns one of: loop_limit, auth, rate_limit_daily, rate_limit, timeout, crash."""
     if isinstance(e, GraphRecursionError):
         return "loop_limit"   # stuck in a tool loop: same input loops again
     if isinstance(e, (groq.AuthenticationError, groq.PermissionDeniedError)):
         return "auth"         # bad / unauthorised key: retrying can't fix it
     if isinstance(e, groq.RateLimitError):
-        return "rate_limit"
+        import rate_limit
+        return "rate_limit_daily" if rate_limit.is_daily_limit_error(e) else "rate_limit"
     if isinstance(e, (groq.APITimeoutError, groq.APIConnectionError, groq.InternalServerError)):
         return "timeout"      # transient network / server problem
     return "crash"

@@ -39,6 +39,8 @@ import yaml
 
 import run_suite
 import judge_sets
+import prompt_addons
+import rate_limit
 from calibrate_noise import EST_AGENT_CALLS, confirm
 from experiment_config import ExperimentConfigError, format_changes, load_experiment
 
@@ -73,13 +75,17 @@ def _clean_usage(usage):
 
 def run_scenario(fn, accepts_settings, settings, scenario, timestamp, experiment):
     start = time.perf_counter()
-    usage = messages = None
+    usage = messages = trajectory = None
+    import idempotent
     try:
-        raw = fn(scenario["question"], settings=settings) if accepts_settings else fn(scenario["question"])
+        # one request id per scenario of this run: an action tool acts at most once for it
+        with idempotent.request_context(f"{experiment}_{timestamp}/{scenario['id']}"):
+            raw = fn(scenario["question"], settings=settings) if accepts_settings else fn(scenario["question"])
         normalized = run_suite.normalize_result(raw)
         if isinstance(raw, dict):
             usage = _clean_usage(raw.get("usage"))
             messages = raw.get("messages") if isinstance(raw.get("messages"), list) else None
+            trajectory = raw.get("trajectory") if isinstance(raw.get("trajectory"), list) else None
     except Exception as e:
         normalized = {"answer": None, "tools_used": [], "tool_outputs": [], "retries_needed": 0,
                       "error": str(e), "error_type": "crash"}
@@ -99,6 +105,7 @@ def run_scenario(fn, accepts_settings, settings, scenario, timestamp, experiment
         "latency_s": latency,
         "usage": usage,
         "messages": messages,   # optional full conversation (None if the target doesn't return one)
+        "trajectory": trajectory,   # optional step list (trajectory.py); None if the target doesn't record one
     }
 
 
@@ -188,7 +195,37 @@ def new_run_dir(name, timestamp):
     return path
 
 
-def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=None):
+def load_scenarios(scenario_dir=None):
+    """Scenarios from scenario_dir (default: run_suite's scenarios/, exactly as before)."""
+    if not scenario_dir or os.path.normpath(scenario_dir) == os.path.normpath(run_suite.SCENARIOS_DIR):
+        return run_suite.load_scenarios()
+    if not os.path.isdir(scenario_dir):
+        raise FileNotFoundError(f"scenario folder not found: {scenario_dir}")
+    out = []
+    for filename in sorted(os.listdir(scenario_dir)):
+        if filename.endswith(".yaml"):
+            with open(os.path.join(scenario_dir, filename), encoding="utf-8") as f:
+                out.append(yaml.safe_load(f))
+    return out
+
+
+def suite_name(scenario_dir=None, target=None) -> str:
+    """'main' for the target's own scenario folder (targets.yaml `scenarios:`, default scenarios/),
+    'adversarial' for scenarios_adversarial/<target>, else the folder name.
+    Baselines and noise files are kept per suite, so suites never mix."""
+    if not scenario_dir or os.path.normpath(scenario_dir) == os.path.normpath(run_suite.SCENARIOS_DIR):
+        return "main"
+    if target:
+        import target_config
+        if target_config.is_main_suite(target, scenario_dir):
+            return "main"
+    parts = os.path.normpath(scenario_dir).replace("\\", "/").split("/")
+    if "scenarios_adversarial" in parts:
+        return "adversarial"
+    return parts[-1]
+
+
+def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=None, scenario_dir=None):
     """Run every scenario into run_dir (traces/ + run_meta.json). Used by main()
     and by calibrate_noise.py --experiment, so there is one experiment runner."""
     timestamp = timestamp or datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -208,13 +245,23 @@ def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=Non
         "timestamp": timestamp,
         "python": platform.python_version(),
         "scenario_ids": [s["id"] for s in scenarios],
+        "scenario_dir": (scenario_dir or run_suite.SCENARIOS_DIR).replace("\\", "/"),
+        "suite": suite_name(scenario_dir, exp["target"]),
         "status": "running",
     }
     _write_json(os.path.join(run_dir, "run_meta.json"), meta)
 
     traces = []
+    stopped = None
     for i, scenario in enumerate(scenarios, 1):
         trace = run_scenario(fn, accepts, exp["settings"], scenario, timestamp, exp["name"])
+        if trace.get("error_type") == "rate_limit_daily" or rate_limit.STATS.daily_limit:
+            # Not saved: a quota stop is not an answer and must not be judged as a fail.
+            stopped = {"after": i - 1, "not_run": [s["id"] for s in scenarios[i - 1:]],
+                       "message": rate_limit.STATS.daily_limit_message or trace.get("error")}
+            print(f"[{i}/{n}] {scenario['id']:15} DAILY API LIMIT reached: stopping. "
+                  f"{i - 1} of {n} scenarios saved.")
+            break
         _write_json(os.path.join(run_dir, "traces", f"{scenario['id']}.json"), trace)
         traces.append(trace)
         status = f"ERROR {trace['error_type']}" if trace["error"] is not None else "ok"
@@ -225,8 +272,12 @@ def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=Non
     cost, cost_note = estimate_cost(totals, exp["settings"], load_pricing())
     totals["estimated_cost_usd"] = cost
     totals["cost_note"] = cost_note
-    meta.update(totals=totals, status="complete")
+    if stopped:
+        meta.update(totals=totals, status="stopped_daily_limit", stopped=stopped)
+    else:
+        meta.update(totals=totals, status="complete")
     _write_json(os.path.join(run_dir, "run_meta.json"), meta)
+    totals["stopped"] = stopped
     return totals
 
 
@@ -236,6 +287,8 @@ def parse_args(argv=None):
     p = argparse.ArgumentParser(description="Run one experiment over the scenario suite.")
     p.add_argument("experiment", help="path to experiments/<name>.yaml")
     p.add_argument("--scenarios", nargs="+", metavar="ID", help="only these scenario ids")
+    p.add_argument("--scenario-dir", metavar="DIR",
+                   help="run another scenario folder, e.g. scenarios_adversarial/<target> (default: scenarios/)")
     p.add_argument("--yes", action="store_true", help="skip the API-call confirmation")
     return p.parse_args(argv)
 
@@ -255,8 +308,23 @@ def main(argv=None):
             validate(exp["settings"])
         except Exception as e:
             sys.exit(f"Settings error in {args.experiment}:\n{e}")
+    if accepts and exp["settings"].get("prompt_addons"):
+        # framework feature, checked for every target before any API call
+        try:
+            prompt_addons.validate(exp["settings"]["prompt_addons"],
+                                   (run_suite.load_targets().get(exp["target"]) or {}).get("description"))
+        except ValueError as e:
+            sys.exit(f"Settings error in {args.experiment}:\nsettings.prompt_addons: {e}")
 
-    scenarios = run_suite.load_scenarios()
+    if not args.scenario_dir:
+        import target_config
+        args.scenario_dir = target_config.get(exp["target"])["scenarios"]   # default: scenarios/
+    try:
+        scenarios = load_scenarios(args.scenario_dir)
+    except FileNotFoundError as e:
+        sys.exit(str(e))
+    if not scenarios:
+        sys.exit(f"No scenarios found in {args.scenario_dir or run_suite.SCENARIOS_DIR}")
     if args.scenarios:
         known = {s["id"] for s in scenarios}
         unknown = sorted(set(args.scenarios) - known)
@@ -286,7 +354,7 @@ def main(argv=None):
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_dir = new_run_dir(exp["name"], timestamp)
-    totals = execute(exp, fn, accepts, scenarios, run_dir, args.experiment, timestamp)
+    totals = execute(exp, fn, accepts, scenarios, run_dir, args.experiment, timestamp, args.scenario_dir)
     cost, cost_note = totals["estimated_cost_usd"], totals["cost_note"]
 
     tok = (f"{totals['total_tokens']:,} tokens ({totals['input_tokens']:,} in / {totals['output_tokens']:,} out)"
@@ -296,6 +364,11 @@ def main(argv=None):
     if cost is not None:
         print(f"Estimated cost: ${cost:.6f} ({cost_note})")
     print(f"Saved {run_dir}")
+    print(rate_limit.summary())
+    if totals.get("stopped"):
+        st = totals["stopped"]
+        sys.exit(f"Stopped at the daily API limit after {st['after']} of {n} scenarios ({run_dir}).\n"
+                 f"Not run: {' '.join(st['not_run'])}\nProvider said: {st['message']}")
     print(f"Next: python judge_run.py {run_dir}")
     return run_dir
 

@@ -34,3 +34,32 @@ configurable:
   module: agent_configurable
   function: run_agent
   accepts_settings: true
+  # one line about what this system is for; used by the scope prompt addon
+  # and the adversarial scenario templates
+  description: "customer support for an online store: order status, refunds, shipping, returns and payment methods"
+  # optional: a function returning this target's tools, for fuzz_tools.py.
+  # Only list tools that are safe to call with junk input (no real writes/emails).
+  tools: agent_configurable:build_tools
+  # tools that don't fetch information, so context_relevance ignores their output
+  non_retrieval_tools: [escalate_to_human]
+  # the one tool that ACTS (only with the setting actions: enabled); check_actions.py checks it,
+  # fuzz_tools.py never calls it, and the sandbox keeps the checks away from the real ledger
+  action_tools:
+    - name: issue_refund
+      test_args: {order_id: A1001}
+  actions_sandbox: support_actions:sandbox
+  # Per-target keys (all optional; see target_config.py). Defaults = the old behaviour:
+  #   judges: [...]        which judges apply (others N/A, not in final_score); default all
+  #   pass_threshold: 7    final_score >= this is a pass
+  #   scenarios: scenarios its main scenario folder
+
+# Example of plugging in a system that is NOT the support bot: a plain function,
+# no tools, no settings. Nothing in the framework was changed for it.
+summarizer:
+  module: examples.summarizer.summarizer
+  function: summarize
+  description: "summarises a short news article in at most two sentences"
+  judge_set: generic_v1                                  # domain-neutral judge wording
+  judges: [correctness_gt, completeness, groundedness]   # no tools: tool judges are N/A
+  pass_threshold: 7
+  scenarios: examples/summarizer/scenarios

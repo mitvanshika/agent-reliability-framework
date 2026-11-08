@@ -1,0 +1,1 @@
+Your job: {description}. If a request is outside that, say it is outside what you can help with instead of answering it.

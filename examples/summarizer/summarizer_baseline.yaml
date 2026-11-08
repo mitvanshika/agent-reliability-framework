@@ -1,0 +1,4 @@
+name: summarizer_baseline
+description: "The example summarizer as it is (a plain function: no settings)"
+target: summarizer
+settings: {}

@@ -10,6 +10,7 @@ question it picks the most likely cause, checking in this order:
   2. run error auth                 -> CONFIG           check the key / model
   3. run error loop_limit           -> TOOLS/PROMPT     agent got stuck calling tools
      any other run crash            -> AGENT CRASH      the target raised an exception
+  safety dropped (adversarial suites) -> SAFETY     resisted the attack less / invented
   (several judges dropped by about the same amount -> UNCLEAR: no single judge
    stands out, so naming one cause would be a guess)
   4. context_relevance dropped      -> RAG              retrieval fetched the wrong / no info
@@ -57,13 +58,15 @@ CAUSES = {
                     "(python run_experiment.py <experiment> --scenarios ...)"),
     "CONFIG": (None, "check GROQ_API_KEY and settings.model, then re-run"),
     "TOOLS/PROMPT": ("prompt", "try a prompt change: 'call each tool at most once; if a tool returns no data, "
-                               "answer from what you have or escalate'"),
+                               "answer from what you have or say you don't know'"),
     "AGENT CRASH": (None, "read the error in the trace; fix the target's code, then re-run"),
-    "RAG": ("retrieval", "try a retrieval change: retrieval.method embeddings, or top_k: 2"),
-    "PROMPT (used info badly)": ("prompt", "try a prompt change: 'answer only from the most relevant FAQ / tool "
-                                           "output, and repeat exact numbers, dates and statuses'"),
-    "TOOL DESCRIPTIONS": ("docstrings", "try a docstrings change: clearer tool descriptions "
-                                        "(start from docstrings/detailed.yaml)"),
+    "SAFETY": ("prompt_addons", "try prompt_addons: [injection_resistance, no_invention, scope]"),
+    "RAG": ("retrieval", "try a retrieval change: a better search method or more results "
+                         "(demo agent: retrieval.method embeddings, or top_k: 2)"),
+    "PROMPT (used info badly)": ("prompt", "try a prompt change: 'answer only from the most relevant source "
+                                           "material, and repeat exact numbers, dates and statuses'"),
+    "TOOL DESCRIPTIONS": ("docstrings", "try clearer tool descriptions "
+                                        "(demo agent: start from docstrings/detailed.yaml)"),
     "PROMPT (missed part)": ("prompt", "try a prompt change: 'list every part of the question first, then answer each'"),
     "MEASUREMENT UNSURE": (None, "read the answer by hand; re-judge (judge_run.py) or calibrate noise before trusting it"),
     "UNCLEAR": (None, "open the run and baseline traces side by side and read them"),
@@ -98,6 +101,9 @@ def diagnose_row(row) -> dict:
         return result("TOOLS/PROMPT", "the run hit the recursion limit (stuck calling tools)")
     if err is not None or row.get("run_error"):
         return result("AGENT CRASH", f"the run crashed ({err or 'unknown'}): {(row.get('run_error') or '')[:120]}")
+
+    if "safety" in deltas and deltas["safety"] <= -DROP:
+        return result("SAFETY", f"safety dropped {deltas['safety']:+g}: it resisted the attack less or invented details")
 
     all_drops = _dropped(deltas, deltas)
     if len(all_drops) >= EQUAL_MIN_JUDGES and max(all_drops.values()) - min(all_drops.values()) <= EQUAL_MARGIN:
@@ -139,7 +145,7 @@ def diagnose(comparison) -> list[dict]:
 def _failed(record):
     if record["status"] == "agent_error":
         return True
-    return record["status"] == "ok" and not (record["final_score"] is not None and record["final_score"] >= PASS_THRESHOLD)
+    return record["status"] == "ok" and not record["passed"]   # passed uses the target's pass_threshold
 
 
 def fine_tune_candidates(target, runs_dir=None):
@@ -202,6 +208,8 @@ def draft_experiment(diagnoses, comparison, experiments_dir=None, now=None):
                       "  docstrings: docstrings/TODO_new_docstrings.yaml\n",
         "retrieval": "  # TODO: pick one change, e.g. {method: embeddings} or {method: bm25, top_k: 2}\n"
                      "  retrieval: {method: TODO}\n",
+        "prompt_addons": "  # TODO: keep the addons that address the failures (see prompt_addons/)\n"
+                         "  prompt_addons: [injection_resistance, no_invention, scope]\n",
     }
     body = examples[setting] if comparison.get("target") == "configurable" else \
         f"  # TODO: change the setting that controls the {setting} of your system\n"

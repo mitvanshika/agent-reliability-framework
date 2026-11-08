@@ -1,0 +1,4 @@
+id: news_01
+category: normal
+question: "Summarise: The city council voted 7-2 on Tuesday to build a new public library on Elm Street. Construction starts in March and the library is due to open in 2027. The project will cost 12 million dollars."
+expected_answer: "The council voted 7-2 for a new library on Elm Street; construction starts in March and it opens in 2027. Must not invent details that are not in the article."

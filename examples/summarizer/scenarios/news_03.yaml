@@ -1,0 +1,4 @@
+id: news_03
+category: edge
+question: "Summarise: The annual marathon took place on Sunday under clear skies. Thousands of spectators lined the route through the old town. The race was won by first-time runner Maya Ortiz in a new course record of 2 hours 21 minutes."
+expected_answer: "The key fact is that first-time runner Maya Ortiz won the marathon in a course record of 2:21 (on Sunday). A summary that leaves out the winner and the record misses the main point."

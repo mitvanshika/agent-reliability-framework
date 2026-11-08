@@ -24,14 +24,85 @@ EXPERIMENT = {
     "checks": ["tool_match"],
 }
 
+# experiment_v1 with completeness v2: it also sees the tool outputs + answer key, so an honest
+# "not available" / escalation counts as complete and an invented answer does not.
+EXPERIMENT_V2 = {**EXPERIMENT, "name": "experiment_v2", "versions": {"completeness": "v2"}}
+
+# Domain-neutral wording of the same five judges (judges/generic.py), for any system.
+# Opt-in per target (targets.yaml `judge_set: generic_v1`); NOT the default.
+GENERIC_V1 = {**EXPERIMENT, "name": "generic_v1",
+              "versions": {n: "generic" for n in EXPERIMENT["llm_judges"]}}
+
+# Adversarial suites (scenarios with an `attack:` field): did it resist, did it invent?
+# completeness / tool_efficiency are left out on purpose: refusing is often correct here.
+ADVERSARIAL = {
+    "name": "adversarial_v1",
+    "llm_judges": ["safety", "groundedness"],
+    "checks": [],
+}
+
+# Step-level confidence (judge_steps.py): one call per TOOL step, "was this step necessary and correct?".
+# Separate and opt-in: results go to runs/<run>/judged_steps/, never into judged/ or final_score.
+STEPS_V1 = {"name": "steps_v1", "llm_judges": ["step_quality"], "checks": [], "unit": "tool step"}
+
+# DeepEval metrics (judges/deepeval_bridge.py; DeepEval runs in its own environment, .venv-deepeval).
+# Opt-in per target (`judge_set: deepeval_v1`), not the default.
+DEEPEVAL_V1 = {"name": "deepeval_v1", "llm_judges": ["de_faithfulness", "de_answer_relevancy"], "checks": []}
+
+BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, GENERIC_V1, DEEPEVAL_V1, ADVERSARIAL)}
+MAIN_SETS = ("experiment_v1", "experiment_v2", "generic_v1", "deepeval_v1")   # what a target may pick
+
+
+def for_run(scenarios, cfg) -> dict:
+    """The judge set for a run of a target (cfg = target_config.get(target)): the attack-suite set for
+    attack scenarios, else the target's `judge_set` (default experiment_v2), restricted to its `judges`."""
+    base = for_scenarios(scenarios)
+    if base["name"] != ADVERSARIAL["name"] and cfg.get("judge_set"):
+        base = BY_NAME[cfg["judge_set"]]
+    return for_target(base, cfg.get("judges"))
+
+
+def for_target(js, judges):
+    """js restricted to the judges a target says apply (targets.yaml `judges:`).
+    None = all. The left-out ones are listed in not_applicable and recorded as N/A.
+    Only the main-suite sets are restricted: an attack suite keeps its own judges."""
+    if judges is None or js["name"] == ADVERSARIAL["name"]:
+        return js
+    keep = set(judges)
+    out = {**js, "llm_judges": [n for n in js["llm_judges"] if n in keep],
+           "checks": [n for n in (js.get("checks") or []) if n in keep]}
+    out["not_applicable"] = [n for n in list(js["llm_judges"]) + list(js.get("checks") or [])
+                             if n not in keep]
+    if not out["llm_judges"]:
+        raise ValueError(f"none of the target's judges {sorted(keep)} is in judge set {js['name']}")
+    return out
+
+
+def changed_judges(old, new) -> list:
+    """Judges/checks of `new` that `old` lacks or runs in a different version."""
+    old_names = set(old["llm_judges"]) | set(old.get("checks") or [])
+    ov, nv = old.get("versions") or {}, new.get("versions") or {}
+    return [n for n in list(new["llm_judges"]) + list(new.get("checks") or [])
+            if n not in old_names or ov.get(n) != nv.get(n)]
+
+
 # every judge/check name, in display order
-ALL_NAMES = list(dict.fromkeys(EXPERIMENT["llm_judges"] + CLASSIC["llm_judges"] + EXPERIMENT["checks"]))
+ALL_NAMES = list(dict.fromkeys(EXPERIMENT["llm_judges"] + ADVERSARIAL["llm_judges"] + CLASSIC["llm_judges"]
+                               + EXPERIMENT["checks"] + DEEPEVAL_V1["llm_judges"]))
+
+
+def for_scenarios(scenarios) -> dict:
+    """The judge set a run should use: adversarial_v1 if its scenarios are attacks, else
+    experiment_v2 (the default since the completeness fix; experiment_v1 runs are re-graded
+    with regrade.py --to experiment_v2)."""
+    return ADVERSARIAL if any(isinstance(s, dict) and s.get("attack") for s in scenarios) else EXPERIMENT_V2
 
 
 def key(judge_set) -> str:
     """Canonical identity: name + judges + checks + judge model."""
     js = judge_set or CLASSIC
-    return json.dumps({k: js.get(k) for k in ("name", "llm_judges", "checks", "judge_model")}, sort_keys=True)
+    return json.dumps({k: js.get(k) for k in ("name", "llm_judges", "checks", "judge_model", "versions")},
+                      sort_keys=True)
 
 
 def same(a, b) -> bool:

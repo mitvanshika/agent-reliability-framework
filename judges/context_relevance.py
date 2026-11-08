@@ -17,21 +17,22 @@ from judges.base import call_judge
 NON_RETRIEVAL_TOOLS = {"escalate_to_human"}
 
 
-def retrieval_outputs(tools_used, tool_outputs):
+def retrieval_outputs(tools_used, tool_outputs, non_retrieval=None):
     """Tool outputs that came from retrieval tools. tools_used and
     tool_outputs are in call order; if they can't be paired, all outputs count."""
+    non_retrieval = NON_RETRIEVAL_TOOLS if non_retrieval is None else set(non_retrieval)
     tools_used, tool_outputs = list(tools_used or []), list(tool_outputs or [])
     if len(tools_used) == len(tool_outputs):
-        return [out for name, out in zip(tools_used, tool_outputs) if name not in NON_RETRIEVAL_TOOLS]
-    if tools_used and all(name in NON_RETRIEVAL_TOOLS for name in tools_used):
+        return [out for name, out in zip(tools_used, tool_outputs) if name not in non_retrieval]
+    if tools_used and all(name in non_retrieval for name in tools_used):
         return []
     return tool_outputs
 
 
 def judge_context_relevance(question: str, tools_used, tool_outputs, expected_answer: str | None = None,
-                            max_retries: int = 2):
+                            max_retries: int = 2, non_retrieval=None):
     """Returns a verdict, or None for N/A (no retrieval happened)."""
-    context = retrieval_outputs(tools_used, tool_outputs)
+    context = retrieval_outputs(tools_used, tool_outputs, non_retrieval)
     if not context:
         return None
     reference = (f"\nFor reference, a correct answer is: {expected_answer}\n"

@@ -1,0 +1,5 @@
+name: exp_08_tool_validation
+description: "Baseline + validated_tool on every tool (bad arguments -> clean errors)"
+extends: baseline
+settings:
+  tool_validation: strict

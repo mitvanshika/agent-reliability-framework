@@ -25,6 +25,7 @@ import traceback
 import compare
 import diagnose
 import judge_run
+import rate_limit
 import run_experiment
 
 STEPS = ["run", "judge", "compare", "diagnose"]
@@ -55,6 +56,7 @@ def run_pipeline(argv=None) -> int:
     p = argparse.ArgumentParser(description="run -> judge -> compare -> diagnose, in one command")
     p.add_argument("experiment")
     p.add_argument("--scenarios", nargs="+", metavar="ID")
+    p.add_argument("--scenario-dir", metavar="DIR", help="passed to run_experiment.py (e.g. an adversarial suite)")
     p.add_argument("--yes", action="store_true", help="no confirmation prompt (needed in CI)")
     p.add_argument("--alert", action="store_true", help="passed to compare.py (Slack if DECLINED / anything down)")
     p.add_argument("--summary-md", metavar="FILE", help="append a Markdown report (CI: $GITHUB_STEP_SUMMARY)")
@@ -64,7 +66,7 @@ def run_pipeline(argv=None) -> int:
     try:
         print(f"=== Step 1/4: run_experiment {args.experiment} ===")
         run_args = [args.experiment] + (["--scenarios", *args.scenarios] if args.scenarios else []) \
-            + (["--yes"] if args.yes else [])
+            + (["--scenario-dir", args.scenario_dir] if args.scenario_dir else []) + (["--yes"] if args.yes else [])
         run_dir, _ = _call("run", run_experiment.main, run_args)
         if run_dir is None:
             raise StepFailed("run", "not confirmed: nothing was run")
@@ -83,8 +85,9 @@ def run_pipeline(argv=None) -> int:
         record["steps"]["judge"] = "ok"
         record.update(pass_rate=summary["pass_rate"], mean_final_score=summary["mean_final_score"])
 
-        target = compare.run_target(judge_run.load_meta(run_dir))
-        if not os.path.isfile(compare.baseline_path(target)):
+        run_meta = judge_run.load_meta(run_dir)
+        target = compare.run_target(run_meta)
+        if not os.path.isfile(compare.baseline_path(target, suite=run_meta.get("suite") or "main")):
             record["steps"]["compare"] = "skipped: no baseline"
             record["verdict"] = None
             print(f"\nNo baseline yet for target '{target}': stopping after judging (nothing is promoted automatically).")
@@ -111,6 +114,7 @@ def run_pipeline(argv=None) -> int:
         record["steps"][e.step] = f"failed: {e.message}"
         record["resume"] = e.resume
         print(f"\nPipeline stopped at step {n}/4 ({e.step}): {e.message}", file=sys.stderr)
+        print(rate_limit.summary(), file=sys.stderr)
         if run_dir:
             print("The run itself is saved." + (f" Resume with: {e.resume}" if e.resume else ""), file=sys.stderr)
         return _finish(record, run_dir, 2, quiet=True, summary_md=args.summary_md)
@@ -180,6 +184,7 @@ def _finish(record, run_dir, code, quiet=False, summary_md=None):
         if record.get("pass_rate") is not None:
             print(f"Pass rate: {record['pass_rate'] * 100:.0f}%   mean final_score: {record['mean_final_score']}")
         print(f"VERDICT: {record.get('verdict') or 'no baseline yet (not compared)'}")
+        print(rate_limit.summary() + "  (agent + judges, whole pipeline)")
         if record.get("down"):
             print(f"Down: {' '.join(record['down'])}")
             for sid, cause in record.get("causes", {}).items():

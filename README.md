@@ -10,6 +10,35 @@ While building the evaluation itself, the framework caught a bug in its own judg
 
 The judges were rewarding hallucination over honesty. A dedicated **groundedness judge** was added specifically to catch this checking not just "is the answer plausible" but "is the answer actually supported by what the agent's tools returned."
 
+## Plug in your system in 4 steps
+
+The support bot in this repo is only the first system tested here. Anything that turns an input into an output can be
+plugged in: a chatbot, a RAG pipeline, a summarizer, a classifier, an agent with or without tools.
+`examples/summarizer/` is a complete example that needed **zero framework edits** (`tests/test_summarizer_example.py`
+checks that from git).
+
+1. **Expose one function**: `answer(question) -> str`, or a dict with `"answer"` and optionally `"tools_used"`,
+   `"tool_outputs"`, `"usage"`. Give it a `settings=` parameter if experiments should vary it.
+2. **Add it to `targets.yaml`** (copy the `summarizer` entry):
+   ```yaml
+   summarizer:
+     module: examples.summarizer.summarizer
+     function: summarize
+     description: "summarises a short news article in at most two sentences"
+     judge_set: generic_v1                                  # domain-neutral judge wording
+     judges: [correctness_gt, completeness, groundedness]   # no tools: tool judges are N/A
+     pass_threshold: 7
+     scenarios: examples/summarizer/scenarios
+   ```
+3. **Write scenarios**: one YAML file per test with `id`, `question` and `expected_answer` (what a correct output
+   must contain, and what it must not claim).
+4. **Check, then run**:
+   ```
+   python check_target.py summarizer               # conformance checks, no API calls (--call: one test call)
+   python experiment_pipeline.py examples/summarizer/summarizer_baseline.yaml
+   python promote_baseline.py runs/<that run>      # once; every later run is compared with it
+   ```
+
 ## Architecture: two tracks
 
 ```
@@ -203,6 +232,129 @@ The demo support agent is only an example. To measure changes to your own system
 5. **Write scenarios** with an answer key (`expected_answer`, optionally `expected_tools`), then run `python experiment_pipeline.py experiments/fdd_baseline.yaml`, promote it, and compare every change against it.
 
 If your system reports `tool_outputs`, the context_relevance judge scores your retrieval. If it reports `usage` and you add a `pricing.yaml`, you get cost per run.
+
+**Per-target settings in `targets.yaml`** (all optional; left out = the behaviour of the support bot):
+
+| key | what it does | default |
+|---|---|---|
+| `description` | one line about the system; given to the judges (generic_v1, safety), the `scope` addon and `generate_adversarial.py` | none |
+| `judge_set` | judge wording: `generic_v1` (domain-neutral, for most systems), `experiment_v2` (the support-bot wording) or `deepeval_v1` (DeepEval metrics, separate environment) | `experiment_v2` |
+| `judges` | which judges apply; the others are recorded N/A and left out of final_score | all of the set |
+| `pass_threshold` | final_score at or above this counts as a pass | 7 |
+| `scenarios` | the target's own scenario folder (its main suite, baseline `baselines/<target>.json`) | `scenarios/` |
+| `non_retrieval_tools` | tools whose output is not retrieved information (ignored by context_relevance) | none |
+| `tools` | `module:function` returning the tools, opts in to `fuzz_tools.py` | not fuzzed |
+| `action_tools` | tools that act: must be `approval.safe_action`, checked by `check_actions.py`, never fuzzed | none |
+| `max_steps` | `step_checks.py`: more LLM turns or tool calls per answer than this is a finding | 8 |
+| `actions_sandbox` | `module:function(tmpdir)` that points side effects at a temp folder during `check_actions.py` | none |
+
+`python check_target.py <target>` checks all of this before you spend a token.
+
+**Sample-agent only.** These files belong to the demo support bot and are support-specific on purpose; your system does
+not need them: `test_agent.py`, `agent_v2_weak.py`, `agent_configurable.py` (with `prompts/`, `docstrings/`,
+`scenarios/`), `store.py`, `retrieval.py`, `support_actions.py`, `generate.py`, `export_finetune.py`, and the Track 1 scripts (`pipeline.py`,
+`run_judges.py`, `find_failed.py`, `export_for_dashboard.py`, `rejudge_specific.py`, the Track 1 dashboard).
+
+## Making any agent's actions safe
+
+Reading tools are harmless if they run twice. Tools that ACT (send an email, refund, pay, delete) are not: agents
+re-run graphs after API errors, models call the same tool twice, users double-click. Two reusable guards, for any
+plain function or LangChain tool, nothing tool-specific:
+
+- **`@idempotent`** (`idempotent.py`): acts at most once per request. Key = tool name + normalized arguments +
+  request id, claimed in SQLite before acting, so even simultaneous callers can't both act; a repeat gets the stored
+  result.
+- **`requires_approval` / `safe_action`** (`approval.py`): ask an approver before acting. `safe_action` = approval +
+  idempotency in the only safe order:
+  1. already done for this request? return the stored result (nobody is asked twice)
+  2. ask the approver; a reject is passed to the model ("not approved ... Nothing was done") and NOT stored
+  3. claim the key, act once, store the result
+
+```python
+from approval import safe_action
+refund = safe_action(issue_refund_tool, approver="dashboard",          # or "cli", "deny", a function, "langgraph"
+                     describe=lambda a: f"Refund order {a['order_id']}")
+```
+
+| approver | how it decides |
+|---|---|
+| `deny` (default) | always no: an unattended run never acts |
+| `cli` | asks on the terminal; only `y` / `yes` approves |
+| `dashboard` | shows it on `/approvals` (Approve / Reject); no decision within the timeout = reject. Deciding needs `APPROVALS_TOKEN` (header `X-Approval-Token`) or a request from the same machine |
+| a function | `fn(request) -> bool` or `Decision`: a chat bot, a policy check |
+| `langgraph` | pauses a LangGraph run at a checkpoint (`interrupt`); `run_with_approvals(app, input, approver, config)` asks the approver and resumes |
+
+Anything unclear fails closed: an approver that raises or answers "maybe" is a reject. Every decision is logged
+(`approval_log`), including replays that needed none. The request id comes from `request_context(...)`,
+`run_experiment.py` sets one per scenario, and inside LangGraph the run's `request_id` / `thread_id` is used.
+
+**LangGraph detail that matters:** LangGraph hands resume values to `interrupt()` by position within a step, and an
+action that is already done no longer interrupts, so positions shift: in testing, a rejected refund received another
+action's approval and was executed. Fixed: every decision carries its action's key, is filed by key, and each action
+looks up its own; resume values without a key are refused. Stress-tested on all 8 approve/reject patterns of 3
+parallel actions.
+
+**Declare and check them per target:**
+```yaml
+my_target:
+  tools: my_module:get_tools
+  action_tools:
+    - name: send_email
+      test_args: {to: "test@example.com", body: "hi"}
+  actions_sandbox: my_module:sandbox     # fn(tmpdir) -> restore(): side effects go to a temp folder during checks
+```
+```
+python check_actions.py my_target       # no LLM: protected, blocked by deny, reject = nothing, approve = once,
+                                        # retry = still once, new request = again, 5 concurrent = once, LangGraph
+```
+`fuzz_tools.py` never calls an action tool: junk input must not trigger a real action.
+
+**First user: the support bot.** `experiments/exp_09_actions.yaml` (`actions: enabled`, one change from the baseline)
+adds `issue_refund(order_id)` from `support_actions.py`: it refuses orders older than 30 days and writes to its own
+`refunds.db` ledger, never to `store.db`. Its approver is the `approver` setting (`deny` by default, `cli` or
+`dashboard`). The baseline has no action tool and is unchanged. `python check_actions.py configurable` passes every
+check. Limits: a LangGraph pause lasts while the process runs (MemorySaver; install `langgraph-checkpoint-sqlite` to
+survive restarts), and an action interrupted by a crash stays "in progress" and is refused until cleared by hand.
+
+## Using DeepEval metrics inside this framework
+
+[DeepEval](https://github.com/confident-ai/deepeval) metrics can be used as judges through the judge set
+`deepeval_v1`: **`de_faithfulness`** (DeepEval's FaithfulnessMetric: are the answer's claims supported by the
+retrieved context, i.e. the tool outputs? N/A without tool outputs) and **`de_answer_relevancy`**
+(AnswerRelevancyMetric: do the answer's statements address the question?). They run on Groq through DeepEval's
+custom-model interface (`GroqModel` in `deepeval_worker.py`), with the same groq client and rate limiter as
+everything else, at temperature 0.
+
+**DeepEval lives in its own environment.** It pulls in 22 packages (OpenAI SDK, pytest + 5 plugins, OpenTelemetry,
+posthog telemetry) and would downgrade click, rich and tabulate, so it is never installed into the main Python. The
+framework talks to `deepeval_worker.py` in that environment over stdin/stdout (`judges/deepeval_bridge.py`).
+One-time setup (about 170 MB):
+```
+python -m venv .venv-deepeval
+.venv-deepeval/Scripts/python -m pip install -r requirements-deepeval.txt
+```
+(`.venv-deepeval/bin/python` on Linux/macOS, or point `DEEPEVAL_PYTHON` at any Python that has it.)
+
+**Telemetry is off.** The worker sets `DEEPEVAL_TELEMETRY_OPT_OUT=1` before importing DeepEval (unless you set that
+variable yourself), and keeps DeepEval's local state (`DEEPEVAL_HOME`, which holds its anonymous id) inside
+`.venv-deepeval/` instead of your home folder. `tests/deepeval_env/check_deepeval_env.py` runs the real metrics
+with all network access blocked and checks that nothing connects.
+
+**Use it for a target** (opt-in; the default stays `experiment_v2`):
+```yaml
+my_rag:
+  module: my_rag.entry
+  function: answer
+  judge_set: deepeval_v1
+  judges: [de_faithfulness, de_answer_relevancy]
+```
+DeepEval scores 0-1 and gives no confidence: scores are scaled to 0-10 and weighted with a fixed confidence (0.8)
+in `final_score`. A run judged with `deepeval_v1` is only compared with a baseline judged the same way (compare.py
+refuses to mix judge sets).
+
+**Cost:** DeepEval's metrics make several LLM calls each (faithfulness: truths, claims, verdicts, reason; answer
+relevancy: statements, verdicts, reason), so about 7 calls per answer, against 5 for `experiment_v2`. The worker
+has its own rate limiter (it is a separate process), so its calls are not in the main run's request count.
 
 ## Fine-tuning data
 

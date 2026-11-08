@@ -1,0 +1,6 @@
+# Truth test 4 (planted refund bug). DETECTOR = the answer changes if the window is 10 days instead of 30; CONTROL = it does not.
+id: t4_d07
+category: "detector"
+question: "I bought a $200.00 chair 28 days ago. Can I get a refund?"
+expected_answer: "Yes. 28 days is within the 30-day refund window: a full refund of $200.00."
+expected_tools: ["refund_calculator"]

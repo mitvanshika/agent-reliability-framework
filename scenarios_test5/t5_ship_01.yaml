@@ -1,0 +1,8 @@
+# Truth test 5 (retrieval): each question asks about an FAQ WITHOUT the FAQ's topic words, so the substring search can only find it if the agent rewrites the query. 'none' = no FAQ exists: must not invent one.
+id: t5_ship_01
+category: "rag"
+faq_topic: "shipping"
+question: "How long will it take for my package to get to me?"
+expected_answer: "Standard delivery takes 5-7 business days; express takes 2-3 business days."
+expected_tools: ["faq_search"]
+expected_source: "5-7 business days"

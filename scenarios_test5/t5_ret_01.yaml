@@ -1,0 +1,8 @@
+# Truth test 5 (retrieval): each question asks about an FAQ WITHOUT the FAQ's topic words, so the substring search can only find it if the agent rewrites the query. 'none' = no FAQ exists: must not invent one.
+id: t5_ret_01
+category: "rag"
+faq_topic: "return policy"
+question: "If I change my mind about something I bought, can I send it back?"
+expected_answer: "Items can be returned within 30 days of purchase for a full refund."
+expected_tools: ["faq_search"]
+expected_source: "returned within 30 days"

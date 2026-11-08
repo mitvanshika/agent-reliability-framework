@@ -126,9 +126,9 @@ ok("tool_match recorded but NOT in final_score", n05["tool_match_result"]["score
 ok("no answer key -> classic fallback, tool_match N/A", nokey["correctness_gt_result"]["mode"] == "fallback_no_answer_key"
    and nokey["correctness_gt_result"]["score"] == 4 and nokey["tool_match_result"].get("na") is True
    and nokey["answer_key_hash"] is None)
-ok("crash: no judge calls, judge_set still recorded", crash["final_score"] is None and crash["judge_set"]["name"] == "experiment_v1")
+ok("crash: no judge calls, judge_set still recorded", crash["final_score"] is None and crash["judge_set"]["name"] == "experiment_v2")
 ok("summary.json: judge set, per-judge incl. new judges, tool_match, N/A counts",
-   s1["judge_set"]["name"] == "experiment_v1" and set(s1["per_judge_mean"]) == set(je.LLM_JUDGES)
+   s1["judge_set"]["name"] == "experiment_v2" and set(s1["per_judge_mean"]) == set(je.LLM_JUDGES)
    and s1["per_judge_na"] == {"context_relevance": 2} and s1["tool_match_mean"] is not None, s1["per_judge_mean"])
 
 print("judge-set mismatch refusal:")
@@ -153,10 +153,10 @@ ok("classic baseline vs experiment run -> refused, exit 2", code == 2 and "Judge
 
 buf = io.StringIO()
 with contextlib.redirect_stdout(buf):
-    promote_baseline.main([run1, "--yes", "--note", "re-judged with experiment_v1"])
+    promote_baseline.main([run1, "--yes", "--note", "re-judged with experiment_v2"])
 ok("re-promote shows 'not comparable' instead of a bogus comparison", "Not comparable: the current baseline was judged with classic_v1" in buf.getvalue())
 base = json.load(open(compare.baseline_path("configurable"), encoding="utf-8"))
-ok("baseline stores judge_set + answer_key_hash", base["judge_set"]["name"] == "experiment_v1"
+ok("baseline stores judge_set + answer_key_hash", base["judge_set"]["name"] == "experiment_v2"
    and base["scenarios"]["normal_02"]["answer_key_hash"] == n02["answer_key_hash"])
 
 print("per-judge deltas include the new judges:")
@@ -168,7 +168,7 @@ with contextlib.redirect_stdout(io.StringIO()):
 code, out, err = run_compare([run2])
 r = json.load(open(os.path.join(run2, "comparison.json"), encoding="utf-8"))
 pj = r["per_judge"]
-ok("same judge set -> compared", code in (0, 1) and r["judge_set"]["name"] == "experiment_v1", err.strip())
+ok("same judge set -> compared", code in (0, 1) and r["judge_set"]["name"] == "experiment_v2", err.strip())
 # correctness_gt: 3 answer-key scenarios 9 -> 4 (-5) + zz_no_key on the classic fallback both times (4 -> 4)
 ok("correctness_gt delta (-5*3 + 0)/4 = -3.75, context_relevance +3 (n=2: N/A left out), tool_match marked as check",
    pj["correctness_gt"]["delta"] == -3.75 and pj["context_relevance"]["delta"] == 3 and pj["context_relevance"]["n"] == 2
@@ -189,6 +189,33 @@ t["judge_set"] = None
 json.dump(t, open(judged_file, "w", encoding="utf-8"))
 code, _, err = run_compare([run2])
 ok("refused: re-judge it", code == 2 and "mix of judge sets" in err, err.strip()[:120])
+
+print("judge errors / crashes don't count as an answer-key change (real run bug, 2026-11-06):")
+# baseline judged with experiment_v1 (run1 promoted above); new run: normal_02 judge error, gen_007 crash
+SCORES.update(correctness_gt=(9, 0.9), context_relevance=(6, 0.9))
+fake_judges.install(lambda name, prompt: SCORES[name])
+rows3 = dict(rows)
+rows3["gen_007"] = {"error": "Recursion limit reached", "error_type": "loop_limit"}
+run3 = make_run(os.path.join(root, "runs"), "exp_02", rows3, judged=False, timestamp="20261106_120000")
+with contextlib.redirect_stdout(io.StringIO()):
+    judge_run.main([run3, "--yes"])
+jf = os.path.join(run3, "judged", "normal_02.json")
+t3 = json.load(open(jf, encoding="utf-8"))
+t3.update(final_score=None, judge_error="Error code: 429 - tokens per day (TPD)")
+for k in [k for k in t3 if k.endswith("_result") or k == "answer_key_hash"]:
+    t3.pop(k)
+json.dump(t3, open(jf, "w", encoding="utf-8"))
+code, out, err = run_compare([run3])
+r3 = json.load(open(os.path.join(run3, "comparison.json"), encoding="utf-8"))
+ok("judge error + crash -> compared (not refused), judge error excluded",
+   code in (0, 1) and "answer key changed" not in err and [e["scenario_id"] for e in r3["excluded"]] == ["normal_02"], err.strip()[:120])
+ok("crash still counts as a fail (score 0)", next(x for x in r3["rows"] if x["scenario_id"] == "gen_007")["run_score"] == 0.0)
+t5 = json.load(open(os.path.join(run3, "judged", "normal_05.json"), encoding="utf-8"))
+t5["answer_key_hash"] = "ffffffffffff"
+json.dump(t5, open(os.path.join(run3, "judged", "normal_05.json"), "w", encoding="utf-8"))
+code, _, err = run_compare([run3])
+ok("a real answer-key change on a scored scenario is still refused", code == 2 and "normal_05" in err
+   and "normal_02" not in err.split("for:")[1], err.strip()[:120])
 
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)
