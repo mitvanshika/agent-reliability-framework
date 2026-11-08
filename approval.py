@@ -35,6 +35,8 @@ Every request and decision goes into approval_log (same SQLite file as the
 action store), including replays that needed no approval.
 """
 
+import contextlib
+import contextvars
 import json
 import threading
 import time
@@ -334,6 +336,27 @@ def rejected_text(tool, decision):
 
 # ---------------------------------------------------------------- wrappers
 
+_OVERRIDE = contextvars.ContextVar("approval_override", default=None)
+
+
+@contextlib.contextmanager
+def override(approver=None, store=None):
+    """Inside this block, every requires_approval / safe_action wrapper uses this approver
+    and/or action store instead of the ones it was built with. For checks and tests
+    (check_actions.py tests the real wrapped tool this way); not for production code."""
+    token = _OVERRIDE.set({"approver": approver, "store": store})
+    try:
+        yield
+    finally:
+        _OVERRIDE.reset(token)
+
+
+def _effective(approver, store):
+    ov = _OVERRIDE.get() or {}
+    return (ov["approver"] if ov.get("approver") is not None else approver,
+            ov.get("store") or store or idem.default_store())
+
+
 def _wrap_tool(target, make):
     if hasattr(target, "func") and hasattr(target, "name") and hasattr(target, "model_copy"):   # LangChain tool
         return target.model_copy(update={"func": make(target.func, target.name)})
@@ -353,11 +376,11 @@ def requires_approval(target=None, *, approver=None, describe=None, store=None):
     """Ask before every call (no idempotency). Decorator or wrapper."""
     def make(fn, name):
         def wrapped(*args, request_id=None, **kwargs):
-            st = store or idem.default_store()
+            appr, st = _effective(approver, store)
             call_args = idem._bind(fn, args, kwargs)
             rid = request_id if request_id is not None else idem.current_request_id()
-            req = ActionRequest(name, call_args, rid, _description(describe, call_args))
-            d = _decide(get_approver(approver), req)
+            req = ActionRequest(name, call_args, rid, _description(describe, call_args), None, st)
+            d = _decide(get_approver(appr), req)
             log_decision(st, req, d.approved, d.by, d.reason)
             if not d.approved:
                 return rejected_text(name, d)
@@ -377,7 +400,7 @@ def safe_action(target=None, *, approver=None, describe=None, store=None):
             if rid is None:
                 raise idem.MissingRequestId(f"{name} is a safe action and needs a request id: call it inside "
                                             f"request_context(...) or pass request_id=...")
-            st = store or idem.default_store()
+            appr, st = _effective(approver, store)
             call_args = idem._bind(fn, args, kwargs)
             key = idem.action_key(name, call_args, rid)
             req = ActionRequest(name, call_args, rid, _description(describe, call_args), key, st)
@@ -388,7 +411,7 @@ def safe_action(target=None, *, approver=None, describe=None, store=None):
                 log_decision(st, req, None, "-", "not needed: already done for this request")
                 return json.loads(row["result"])
 
-            d = _decide(get_approver(approver), req)           # 2. ask (nothing claimed yet)
+            d = _decide(get_approver(appr), req)               # 2. ask (nothing claimed yet)
             log_decision(st, req, d.approved, d.by, d.reason)
             if not d.approved:
                 st.event(key, name, rid, "rejected", f"{d.by}: {d.reason}")
@@ -409,6 +432,7 @@ def safe_action(target=None, *, approver=None, describe=None, store=None):
 
         wrapped.__wrapped__, wrapped.__name__ = fn, getattr(fn, "__name__", name)
         wrapped.__safe_action__ = wrapped.__requires_approval__ = wrapped.__idempotent__ = True
+        wrapped.approver_spec = approver           # what it was configured with (check_actions reports it)
         return wrapped
 
     return (lambda t: _wrap_tool(t, make)) if target is None else _wrap_tool(target, make)
@@ -443,6 +467,16 @@ def run_with_approvals(app, graph_input, approver="cli", config=None, max_rounds
     raise RuntimeError(f"still paused after {max_rounds} approval rounds")
 
 
+def configured_approver(t):
+    fn = getattr(t, "func", t)
+    while fn is not None:
+        if getattr(fn, "__safe_action__", False):
+            spec = getattr(fn, "approver_spec", None)
+            return "deny" if spec is None else (spec if isinstance(spec, str) else type(spec).__name__)
+        fn = getattr(fn, "__wrapped__", None)
+    return None
+
+
 def is_safe_action(t) -> bool:
     fn = getattr(t, "func", t)
     while fn is not None:
@@ -454,4 +488,4 @@ def is_safe_action(t) -> bool:
 
 __all__ = ["ActionRequest", "Decision", "DenyApprover", "AutoApprover", "CallbackApprover", "CliApprover",
            "LangGraphApprover", "DashboardApprover", "queue", "decide_pending", "get_approver", "parse_answer", "requires_approval", "safe_action",
-           "run_with_approvals", "is_safe_action", "approval_log"]
+           "run_with_approvals", "is_safe_action", "configured_approver", "override", "approval_log"]

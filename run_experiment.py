@@ -76,8 +76,11 @@ def _clean_usage(usage):
 def run_scenario(fn, accepts_settings, settings, scenario, timestamp, experiment):
     start = time.perf_counter()
     usage = messages = None
+    import idempotent
     try:
-        raw = fn(scenario["question"], settings=settings) if accepts_settings else fn(scenario["question"])
+        # one request id per scenario of this run: an action tool acts at most once for it
+        with idempotent.request_context(f"{experiment}_{timestamp}/{scenario['id']}"):
+            raw = fn(scenario["question"], settings=settings) if accepts_settings else fn(scenario["question"])
         normalized = run_suite.normalize_result(raw)
         if isinstance(raw, dict):
             usage = _clean_usage(raw.get("usage"))

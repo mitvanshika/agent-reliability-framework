@@ -47,7 +47,8 @@ ok("configurable: escalate_to_human is non-retrieval (moved from judge code to t
 for name in ("strong", "weak", "not-a-target", None):
     d = target_config.get(name)
     ok(f"{name}: all defaults", d == {"description": None, "judge_set": None, "judges": None, "pass_threshold": 7.0,
-                                      "scenarios": run_suite.SCENARIOS_DIR, "non_retrieval_tools": []}, d)
+                                      "scenarios": run_suite.SCENARIOS_DIR, "non_retrieval_tools": [],
+                                      "action_tools": []}, d)
 ok("every real targets.yaml entry validates", all(
    not target_config.validate(n, e, judge_sets.ALL_NAMES) for n, e in REAL.items()),
    [target_config.validate(n, e, judge_sets.ALL_NAMES) for n, e in REAL.items()])

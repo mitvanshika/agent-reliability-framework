@@ -154,8 +154,16 @@ def main(argv=None):
     except FuzzError as e:
         print(e, file=sys.stderr)
         return 2
+    import approval
+    import target_config
+    listed = {a["name"] for a in target_config.get(args.target)["action_tools"]}
+    skipped = [tool_name(t) for t in tools if tool_name(t) in listed or approval.is_safe_action(t)]
+    tools = [t for t in tools if tool_name(t) not in skipped]
     print(f"Fuzzing {len(tools)} tools of '{args.target}'" + (f" built from {exp_path}" if exp_path else "")
           + " (no LLM, no API calls)")
+    for name in skipped:
+        print(f"  SKIPPED {name}: an action tool (junk input must never trigger a real action); "
+              f"checked by check_actions.py")
     text, totals = report(fuzz(tools))
     print(text)
     if totals["CRASH"]:
