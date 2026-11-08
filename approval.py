@@ -24,6 +24,8 @@ Approvers turn an ActionRequest into a Decision:
   CliApprover       asks on the terminal; only y / yes approves
   CallbackApprover  any fn(request) -> bool | Decision (a chat bot, a policy check...)
   AutoApprover      approves everything, logged as "auto (tests only)"
+  DashboardApprover puts the request on the dashboard's /approvals page and waits;
+                    no decision within timeout_s = reject ("expired")
   LangGraphApprover pauses a LangGraph run (interrupt) until run_with_approvals()
                     or your own code resumes it with a decision
 An approver that raises or answers something else counts as a REJECT
@@ -36,6 +38,7 @@ action store), including replays that needed no approval.
 import json
 import threading
 import time
+import uuid
 from dataclasses import dataclass, field
 
 import idempotent as idem
@@ -182,7 +185,81 @@ def _recall(store, scope, key):
     return Decision(bool(row["approved"]), row["by_whom"], row["reason"]) if row else None
 
 
-APPROVERS = {"deny": DenyApprover, "auto": AutoApprover, "cli": CliApprover, "langgraph": LangGraphApprover}
+# ---------------------------------------------------------------- dashboard queue
+
+def _queue_table(store):
+    with store._conn() as c:
+        c.execute("""CREATE TABLE IF NOT EXISTS approval_queue (
+            id TEXT PRIMARY KEY, key TEXT, tool TEXT, args TEXT, request_id TEXT, description TEXT,
+            status TEXT, by_whom TEXT, reason TEXT, created REAL, decided REAL)""")
+
+
+def enqueue(store, request) -> str:
+    _queue_table(store)
+    qid = uuid.uuid4().hex
+    with store._conn() as c:
+        c.execute("INSERT INTO approval_queue VALUES (?, ?, ?, ?, ?, ?, 'pending', NULL, NULL, ?, NULL)",
+                  (qid, request.key, request.tool, json.dumps(idem.normalize(request.args), default=str),
+                   request.request_id, request.description, time.time()))
+    return qid
+
+
+def queue_item(store, qid):
+    _queue_table(store)
+    with store._conn() as c:
+        row = c.execute("SELECT * FROM approval_queue WHERE id=?", (qid,)).fetchone()
+    return dict(row) if row else None
+
+
+def queue(store=None, status=None, limit=100):
+    store = store or idem.default_store()
+    _queue_table(store)
+    q, params = "SELECT * FROM approval_queue", []
+    if status:
+        q, params = q + " WHERE status=?", [status]
+    with store._conn() as c:
+        return [dict(r) for r in c.execute(q + " ORDER BY created DESC LIMIT ?", params + [limit])]
+
+
+def decide_pending(store, qid, approved, by, reason="") -> bool:
+    """Record a decision for a pending request. False if it was not pending any more
+    (already decided, or expired): the first decision wins."""
+    _queue_table(store)
+    with store._conn() as c:
+        cur = c.execute("UPDATE approval_queue SET status=?, by_whom=?, reason=?, decided=? "
+                        "WHERE id=? AND status='pending'",
+                        ("approved" if approved else "rejected", by, reason, time.time(), qid))
+        return cur.rowcount == 1
+
+
+class DashboardApprover:
+    """Shows the request on the dashboard (/approvals) and waits for Approve / Reject.
+    No decision within timeout_s -> reject (status 'expired'), so an unattended run
+    never acts by default."""
+    name = "dashboard"
+
+    def __init__(self, store=None, timeout_s=300.0, poll_s=0.5, sleep=time.sleep, clock=time.monotonic):
+        self.store, self.timeout_s, self.poll_s, self._sleep, self._clock = store, timeout_s, poll_s, sleep, clock
+
+    def decide(self, request):
+        st = self.store or request.store or idem.default_store()
+        qid = enqueue(st, request)
+        deadline = self._clock() + self.timeout_s
+        while True:
+            item = queue_item(st, qid)
+            if item["status"] in ("approved", "rejected"):
+                return Decision(item["status"] == "approved", f"dashboard: {item['by_whom']}", item["reason"] or "")
+            if self._clock() >= deadline:
+                if decide_pending(st, qid, False, "timeout", f"no decision within {self.timeout_s:g}s"):
+                    with st._conn() as c:
+                        c.execute("UPDATE approval_queue SET status='expired' WHERE id=?", (qid,))
+                    return Decision(False, "dashboard", f"no decision within {self.timeout_s:g}s (expired)")
+                continue          # someone decided in the last instant: read it
+            self._sleep(self.poll_s)
+
+
+APPROVERS = {"deny": DenyApprover, "auto": AutoApprover, "cli": CliApprover, "langgraph": LangGraphApprover,
+             "dashboard": DashboardApprover}
 
 
 def get_approver(spec=None):
@@ -376,5 +453,5 @@ def is_safe_action(t) -> bool:
 
 
 __all__ = ["ActionRequest", "Decision", "DenyApprover", "AutoApprover", "CallbackApprover", "CliApprover",
-           "LangGraphApprover", "get_approver", "parse_answer", "requires_approval", "safe_action",
+           "LangGraphApprover", "DashboardApprover", "queue", "decide_pending", "get_approver", "parse_answer", "requires_approval", "safe_action",
            "run_with_approvals", "is_safe_action", "approval_log"]

@@ -278,6 +278,56 @@ def api_experiment_baselines():
                      "suite": b.get("suite") or "main"} for b in _current_baselines().values()])
 
 
+# ---------------------------------------------------------------- approvals (approval.py)
+# Pending actions waiting for a human (DashboardApprover). Deciding is protected:
+# with APPROVALS_TOKEN set, the request must send it (X-Approval-Token header);
+# without it, decisions are accepted only from this machine, because the app
+# listens on 0.0.0.0 and approving an action is not something any visitor may do.
+
+def _approvals_store():
+    import idempotent
+    return idempotent.default_store()
+
+
+def _may_decide():
+    token = os.environ.get("APPROVALS_TOKEN")
+    if token:
+        import hmac
+        return hmac.compare_digest(request.headers.get("X-Approval-Token") or "", token)
+    return request.remote_addr in ("127.0.0.1", "::1")
+
+
+@app.route("/approvals")
+def approvals_page():
+    return render_template("approvals.html")
+
+
+@app.route("/api/approvals")
+def api_approvals():
+    import approval
+    st = _approvals_store()
+    return jsonify({"pending": approval.queue(st, "pending"), "recent": approval.queue(st, limit=50),
+                    "token_required": bool(os.environ.get("APPROVALS_TOKEN"))})
+
+
+@app.route("/api/approvals/<qid>", methods=["POST"])
+def api_decide(qid):
+    import approval
+    if not _may_decide():
+        return jsonify({"error": "not allowed to decide: set APPROVALS_TOKEN and send it as X-Approval-Token, "
+                                 "or decide from this machine"}), 403
+    body = request.get_json(silent=True) or {}
+    by = str(body.get("by") or "").strip()
+    if not isinstance(body.get("approved"), bool) or not by:
+        return jsonify({"error": "send {\"approved\": true|false, \"by\": \"your name\", \"reason\": \"...\"}"}), 400
+    st = _approvals_store()
+    if approval.queue_item(st, qid) is None:
+        return jsonify({"error": "no such request"}), 404
+    if not approval.decide_pending(st, qid, body["approved"], by, str(body.get("reason") or "")[:500]):
+        return jsonify({"error": "already decided or expired", "item": approval.queue_item(st, qid)}), 409
+    return jsonify({"ok": True, "item": approval.queue_item(st, qid)})
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     # The Werkzeug debugger is an in-browser Python console: never on by
