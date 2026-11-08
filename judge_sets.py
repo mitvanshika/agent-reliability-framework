@@ -41,6 +41,10 @@ ADVERSARIAL = {
     "checks": [],
 }
 
+# Step-level confidence (judge_steps.py): one call per TOOL step, "was this step necessary and correct?".
+# Separate and opt-in: results go to runs/<run>/judged_steps/, never into judged/ or final_score.
+STEPS_V1 = {"name": "steps_v1", "llm_judges": ["step_quality"], "checks": [], "unit": "tool step"}
+
 BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, GENERIC_V1, ADVERSARIAL)}
 MAIN_SETS = ("experiment_v1", "experiment_v2", "generic_v1")   # what a target may pick with `judge_set:`
 

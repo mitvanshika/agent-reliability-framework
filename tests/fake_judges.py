@@ -24,6 +24,7 @@ _MODULES = {
     "context_relevance": "judges.context_relevance",
     "safety": "judges.safety",
     "generic": "judges.generic",   # all five generic judges: tell them apart by the prompt's first line
+    "step": "judges.step",         # step_quality (judge_steps.py)
 }
 
 
