@@ -269,7 +269,62 @@ def api_experiment_run(run_id):
                     "tool_match_mean": summary.get("tool_match_mean"),
                     "errors_by_type": summary.get("errors_by_type"), "comparison": comparison,
                     "diagnosis": (comparison or {}).get("diagnosis") or diagnosis.get("diagnoses") or [],
-                    "fine_tune_candidates": diagnosis.get("fine_tune_candidates") or {}})
+                    "fine_tune_candidates": diagnosis.get("fine_tune_candidates") or {},
+                    "scenarios": _scenario_steps(path)})
+
+
+SCENARIO_ID = re.compile(r"^[A-Za-z0-9_.\-]+$")
+
+
+def _scenario_steps(path):
+    """[{scenario_id, steps, tool_calls, findings, source}] for the run's step-timeline links."""
+    import step_checks
+    import trajectory
+    out = []
+    for sid, t in sorted(load_latest_traces(os.path.join(path, "traces")).items()):
+        steps, source = trajectory.of_trace(t)
+        out.append({"scenario_id": sid, "steps": len(steps), "source": source,
+                    "tool_calls": sum(1 for s in steps if s.get("type") == "tool"),
+                    "findings": len(step_checks.check_steps(steps)) if steps else 0, "error": t.get("error")})
+    return out
+
+
+@app.route("/runs/<run_id>/<scenario_id>")
+def timeline_page(run_id, scenario_id):
+    return render_template("timeline.html")
+
+
+@app.route("/api/experiments/runs/<run_id>/steps/<scenario_id>")
+def api_steps(run_id, scenario_id):
+    """One answer, step by step: the steps (recorded or rebuilt), step-check findings,
+    the answer's judge scores and, if judge_steps.py ran, the per-step scores."""
+    import step_checks
+    import trajectory
+    path = _run_path(run_id)
+    if path is None or not SCENARIO_ID.match(scenario_id or ""):
+        return jsonify({"error": "unknown run or scenario"}), 404
+    trace = load_latest_traces(os.path.join(path, "traces")).get(scenario_id)
+    if trace is None:
+        return jsonify({"error": "unknown scenario"}), 404
+    steps, source = trajectory.of_trace(trace)
+    judged = load_latest_traces(os.path.join(path, "judged")).get(scenario_id) if os.path.isdir(
+        os.path.join(path, "judged")) else None
+    judges = {}
+    for k, v in (judged or {}).items():
+        if k.endswith("_result") and isinstance(v, dict):
+            judges[k[:-7]] = {"score": v.get("score"), "na": bool(v.get("na")), "reason": v.get("reason")}
+    step_scores = None
+    js_dir = os.path.join(path, "judged_steps")
+    if os.path.isdir(js_dir):
+        rec = load_latest_traces(js_dir).get(scenario_id)
+        if rec and not rec.get("na"):
+            step_scores = {str(s["index"]): {"score": s["score"], "reason": s["reason"]} for s in rec.get("steps") or []}
+    return jsonify({
+        "run_id": run_id, "scenario_id": scenario_id, "question": trace.get("question"),
+        "answer": trace.get("answer"), "error": trace.get("error"), "latency_s": trace.get("latency_s"),
+        "usage": trace.get("usage"), "steps": steps, "source": source,
+        "findings": step_checks.check_steps(steps) if steps else [],
+        "final_score": (judged or {}).get("final_score"), "judges": judges, "step_scores": step_scores})
 
 
 @app.route("/api/experiments/baselines")

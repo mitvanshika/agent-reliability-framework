@@ -26,6 +26,11 @@
     --font-mono: 'IBM Plex Mono', monospace;
   }
   * { box-sizing: border-box; }
+  .steps-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .steplink { border: 1px solid var(--border); border-radius: 6px; padding: 5px 9px; color: var(--text); text-decoration: none; }
+  .steplink:hover { border-color: var(--accent); }
+  .warnb { background: #3a2f14; color: var(--warn); } .failb { background: #3a1714; color: var(--fail); }
+  td a { color: var(--text); }
   body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; }
   header { display: flex; align-items: baseline; gap: 16px; padding: 20px 28px; border-bottom: 1px solid var(--border); }
   header h1 { font-family: var(--font-display); font-size: 20px; margin: 0; }
@@ -198,7 +203,7 @@ async function openRun(runId) {
   } else {
     const sym = { up: '&#9650;', down: '&#9660;', same: '&#9552;' };
     const rows = [...c.rows].sort((a, b) => a.delta - b.delta).map(r => `
-      <tr><td class="${r.direction}">${sym[r.direction]}</td><td class="mono">${esc(r.scenario_id)}</td>
+      <tr><td class="${r.direction}">${sym[r.direction]}</td><td class="mono"><a href="/runs/${encodeURIComponent(d.run_id)}/${encodeURIComponent(r.scenario_id)}">${esc(r.scenario_id)}</a></td>
         <td class="num">${num(r.baseline_score, 1)}</td><td class="num">${num(r.run_score, 1)}</td>
         <td class="num">${(r.delta >= 0 ? '+' : '') + num(r.delta, 1)}</td><td class="num">${num(r.band, 1)}</td>
         <td>${esc(r.flip || '')}</td><td class="mono">${esc([...(r.judges_moved || []), ...(r.notes || [])].join(', '))}</td></tr>`).join('');
@@ -213,6 +218,11 @@ async function openRun(runId) {
     html += '<h2 style="margin-top:18px">Diagnosis</h2>' + d.diagnosis.map(x => `
       <div class="cause"><b>${esc(x.scenario_id)}: ${esc(x.cause)}</b>
         <div class="dim">${esc(x.evidence)}</div><div>next: ${esc(x.suggestion)}</div></div>`).join('');
+  }
+  if ((d.scenarios || []).length) {
+    html += '<h2 style="margin-top:18px">Step timelines</h2><div class="steps-list">' + d.scenarios.map(s =>
+      `<a class="mono steplink" href="/runs/${encodeURIComponent(d.run_id)}/${encodeURIComponent(s.scenario_id)}">${esc(s.scenario_id)}
+        <span class="dim">${esc(s.steps)} steps</span>${s.findings ? ` <span class="badge warnb">${esc(s.findings)} finding${s.findings > 1 ? 's' : ''}</span>` : ''}${s.error ? ' <span class="badge failb">error</span>' : ''}</a>`).join('') + '</div>';
   }
   const ft = Object.entries(d.fine_tune_candidates || {});
   if (ft.length) {
