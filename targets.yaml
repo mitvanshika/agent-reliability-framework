@@ -42,6 +42,12 @@ configurable:
   tools: agent_configurable:build_tools
   # tools that don't fetch information, so context_relevance ignores their output
   non_retrieval_tools: [escalate_to_human]
+  # the one tool that ACTS (only with the setting actions: enabled); check_actions.py checks it,
+  # fuzz_tools.py never calls it, and the sandbox keeps the checks away from the real ledger
+  action_tools:
+    - name: issue_refund
+      test_args: {order_id: A1001}
+  actions_sandbox: support_actions:sandbox
   # Per-target keys (all optional; see target_config.py). Defaults = the old behaviour:
   #   judges: [...]        which judges apply (others N/A, not in final_score); default all
   #   pass_threshold: 7    final_score >= this is a pass

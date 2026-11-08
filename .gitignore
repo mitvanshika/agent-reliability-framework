@@ -18,3 +18,5 @@ finetune/
 agent-reliability-framework/
 # idempotent.py / approval.py action store (runtime data)
 actions.db
+# support_actions.py refund ledger (sample agent, runtime data)
+refunds.db

@@ -37,6 +37,7 @@ import difflib
 import json
 import os
 import time
+import uuid
 from typing import Literal
 
 import yaml
@@ -80,12 +81,17 @@ class _FaqArgs(StrictArgs):
     query: str = Field(min_length=1, max_length=500, description="a non-empty search of at most 500 characters")
 
 
+class _IssueRefundArgs(StrictArgs):
+    order_id: str = Field(pattern=r"^[A-Za-z][0-9]{4}$", description="like A1234: one letter and four digits")
+
+
 class _EscalateArgs(StrictArgs):
     reason: str = Field(min_length=1, max_length=1000, description="a non-empty reason of at most 1,000 characters")
 
 
 TOOL_CONSTRAINTS = {"order_lookup": _OrderLookupArgs, "refund_calculator": _RefundArgs,
-                    "faq_search": _FaqArgs, "escalate_to_human": _EscalateArgs}
+                    "faq_search": _FaqArgs, "escalate_to_human": _EscalateArgs,
+                    "issue_refund": _IssueRefundArgs}
 
 
 class RetrievalSettings(BaseModel):
@@ -114,6 +120,8 @@ class AgentSettings(BaseModel):
     recursion_limit: int = Field(ge=1)
     prompt_addons: list[str] = []   # framework rules appended to the prompt (prompt_addons/); default none
     tool_validation: Literal["off", "strict"] = "off"   # strict: validated_tool() on every tool; default off
+    actions: Literal["off", "enabled"] = "off"          # enabled: add issue_refund (support_actions.py); default off
+    approver: Literal["deny", "cli", "dashboard"] = "deny"   # who approves issue_refund; default: nobody (deny)
 
 
 def _repo_path(path: str) -> str:
@@ -208,6 +216,10 @@ def _tools(cfg: AgentSettings):
         # Same name, argument schema and description; only the search function changes.
         tools = [t.model_copy(update={"func": _faq_function(cfg.retrieval)}) if t.name == "faq_search" else t
                  for t in tools]
+    if cfg.actions == "enabled":
+        # The one tool that ACTS: approval first (cfg.approver, default deny), then at most once per request.
+        import support_actions
+        tools = tools + [support_actions.guarded(cfg.approver)]
     if cfg.tool_validation == "strict":
         # Same name, description and schema the model sees; arguments checked inside, never raises.
         tools = [validated_tool(t, TOOL_CONSTRAINTS[t.name]) for t in tools]
@@ -285,15 +297,20 @@ def run_agent(question: str, settings: dict | None = None, max_retries: int = 2)
                             "not run_suite.py / calibrate_noise.py.")
     cfg = validate_settings(settings)
     app, system_prompt = _get_app(settings, cfg)
+    import idempotent
+    # One request id for this question, kept across the retries below, so an action tool
+    # (actions: enabled) never acts twice because the graph was re-run after an API error.
+    request_id = idempotent.current_request_id() or f"run_agent/{uuid.uuid4().hex}"
 
     last_error = None
     error_type = None
     for attempt in range(max_retries + 1):
         try:
-            result = app.invoke(
-                {"messages": [SystemMessage(content=system_prompt), HumanMessage(content=question)]},
-                config={"recursion_limit": cfg.recursion_limit},
-            )
+            with idempotent.request_context(request_id):
+                result = app.invoke(
+                    {"messages": [SystemMessage(content=system_prompt), HumanMessage(content=question)]},
+                    config={"recursion_limit": cfg.recursion_limit},
+                )
             tools_used, tool_outputs = [], []
             for msg in result["messages"]:
                 if hasattr(msg, "tool_calls") and msg.tool_calls:
