@@ -18,8 +18,9 @@ the tool does.
 
 Key = sha256(tool name + normalized arguments + request id). Normalizing:
 strings are stripped, 10.0 == 10, dict keys sorted, tuples == lists. The
-request id comes from request_id=... or from request_context(); the harness
-sets one per scenario. Without one the call is refused (raises
+request id comes from request_id=..., else request_context(), else (inside a
+LangGraph run) the run's config: configurable.request_id, or its thread_id, so a
+paused and resumed graph keeps the same key. The harness sets one per scenario. Without one the call is refused (raises
 MissingRequestId): "once ever" is almost never what you want, and silently
 guessing is worse.
 
@@ -68,7 +69,17 @@ def request_context(request_id):
 
 
 def current_request_id():
-    return _REQUEST_ID.get()
+    """request_context(), else the LangGraph run's configurable.request_id / thread_id, else None."""
+    rid = _REQUEST_ID.get()
+    if rid is not None:
+        return rid
+    try:
+        from langgraph.config import get_config
+        conf = get_config().get("configurable") or {}
+    except Exception:          # not inside a LangGraph run (or no LangGraph)
+        return None
+    rid = conf.get("request_id") or conf.get("thread_id")
+    return str(rid) if rid is not None else None
 
 
 def normalize(value):

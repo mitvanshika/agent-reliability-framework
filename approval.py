@@ -24,13 +24,17 @@ Approvers turn an ActionRequest into a Decision:
   CliApprover       asks on the terminal; only y / yes approves
   CallbackApprover  any fn(request) -> bool | Decision (a chat bot, a policy check...)
   AutoApprover      approves everything, logged as "auto (tests only)"
-An approver that raises or answers something else counts as a REJECT.
+  LangGraphApprover pauses a LangGraph run (interrupt) until run_with_approvals()
+                    or your own code resumes it with a decision
+An approver that raises or answers something else counts as a REJECT
+(LangGraph's pause signal is the one exception that is let through).
 
 Every request and decision goes into approval_log (same SQLite file as the
 action store), including replays that needed no approval.
 """
 
 import json
+import threading
 import time
 from dataclasses import dataclass, field
 
@@ -44,6 +48,7 @@ class ActionRequest:
     request_id: str | None
     description: str
     key: str | None = None
+    store: object = field(default=None, repr=False, compare=False)   # the action store (for LangGraph mode)
 
 
 @dataclass
@@ -92,7 +97,92 @@ class CliApprover:
         return Decision(answer in ("y", "yes"), self.by, f"typed {answer!r}")
 
 
-APPROVERS = {"deny": DenyApprover, "auto": AutoApprover, "cli": CliApprover}
+def parse_answer(answer, by="approver"):
+    """A resume value / callback answer -> Decision. Anything unclear is a reject."""
+    if isinstance(answer, Decision):
+        return answer
+    if answer is True or answer is False:
+        return Decision(answer, by)
+    if isinstance(answer, dict) and isinstance(answer.get("approved"), bool):
+        return Decision(answer["approved"], str(answer.get("by") or by), str(answer.get("reason") or ""))
+    return Decision(False, by, f"unclear answer {answer!r}: treated as reject")
+
+
+class LangGraphApprover:
+    """Inside a LangGraph tool: pause the graph (interrupt) and wait for the decision.
+    The graph must be compiled with a checkpointer and run with a thread_id.
+
+    Resume with {"approved": bool, "by": ..., "reason": ..., "key": <the pause payload's key>};
+    run_with_approvals() does this. A resume value without "key" is REFUSED (rejected).
+
+    Why the key and the decision memory: LangGraph hands resume values to interrupt() calls
+    by POSITION within the tools step (interrupt() has no id, and every interrupt of one step
+    shares one interrupt id). Positions shift when an action that is already done replays
+    without interrupting, and parallel tool calls race for them. So whoever reads a resume
+    value files it under its key (table `decisions`, scoped to this tools step), and every
+    action looks in that memory before interrupting. A decision is never applied to the
+    wrong action, never lost and never asked twice."""
+    name = "langgraph"
+    max_skips = 50
+    _locks = {}
+    _locks_guard = threading.Lock()
+
+    def _lock(self, scope):
+        with self._locks_guard:
+            return self._locks.setdefault(scope, threading.Lock())
+
+    def decide(self, request):
+        try:
+            from langgraph.config import get_config
+            from langgraph.types import interrupt
+        except ImportError:
+            return Decision(False, self.name, "LangGraph is not installed")
+        try:
+            conf = get_config().get("configurable") or {}
+        except RuntimeError as e:          # called outside a graph run: no checkpoint to pause at
+            return Decision(False, self.name, f"needs a LangGraph run with a checkpointer ({e})")
+        scope = f"{conf.get('thread_id')}|{conf.get('checkpoint_ns')}"
+        store = request.store or idem.default_store()
+        payload = {"type": "approval", "tool": request.tool, "args": request.args,
+                   "request_id": request.request_id, "description": request.description, "key": request.key}
+        with self._lock(scope):            # parallel tool calls take turns reading resume values
+            known = _recall(store, scope, request.key)
+            if known:
+                return known
+            for _ in range(self.max_skips):
+                answer = interrupt(payload)    # pauses the graph if no resume value is left
+                if not (isinstance(answer, dict) and answer.get("key")):
+                    return Decision(False, self.name, f"resume value {answer!r} has no 'key': refused, since it can't "
+                                                      "be matched to an action (use run_with_approvals, or resume "
+                                                      "with the pause payload's key)")
+                d = parse_answer(answer, "langgraph resume")
+                _remember(store, scope, answer["key"], d)
+                if answer["key"] == request.key:
+                    return d
+            return Decision(False, self.name, "no decision for this action arrived")
+
+
+def _decisions_table(store):
+    with store._conn() as c:
+        c.execute("""CREATE TABLE IF NOT EXISTS decisions (scope TEXT, key TEXT, approved INTEGER, by_whom TEXT,
+                     reason TEXT, at REAL, PRIMARY KEY (scope, key))""")
+
+
+def _remember(store, scope, key, d):
+    _decisions_table(store)
+    with store._conn() as c:
+        c.execute("INSERT OR IGNORE INTO decisions VALUES (?, ?, ?, ?, ?, ?)",
+                  (scope, key, int(d.approved), d.by, d.reason, time.time()))
+
+
+def _recall(store, scope, key):
+    _decisions_table(store)
+    with store._conn() as c:
+        row = c.execute("SELECT * FROM decisions WHERE scope=? AND key=?", (scope, key)).fetchone()
+    return Decision(bool(row["approved"]), row["by_whom"], row["reason"]) if row else None
+
+
+APPROVERS = {"deny": DenyApprover, "auto": AutoApprover, "cli": CliApprover, "langgraph": LangGraphApprover}
 
 
 def get_approver(spec=None):
@@ -114,12 +204,22 @@ def _decide(approver, request) -> Decision:
     try:
         d = approver.decide(request)
     except Exception as e:  # noqa: BLE001
+        if _is_graph_pause(e):
+            raise                       # LangGraph pausing for approval: not a failure
         return Decision(False, getattr(approver, "name", "approver"), f"approver failed: {type(e).__name__}: {e}")
     if isinstance(d, Decision):
         return d
     if d is True or d is False:
         return Decision(d, getattr(approver, "by", getattr(approver, "name", "approver")))
     return Decision(False, getattr(approver, "name", "approver"), f"unclear answer {d!r}: treated as reject")
+
+
+def _is_graph_pause(e):
+    try:
+        from langgraph.errors import GraphBubbleUp
+    except ImportError:
+        return False
+    return isinstance(e, GraphBubbleUp)
 
 
 # ---------------------------------------------------------------- log
@@ -203,7 +303,7 @@ def safe_action(target=None, *, approver=None, describe=None, store=None):
             st = store or idem.default_store()
             call_args = idem._bind(fn, args, kwargs)
             key = idem.action_key(name, call_args, rid)
-            req = ActionRequest(name, call_args, rid, _description(describe, call_args), key)
+            req = ActionRequest(name, call_args, rid, _description(describe, call_args), key, st)
 
             row = st.get(key)                                   # 1. already done?
             if row and row["status"] == "done":
@@ -237,6 +337,35 @@ def safe_action(target=None, *, approver=None, describe=None, store=None):
     return (lambda t: _wrap_tool(t, make)) if target is None else _wrap_tool(target, make)
 
 
+def run_with_approvals(app, graph_input, approver="cli", config=None, max_rounds=100):
+    """Run a LangGraph app whose action tools use approver="langgraph". Each time the graph
+    pauses for an approval, ask `approver` (cli / callback / dashboard / deny...; never
+    "langgraph" itself) and resume with the decision, until the graph finishes.
+    The app must have a checkpointer; config must carry a thread_id."""
+    from langgraph.types import Command
+    if not ((config or {}).get("configurable") or {}).get("thread_id"):
+        raise ValueError("run_with_approvals needs config={'configurable': {'thread_id': ...}} "
+                         "(the checkpoint the paused graph is resumed from)")
+    outside = get_approver(approver)
+    if isinstance(outside, LangGraphApprover):
+        raise ValueError("the outside approver decides; 'langgraph' is the in-graph side")
+    result = app.invoke(graph_input, config)
+    for _ in range(max_rounds):
+        pending = result.get("__interrupt__") if isinstance(result, dict) else None
+        if not pending:
+            return result
+        resume = {}
+        for it in pending:
+            v = it.value
+            if not (isinstance(v, dict) and v.get("type") == "approval"):
+                raise ValueError(f"the graph paused for something that is not an approval: {v!r}")
+            req = ActionRequest(v["tool"], v["args"], v.get("request_id"), v.get("description") or "", v.get("key"))
+            d = _decide(outside, req)
+            resume[it.id] = {"approved": d.approved, "by": d.by, "reason": d.reason, "key": req.key}
+        result = app.invoke(Command(resume=resume), config)
+    raise RuntimeError(f"still paused after {max_rounds} approval rounds")
+
+
 def is_safe_action(t) -> bool:
     fn = getattr(t, "func", t)
     while fn is not None:
@@ -247,4 +376,5 @@ def is_safe_action(t) -> bool:
 
 
 __all__ = ["ActionRequest", "Decision", "DenyApprover", "AutoApprover", "CallbackApprover", "CliApprover",
-           "get_approver", "requires_approval", "safe_action", "is_safe_action", "approval_log"]
+           "LangGraphApprover", "get_approver", "parse_answer", "requires_approval", "safe_action",
+           "run_with_approvals", "is_safe_action", "approval_log"]
