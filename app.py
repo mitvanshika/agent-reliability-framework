@@ -1,24 +1,4 @@
-"""
-Small backend that holds the Groq API key privately (via environment
-variable / Replit Secret) and proxies requests from the frontend.
-The browser never sees the key.
 
-Also serves /api/data, which reads judged_traces/ and
-judged_traces_weak/ directly off disk on every request — no more
-manually running export_for_dashboard.py and re-uploading a JSON
-file every time the results change. Reload the page, get current
-data.
-
-Run locally:
-    python store.py               (creates + seeds the database, once)
-    set GROQ_API_KEY in .env
-    python app.py
-
-On Replit:
-    1. Create a Python Repl, upload the project
-    2. Go to the "Secrets" tab (lock icon) and add: GROQ_API_KEY = your key
-    3. Click Run — Replit gives you a public URL
-"""
 
 import json
 import os

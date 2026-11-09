@@ -253,7 +253,6 @@ If your system reports `tool_outputs`, the context_relevance judge scores your r
 **Sample-agent only.** These files belong to the demo support bot and are support-specific on purpose; your system does
 not need them: `test_agent.py`, `agent_v2_weak.py`, `agent_configurable.py` (with `prompts/`, `docstrings/`,
 `scenarios/`), `store.py`, `retrieval.py`, `support_actions.py`, `generate.py`, `export_finetune.py`, and the Track 1 scripts (`pipeline.py`,
-`run_judges.py`, `find_failed.py`, `export_for_dashboard.py`, `rejudge_specific.py`, the Track 1 dashboard).
 
 ## Making any agent's actions safe
 
