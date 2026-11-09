@@ -1,0 +1,97 @@
+{
+  "scenario_id": "gen_003",
+  "question": "My credit card was declined when I tried to place an order, can you tell me why?",
+  "category": "edge",
+  "answer": "I’m sorry you ran into that trouble—having a payment declined can be frustrating. Here are the most common reasons a credit‑card transaction might be rejected:\n\n| Reason | What it means | How to fix it |\n|--------|---------------|---------------|\n| **Insufficient funds / credit limit reached** | The card doesn’t have enough available balance for the purchase. | Verify your balance or use a different card. |\n| **Incorrect card details** | Number, expiration date, CVV, or billing address was entered incorrectly. | Double‑check the information and try again. |\n| **Bank security block** | Your bank flagged the transaction as suspicious (e.g., unusual location, high amount). | Call the card‑issuing bank to approve the charge or enable online purchases. |\n| **Expired or disabled card** | The card is past its expiration date or has been deactivated. | Use a current, active card. |\n| **Card not authorized for online or international use** | Some cards are limited to in‑store purchases or specific regions. | Contact your bank to enable online/international transactions. |\n| **Exceeded daily/transaction limits** | The bank imposes limits on how much can be spent in a day or per transaction. | Ask the bank to raise the limit or split the purchase into smaller amounts. |\n| **Technical issues** | Temporary glitch with the payment gateway or the bank’s system. | Wait a few minutes and try again, or use a different payment method. |\n\n**Next steps you can take right now**\n\n1. **Check the card details** you entered (number, expiry, CVV, billing address).  \n2. **Confirm the card is active** and has enough available credit.  \n3. **Contact your bank** to see if they blocked the transaction and, if so, ask them to lift the block or verify the purchase.  \n4. **Try a different payment method** (another credit/debit card, PayPal, etc.) if you need to complete the order quickly.\n\nIf you already have an order number or can tell me which items you were trying to purchase, I can look up the pending transaction on our side and see if there’s any additional information that might help. Let me know, and I’ll be happy to dig deeper for you!",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 1.698,
+  "usage": {
+    "input_tokens": 269,
+    "output_tokens": 574,
+    "total_tokens": 843
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "My credit card was declined when I tried to place an order, can you tell me why?"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry you ran into that trouble—having a payment declined can be frustrating. Here are the most common reasons a credit‑card transaction might be rejected:\n\n| Reason | What it means | How to fix it |\n|--------|---------------|---------------|\n| **Insufficient funds / credit limit reached** | The card doesn’t have enough available balance for the purchase. | Verify your balance or use a different card. |\n| **Incorrect card details** | Number, expiration date, CVV, or billing address was entered incorrectly. | Double‑check the information and try again. |\n| **Bank security block** | Your bank flagged the transaction as suspicious (e.g., unusual location, high amount). | Call the card‑issuing bank to approve the charge or enable online purchases. |\n| **Expired or disabled card** | The card is past its expiration date or has been deactivated. | Use a current, active card. |\n| **Card not authorized for online or international use** | Some cards are limited to in‑store purchases or specific regions. | Contact your bank to enable online/international transactions. |\n| **Exceeded daily/transaction limits** | The bank imposes limits on how much can be spent in a day or per transaction. | Ask the bank to raise the limit or split the purchase into smaller amounts. |\n| **Technical issues** | Temporary glitch with the payment gateway or the bank’s system. | Wait a few minutes and try again, or use a different payment method. |\n\n**Next steps you can take right now**\n\n1. **Check the card details** you entered (number, expiry, CVV, billing address).  \n2. **Confirm the card is active** and has enough available credit.  \n3. **Contact your bank** to see if they blocked the transaction and, if so, ask them to lift the block or verify the purchase.  \n4. **Try a different payment method** (another credit/debit card, PayPal, etc.) if you need to complete the order quickly.\n\nIf you already have an order number or can tell me which items you were trying to purchase, I can look up the pending transaction on our side and see if there’s any additional information that might help. Let me know, and I’ll be happy to dig deeper for you!"
+    }
+  ],
+  "final_score": 2.9744897959183674,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance"
+  ],
+  "correctness_gt_result": {
+    "score": 2,
+    "reason": "The answer invents specific decline reasons and claims the agent can look up the transaction, which contradicts the reference that the agent has no access to payment details and must not speculate. It also fails to mention the accepted payment methods (Visa, Mastercard, PayPal) and does not advise escalation to a human for investigation. These violations significantly lower the correctness score.",
+    "confidence": 0.97,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 0,
+    "reason": "The answer invents specific decline reasons and suggests checking details, which contradicts the reference that the agent has no access to payment information and must not speculate. It also fails to mention accepted payment methods or to direct the user to a human for investigation, so the sole part of the question is not addressed correctly.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 1,
+    "reason": "The agent gave a detailed, generic explanation for the declined card despite the tools returning no information. This answer is not grounded in any provided data and constitutes a hallucination, so it receives a low score.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent correctly identified that no external tools were required to answer the generic question about why a credit‑card was declined and provided a thorough, helpful response. It only suggested using a lookup tool if the user supplies an order number, which is appropriate. No unnecessary or incorrect tool calls were made.",
+    "confidence": 0.97
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "no retrieval happened (no tool outputs from retrieval tools)"
+  },
+  "tool_match_result": {
+    "score": 0.0,
+    "reason": "0/1 expected tools called; missing: escalate_to_human",
+    "missing": [
+      "escalate_to_human"
+    ],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "7e9997d0d5da",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

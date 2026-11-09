@@ -1,7 +1,7 @@
 # Judge fix: completeness v2 (judge set experiment_v2)
 
-**Status: re-grade done for the baseline and the A/A run; exp_01 stopped at the daily token limit (12/31
-re-graded). Its compare is pending and will be added here.**
+**Status (updated 2026-11-09): done. All three runs (baseline, A/A, exp_01) are re-graded with experiment_v2, and
+exp_01 is compared again: still DECLINED, now on both tests (see "Update 2026-11-09" at the end).**
 
 ## The problem (found in the known-bad test)
 completeness v1 saw only the question and the answer. It could not tell an honest "I don't have that" from a
@@ -72,7 +72,20 @@ The remaining 24 scenarios moved between -0.65 (gen_009) and +1.60 (gen_002) in 
   answer no longer gets completeness 10.
 - rag_06 (invented gift cards): not re-graded yet (still v1: completeness 10).
 
-## Pending (needs tokens)
+## Pending (needs tokens) - done 2026-11-09
 `python regrade.py runs/exp_01_weak_prompt_20261107_164943 --to experiment_v2 --yes` (19 calls left, resumes where
 it stopped), then `python compare.py runs/exp_01_weak_prompt_20261107_164943`: does exp_01 still say DECLINED, and do
 gen_005 / rag_06 no longer get completeness 10 for invented answers?
+
+## Update 2026-11-09: exp_01 re-graded and compared (expected vs got)
+All 31 exp_01 answers are now judged with experiment_v2 (0 judge errors).
+
+| check | expected | got | |
+|---|---|---|---|
+| exp_01 verdict vs the v2 baseline | still DECLINED | **DECLINED**: McNemar p=0.002 (10 pass->fail, 0 fail->pass), Wilcoxon p=0.019 | as expected |
+| gen_005 (invented replacement) | completeness not 10 | **0**, final 2.18 | as expected |
+| rag_06 (invented gift cards) | completeness not 10 | **0** (v1: 10), final 3.01 | as expected |
+| exp_01 pass rate | | 17/31 (55%), mean 7.14 | |
+
+Completeness is now the judge that drops most for the weak prompt (-1.97), where v1 had it rising (+0.84): v1 paid
+the weak agent for confident invented answers. The full comparison is in `known_bad_test.md` (Update 2026-11-09).

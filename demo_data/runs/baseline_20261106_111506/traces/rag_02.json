@@ -1,0 +1,77 @@
+{
+  "scenario_id": "rag_02",
+  "question": "Can you send my order to my mailbox at the post office?",
+  "category": "normal",
+  "answer": "Yes—we can ship to a PO box, but only using the standard postal service. Our express options (FedEx, UPS, etc.) can’t deliver to a PO box. If you choose standard shipping, delivery to a PO box usually takes about **7–10 business days** (our regular 5‑7‑day estimate can be a little longer because the mail is routed through the postal system).\n\nIf you’d like to change the shipping method for an existing order, just let me know your order number and we can update it for you. Otherwise, feel free to place a new order and select “Standard Shipping” with your PO box address at checkout.",
+  "tools_used": [
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.",
+    "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 8.382,
+  "usage": {
+    "input_tokens": 1111,
+    "output_tokens": 414,
+    "total_tokens": 1525
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can you send my order to my mailbox at the post office?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_83b8e326-1990-4849-b511-fce0a3c4de7e",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"PO box shipping\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_83b8e326-1990-4849-b511-fce0a3c4de7e",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_08d13433-e7b8-44bd-a219-6091e6aae94e",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"PO box\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_08d13433-e7b8-44bd-a219-6091e6aae94e",
+      "content": "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "Yes—we can ship to a PO box, but only using the standard postal service. Our express options (FedEx, UPS, etc.) can’t deliver to a PO box. If you choose standard shipping, delivery to a PO box usually takes about **7–10 business days** (our regular 5‑7‑day estimate can be a little longer because the mail is routed through the postal system).\n\nIf you’d like to change the shipping method for an existing order, just let me know your order number and we can update it for you. Otherwise, feel free to place a new order and select “Standard Shipping” with your PO box address at checkout."
+    }
+  ]
+}

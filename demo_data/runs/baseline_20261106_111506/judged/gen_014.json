@@ -1,0 +1,97 @@
+{
+  "scenario_id": "gen_014",
+  "question": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!",
+  "category": "edge",
+  "answer": "I’m sorry to hear that your order hasn’t arrived yet. Could you please provide your order number so I can look up the details and see the best way to resolve this for you?",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 2.671,
+  "usage": {
+    "input_tokens": 321,
+    "output_tokens": 115,
+    "total_tokens": 436
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry to hear that your order hasn’t arrived yet. Could you please provide your order number so I can look up the details and see the best way to resolve this for you?"
+    }
+  ],
+  "final_score": 6.026455026455026,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance"
+  ],
+  "correctness_gt_result": {
+    "score": 4,
+    "reason": "The agent correctly asks for the missing order number, satisfying that required fact. However, it omits the reference's required information that two weeks is within the 30‑day refund window (refund likely possible but not guaranteed) and that the issue should be escalated to a human. No contradictory statements are made, but the missing required facts reduce the score.",
+    "confidence": 0.96,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 3,
+    "reason": "The agent correctly asks for the missing order number, which matches the reference requirement. However, they do not address the refund request (whether it can be granted, noting the 30‑day window) nor mention escalation to a human, both of which are required parts of a complete answer. Only one of the three expected parts is complete, giving roughly a third of the answer correct.",
+    "confidence": 0.92
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The tools provided no useful information, and the agent correctly responded by acknowledging the lack of data and requesting the order number to investigate further, rather than fabricating a refund or specific details. This aligns with the guideline for handling missing tool output.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "score": 8,
+    "reason": "The agent correctly refrained from using any tools because it first needed the customer's order number to identify the transaction before processing a refund. This avoids unnecessary or premature tool calls. The approach is sensible, though a slight deduction is given because the system could have at least queried a “refund eligibility” tool after obtaining the order number, but that step is pending. Overall the tool usage aligns with the required workflow.",
+    "confidence": 0.92
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "no retrieval happened (no tool outputs from retrieval tools)"
+  },
+  "tool_match_result": {
+    "score": 0.0,
+    "reason": "0/1 expected tools called; missing: escalate_to_human",
+    "missing": [
+      "escalate_to_human"
+    ],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "15c42b9bd62f",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

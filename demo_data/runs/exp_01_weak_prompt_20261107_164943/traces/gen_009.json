@@ -1,0 +1,98 @@
+{
+  "scenario_id": "gen_009",
+  "question": "My order A1004 arrived damaged, I need a refund and I want to speak to a manager now!",
+  "category": "edge",
+  "answer": "I’m very sorry to hear that your order arrived damaged. Our standard refund policy only covers returns within 30 days of purchase, and since it’s been 60 days, a refund isn’t automatically eligible. \n\nI’ve escalated your case to a manager so they can review the situation and see what we can do for you. A human support representative will be with you shortly. Thank you for your patience.",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Order A1004: status=delivered, total=$15.99, days_since_purchase=60",
+    "Not eligible for refund: purchase was made more than 30 days ago",
+    "Escalated to human support. Reason: Customer requests to speak with a manager regarding a damaged order received 60 days ago and refund request."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 16.085,
+  "usage": {
+    "input_tokens": 1428,
+    "output_tokens": 481,
+    "total_tokens": 1909
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "My order A1004 arrived damaged, I need a refund and I want to speak to a manager now!"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_c0987bf2-97f7-47ba-8140-ec0366eb608d",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1004\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_c0987bf2-97f7-47ba-8140-ec0366eb608d",
+      "content": "Order A1004: status=delivered, total=$15.99, days_since_purchase=60"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_0175f97c-c563-4ca9-8428-c9d57f611fd3",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 60, \"order_total\": 15.99}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_0175f97c-c563-4ca9-8428-c9d57f611fd3",
+      "content": "Not eligible for refund: purchase was made more than 30 days ago"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_9ab53e75-9417-46b1-a1df-e74acb1a104a",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"Customer requests to speak with a manager regarding a damaged order received 60 days ago and refund request.\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_9ab53e75-9417-46b1-a1df-e74acb1a104a",
+      "content": "Escalated to human support. Reason: Customer requests to speak with a manager regarding a damaged order received 60 days ago and refund request."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m very sorry to hear that your order arrived damaged. Our standard refund policy only covers returns within 30 days of purchase, and since it’s been 60 days, a refund isn’t automatically eligible. \n\nI’ve escalated your case to a manager so they can review the situation and see what we can do for you. A human support representative will be with you shortly. Thank you for your patience."
+    }
+  ]
+}

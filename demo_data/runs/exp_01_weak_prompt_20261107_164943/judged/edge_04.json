@@ -1,0 +1,117 @@
+{
+  "scenario_id": "edge_04",
+  "question": "What's your policy on international customs fees?",
+  "category": "edge",
+  "answer": "International shipments can be subject to customs duties, taxes, and other fees that are imposed by the destination country’s government. These charges are **not** included in the price you see on our site and are the buyer’s responsibility. We have no control over the amount or timing of those fees, and they must be paid directly to the carrier or customs authority before the package is released.\n\nIf you have any specific concerns about a particular destination—such as whether a certain type of product might be exempt or if there are known fees for that country—feel free to let us know and we can try to provide more detailed information. Otherwise, please be prepared for any applicable customs charges when ordering internationally.",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 1.587,
+  "usage": {
+    "input_tokens": 582,
+    "output_tokens": 229,
+    "total_tokens": 811
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "What's your policy on international customs fees?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_a4fa988f-6575-41ee-a07a-8462ff4174b6",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"international customs fees policy\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_a4fa988f-6575-41ee-a07a-8462ff4174b6",
+      "content": "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+    },
+    {
+      "role": "assistant",
+      "content": "International shipments can be subject to customs duties, taxes, and other fees that are imposed by the destination country’s government. These charges are **not** included in the price you see on our site and are the buyer’s responsibility. We have no control over the amount or timing of those fees, and they must be paid directly to the carrier or customs authority before the package is released.\n\nIf you have any specific concerns about a particular destination—such as whether a certain type of product might be exempt or if there are known fees for that country—feel free to let us know and we can try to provide more detailed information. Otherwise, please be prepared for any applicable customs charges when ordering internationally."
+    }
+  ],
+  "final_score": 9.801217038539555,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent’s answer includes all required facts: international shipments may incur customs duties, taxes, and fees imposed by the destination country, these costs are the buyer’s responsibility, and they are not included in the order total. No contradictory or prohibited claims are made, and the extra information does not conflict with the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The agent's answer fully covers the only part of the question, stating that international shipments may incur customs duties, taxes, and fees imposed by the destination country, that these charges are the buyer's responsibility, and are not included in the order total, matching both the tool output and reference answer. No extraneous or invented information is present.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's answer faithfully reflects the tool's information about customs duties, taxes, and fees being the buyer's responsibility and not included in the order total, and adds consistent, non-contradictory details. No hallucination is present.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the answer required a specific policy reference and used the appropriate 'faq_search' tool to retrieve it. No extra or irrelevant tools were called, and the information provided directly addresses the question about customs fees, indicating sensible and efficient tool usage.",
+    "confidence": 0.98
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved passage directly states the policy: international shipments may incur customs duties, taxes, and fees imposed by the destination country, and these are the buyer's responsibility and not included in the order total, which fully answers the question.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "40993e3f2de3",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

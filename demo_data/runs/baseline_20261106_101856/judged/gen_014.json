@@ -1,0 +1,97 @@
+{
+  "scenario_id": "gen_014",
+  "question": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!",
+  "category": "edge",
+  "answer": "I’m really sorry to hear that your order still hasn’t arrived—that’s definitely frustrating.  \nCould you please share your order number with me? Once I have that, I can look up the shipment details and let you know the next steps for a refund or replacement.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 2.858,
+  "usage": {
+    "input_tokens": 321,
+    "output_tokens": 127,
+    "total_tokens": 448
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m really sorry to hear that your order still hasn’t arrived—that’s definitely frustrating.  \nCould you please share your order number with me? Once I have that, I can look up the shipment details and let you know the next steps for a refund or replacement."
+    }
+  ],
+  "final_score": 8.106145251396647,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance"
+  ],
+  "correctness_gt_result": {
+    "score": 6,
+    "reason": "The agent correctly asks for the missing order ID and does not guarantee a refund, aligning with the reference. However, the answer omits the required escalation to a human representative, which the reference states is necessary for upset customers with missing packages. The lack of this key step reduces the score.",
+    "confidence": 0.78,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 8,
+    "reason": "The agent acknowledges the customer's frustration and correctly asks for the missing order number, which aligns with the reference. They also avoid guaranteeing an immediate refund, indicating they will check details and advise on next steps, which matches the reference guidance. However, they do not explicitly mention escalating the issue to a human representative, which the reference says should be done for upset customers with missing packages. Therefore, most but not all required parts are complete.",
+    "confidence": 0.86
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent did not fabricate any details despite the lack of tool output; instead, it appropriately requested the order number to retrieve information, which aligns with correct behavior when no data is available.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent correctly refrained from using any tools before obtaining the necessary order number, which is required to look up the shipment and process a refund. No unnecessary or incorrect tool calls were made, demonstrating sensible tool usage.",
+    "confidence": 0.97
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "no retrieval happened (no tool outputs from retrieval tools)"
+  },
+  "tool_match_result": {
+    "score": 0.0,
+    "reason": "0/1 expected tools called; missing: escalate_to_human",
+    "missing": [
+      "escalate_to_human"
+    ],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "15c42b9bd62f",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

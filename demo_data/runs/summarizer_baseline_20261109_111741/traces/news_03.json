@@ -1,0 +1,17 @@
+{
+  "scenario_id": "news_03",
+  "question": "Summarise: The annual marathon took place on Sunday under clear skies. Thousands of spectators lined the route through the old town. The race was won by first-time runner Maya Ortiz in a new course record of 2 hours 21 minutes.",
+  "category": "edge",
+  "answer": "The annual marathon took place on Sunday under clear skies. Thousands of spectators lined the route through the old town.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261109_111741",
+  "error": null,
+  "error_type": null,
+  "experiment": "summarizer_baseline",
+  "latency_s": 0.0,
+  "usage": null,
+  "messages": null,
+  "trajectory": null
+}

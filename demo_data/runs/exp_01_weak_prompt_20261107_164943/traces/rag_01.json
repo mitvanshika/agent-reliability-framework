@@ -1,0 +1,56 @@
+{
+  "scenario_id": "rag_01",
+  "question": "Will I have to pay import fees when my order is sent abroad?",
+  "category": "normal",
+  "answer": "Yes—when we ship an order to an address outside of the country, the destination’s customs authorities may assess duties, taxes, or other import fees. Those charges are set by the local government and are the buyer’s responsibility; they aren’t included in the price you paid to us. If you have any specific concerns about a particular country’s regulations, feel free to let us know and we’ll try to provide more details.",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 3.815,
+  "usage": {
+    "input_tokens": 594,
+    "output_tokens": 219,
+    "total_tokens": 813
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Will I have to pay import fees when my order is sent abroad?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_83112233-8eed-4978-a805-da8667a68511",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"import fees abroad customs\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_83112233-8eed-4978-a805-da8667a68511",
+      "content": "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+    },
+    {
+      "role": "assistant",
+      "content": "Yes—when we ship an order to an address outside of the country, the destination’s customs authorities may assess duties, taxes, or other import fees. Those charges are set by the local government and are the buyer’s responsibility; they aren’t included in the price you paid to us. If you have any specific concerns about a particular country’s regulations, feel free to let us know and we’ll try to provide more details."
+    }
+  ]
+}

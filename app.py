@@ -17,10 +17,25 @@ from trace_utils import load_latest_traces
 load_dotenv()
 
 app = Flask(__name__)
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
-STRONG_FOLDER = "judged_traces"
-WEAK_FOLDER = "judged_traces_weak"
+# DEMO_MODE=1: a read-only public demo (Render). Everything is read from the
+# snapshot in demo_data/ (make_demo_data.py), the Ask box serves only the
+# recorded answers in demo_data/ask_cache.json, approval decisions are off,
+# and no LLM client or LangChain module is ever imported (fits in 512 MB).
+DEMO_MODE = os.environ.get("DEMO_MODE") == "1"
+DEMO_DIR = "demo_data"
+GROQ_API_KEY = None if DEMO_MODE else os.environ.get("GROQ_API_KEY")
+
+if os.environ.get("TRUST_PROXY") == "1":
+    # Behind one reverse proxy (Render): take the client IP from its X-Forwarded-For,
+    # so the per-IP rate limit sees visitors, not the proxy.
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+
+STRONG_FOLDER = os.path.join(DEMO_DIR, "judged_traces") if DEMO_MODE else "judged_traces"
+WEAK_FOLDER = os.path.join(DEMO_DIR, "judged_traces_weak") if DEMO_MODE else "judged_traces_weak"
+DEMO_ASK_MESSAGE = ("This is the read-only demo: it shows recorded answers to the suggested questions only. "
+                    "Run the dashboard locally with a GROQ_API_KEY to ask anything.")
 
 # /api/ask protection: the server's Groq key must not become a free,
 # unlimited LLM for anyone who can reach this page.
@@ -105,9 +120,52 @@ def build_ask_context(strong: dict, weak: dict) -> str:
     return "\n".join(lines)
 
 
+# Top nav on every page (templates/_nav.html). A page is "active" when the
+# request path starts with its link; /runs/... (step timeline) counts as Experiments.
+NAV_ITEMS = [("/", "Overview"), ("/experiments", "Experiments"), ("/evidence", "Evidence"),
+             ("/systems", "Systems"), ("/approvals", "Approvals"), ("/track1", "Track 1")]
+
+
+@app.context_processor
+def _nav_context():
+    path = request.path
+    active = "/experiments" if path.startswith("/runs/") else next(
+        (p for p, _ in reversed(NAV_ITEMS) if p != "/" and path.startswith(p)), "/" if path == "/" else None)
+    return {"nav_items": NAV_ITEMS, "nav_active": active, "demo_mode": DEMO_MODE}
+
+
 @app.route("/")
+def overview_page():
+    import overview
+    return render_template("overview.html", data=overview.overview(RUNS_DIR, NOISE_DIR))
+
+
+@app.route("/evidence")
+def evidence_index():
+    import overview
+    return render_template("evidence_list.html", notes=overview.evidence_list(EVIDENCE_DIR))
+
+
+@app.route("/evidence/<name>")
+def evidence_page(name):
+    """One evidence/*.md note as a page. Only names that evidence_list() found are served (no paths)."""
+    import overview
+    page = overview.evidence_html(name, EVIDENCE_DIR)
+    if page is None:
+        return render_template("evidence_list.html", notes=overview.evidence_list(EVIDENCE_DIR)), 404
+    return render_template("evidence.html", name=name, title=page[0], html=page[1])
+
+
+@app.route("/systems")
+def systems_page():
+    import overview
+    return render_template("systems.html", systems=overview.systems(TARGETS_FILE, BASELINES_DIR, RUNS_DIR))
+
+
+@app.route("/track1")
 def index():
-    return render_template("index.html")
+    """The original strong-vs-weak investigator (Track 1), unchanged."""
+    return render_template("track1.html")
 
 
 @app.route("/api/data")
@@ -117,8 +175,54 @@ def api_data():
     return jsonify({"strong": strong, "weak": weak})
 
 
+def _check_question():
+    """(question, None) or (None, error response): rate limit + validation, shared by both Ask boxes."""
+    retry_after = _rate_limited(request.remote_addr or "unknown")
+    if retry_after:
+        resp = jsonify({"error": f"Too many questions. Limit is {ASK_LIMIT_PER_MINUTE} per minute; "
+                                 f"try again in {retry_after}s."})
+        resp.headers["Retry-After"] = str(retry_after)
+        return None, (resp, 429)
+    payload = request.get_json(force=True, silent=True)
+    if not isinstance(payload, dict):
+        return None, (jsonify({"error": "Request body must be a JSON object."}), 400)
+    question = payload.get("question", "")
+    if not isinstance(question, str):
+        return None, (jsonify({"error": "'question' must be a string."}), 400)
+    if not question.strip():
+        return None, (jsonify({"error": "Question is empty."}), 400)
+    if len(question) > MAX_QUESTION_CHARS:
+        return None, (jsonify({"error": f"Question too long ({len(question)} chars, max {MAX_QUESTION_CHARS})."}), 400)
+    return question, None
+
+
+ASK_MODEL = "openai/gpt-oss-120b"
+
+
+def groq_chat(system_prompt, question, api_key=None, max_tokens=1500):
+    """One chat call to Groq; returns (response json, status). Used by the experiments Ask box
+    and by make_demo_data.py --ask, so the cached answers come from the same call."""
+    resp = requests.post(
+        "https://api.groq.com/openai/v1/chat/completions",
+        headers={"Authorization": f"Bearer {api_key or GROQ_API_KEY}", "Content-Type": "application/json"},
+        json={"model": ASK_MODEL, "max_tokens": max_tokens, "temperature": 0,
+              "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": question}]},
+        timeout=60,
+    )
+    return resp.json(), resp.status_code
+
+
+def answer_text(groq_json):
+    try:
+        return (groq_json["choices"][0]["message"]["content"] or "").strip()
+    except (KeyError, IndexError, TypeError):
+        return ""
+
+
 @app.route("/api/ask", methods=["POST"])
 def ask():
+    if DEMO_MODE:
+        return jsonify({"error": DEMO_ASK_MESSAGE}), 403
     if not GROQ_API_KEY:
         return jsonify({"error": "Server is missing GROQ_API_KEY. Set it as a Secret/env var."}), 500
 
@@ -169,8 +273,11 @@ def ask():
 
 # ---------------------------------------------------------------- /experiments dashboard
 # Read-only views of runs/ and baselines/ on disk. No LLM calls, no keys sent.
-RUNS_DIR = "runs"
-BASELINES_DIR = "baselines"
+RUNS_DIR = os.path.join(DEMO_DIR, "runs") if DEMO_MODE else "runs"
+BASELINES_DIR = os.path.join(DEMO_DIR, "baselines") if DEMO_MODE else "baselines"
+NOISE_DIR = os.path.join(DEMO_DIR, "noise") if DEMO_MODE else "noise"
+EVIDENCE_DIR = os.path.join(DEMO_DIR, "evidence") if DEMO_MODE else "evidence"
+TARGETS_FILE = "targets.yaml"
 RUN_ID = re.compile(r"^[A-Za-z0-9_.-]+$")
 
 
@@ -259,7 +366,7 @@ SCENARIO_ID = re.compile(r"^[A-Za-z0-9_.\-]+$")
 def _scenario_steps(path):
     """[{scenario_id, steps, tool_calls, findings, source}] for the run's step-timeline links."""
     import step_checks
-    import trajectory
+    import trajectory_read as trajectory
     out = []
     for sid, t in sorted(load_latest_traces(os.path.join(path, "traces")).items()):
         steps, source = trajectory.of_trace(t)
@@ -279,7 +386,7 @@ def api_steps(run_id, scenario_id):
     """One answer, step by step: the steps (recorded or rebuilt), step-check findings,
     the answer's judge scores and, if judge_steps.py ran, the per-step scores."""
     import step_checks
-    import trajectory
+    import trajectory_read as trajectory
     path = _run_path(run_id)
     if path is None or not SCENARIO_ID.match(scenario_id or ""):
         return jsonify({"error": "unknown run or scenario"}), 404
@@ -313,6 +420,61 @@ def api_experiment_baselines():
                      "suite": b.get("suite") or "main"} for b in _current_baselines().values()])
 
 
+# ---------------------------------------------------------------- Ask box on /experiments
+# The server builds the whole context from the run files (ask_context.py); the
+# browser sends only {"question": ...}. Same per-IP rate limit as /api/ask.
+
+def _ask_cache():
+    with open(os.path.join(DEMO_DIR, "ask_cache.json"), encoding="utf-8") as f:
+        return json.load(f)
+
+
+@app.route("/api/experiments/ask/suggestions")
+def api_ask_suggestions():
+    import ask_context
+    cached = set()
+    if DEMO_MODE:
+        try:
+            cached = {a["id"] for a in _ask_cache().get("answers") or [] if a.get("answer")}
+        except (OSError, ValueError):
+            pass
+    return jsonify({"demo": DEMO_MODE, "live": bool(GROQ_API_KEY),
+                    "suggestions": [s for s in ask_context.SUGGESTIONS if not DEMO_MODE or s["id"] in cached]})
+
+
+@app.route("/api/experiments/ask", methods=["POST"])
+def api_experiments_ask():
+    import ask_context
+    question, err = _check_question()
+    if err:
+        return err
+    if DEMO_MODE:
+        card = ask_context.find_suggestion(question)
+        try:
+            cache = _ask_cache()
+        except (OSError, ValueError):
+            cache = {}
+        hit = next((a for a in cache.get("answers") or [] if card and a.get("id") == card["id"]), None)
+        if not hit or not hit.get("answer"):
+            return jsonify({"error": DEMO_ASK_MESSAGE, "demo": True}), 403
+        return jsonify({"answer": hit["answer"], "source": "recorded", "question": card["question"],
+                        "recorded_at": cache.get("generated_at"), "model": cache.get("model")})
+    if not GROQ_API_KEY:
+        return jsonify({"error": "Server is missing GROQ_API_KEY. Set it as a Secret/env var."}), 500
+    prompt = ask_context.system_prompt(RUNS_DIR, BASELINES_DIR, NOISE_DIR)
+    try:
+        data, status = groq_chat(prompt, question)
+    except requests.RequestException as e:
+        return jsonify({"error": str(e)}), 502
+    if status != 200:
+        msg = (data.get("error") or {}).get("message") if isinstance(data, dict) else None
+        return jsonify({"error": msg or f"Groq returned HTTP {status}"}), status
+    text = answer_text(data)
+    if not text:
+        return jsonify({"error": "The model returned an empty answer; try again."}), 502
+    return jsonify({"answer": text, "source": "live", "model": ASK_MODEL})
+
+
 # ---------------------------------------------------------------- approvals (approval.py)
 # Pending actions waiting for a human (DashboardApprover). Deciding is protected:
 # with APPROVALS_TOKEN set, the request must send it (X-Approval-Token header);
@@ -339,6 +501,8 @@ def approvals_page():
 
 @app.route("/api/approvals")
 def api_approvals():
+    if DEMO_MODE:
+        return jsonify({"pending": [], "recent": [], "token_required": False, "demo": True})
     import approval
     st = _approvals_store()
     return jsonify({"pending": approval.queue(st, "pending"), "recent": approval.queue(st, limit=50),
@@ -347,6 +511,8 @@ def api_approvals():
 
 @app.route("/api/approvals/<qid>", methods=["POST"])
 def api_decide(qid):
+    if DEMO_MODE:
+        return jsonify({"error": "approvals are read-only in the demo"}), 403
     import approval
     if not _may_decide():
         return jsonify({"error": "not allowed to decide: set APPROVALS_TOKEN and send it as X-Approval-Token, "

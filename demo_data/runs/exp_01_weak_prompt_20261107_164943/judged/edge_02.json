@@ -1,0 +1,117 @@
+{
+  "scenario_id": "edge_02",
+  "question": "Can you check order Z9999 for me?",
+  "category": "edge",
+  "answer": "I’m sorry—I wasn’t able to locate an order with the ID **Z9999**. Could you double‑check the order number and let me know the correct one? If you have any additional details (like the email address used for the purchase or the date), feel free to share them and I’ll look it up for you.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "No order found with ID Z9999"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 1.223,
+  "usage": {
+    "input_tokens": 557,
+    "output_tokens": 145,
+    "total_tokens": 702
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Can you check order Z9999 for me?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_4d232028-42ee-4304-bfb4-d1e2d091ae09",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"Z9999\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_4d232028-42ee-4304-bfb4-d1e2d091ae09",
+      "content": "No order found with ID Z9999"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry—I wasn’t able to locate an order with the ID **Z9999**. Could you double‑check the order number and let me know the correct one? If you have any additional details (like the email address used for the purchase or the date), feel free to share them and I’ll look it up for you."
+    }
+  ],
+  "final_score": 9.8,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly states that no order with ID Z9999 was found and asks the customer to double‑check the ID, exactly as required. No false order details are invented, and the extra request for additional info does not contradict the reference. Hence it fully satisfies the criteria.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single part of the question—checking order Z9999—is fully addressed. The agent correctly reports that no order with that ID exists (matching the tool output and reference), and asks the user to double‑check the ID without inventing any details. This satisfies the required response.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent correctly reported that no order was found for ID Z9999, matching the tool's output, and asked for clarification without adding unsupported information.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the order_lookup tool was needed, called it once, and based its response on the result, without any extraneous or incorrect tool usage.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval returned a clear statement that no order with ID Z9999 exists, which directly answers the user's query without requiring any additional information.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "c9ee52ae40fb",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

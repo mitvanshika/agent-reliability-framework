@@ -1,0 +1,138 @@
+{
+  "scenario_id": "gen_002",
+  "question": "Can I get a refund for order A1001 if it was purchased 45 days ago?",
+  "category": "edge",
+  "answer": "I’ve looked up order **A1001** for you. According to our system the order was placed **12 days ago**, the total was **$89.99**, and it has already been delivered.\n\nBased on that information, the order is **still within our 30‑day return window**, so you’re eligible for a **full refund of $89.99**.\n\nIf you were referring to a different purchase that was actually made **45 days ago**, that would fall outside the standard return period and a refund would not be possible under our usual policy. Please let me know if you’d like me to check a different order number or if there’s anything else I can help with!",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator"
+  ],
+  "tool_outputs": [
+    "Order A1001: status=delivered, total=$89.99, days_since_purchase=12",
+    "Eligible for full refund of $89.99"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 2.116,
+  "usage": {
+    "input_tokens": 956,
+    "output_tokens": 454,
+    "total_tokens": 1410
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Can I get a refund for order A1001 if it was purchased 45 days ago?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_e8f37e91-1e3a-4c6f-87ce-8604bd89c321",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1001\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_e8f37e91-1e3a-4c6f-87ce-8604bd89c321",
+      "content": "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_db90dd2c-4b45-476c-891c-6958d2b15db5",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 12, \"order_total\": 89.99}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_db90dd2c-4b45-476c-891c-6958d2b15db5",
+      "content": "Eligible for full refund of $89.99"
+    },
+    {
+      "role": "assistant",
+      "content": "I’ve looked up order **A1001** for you. According to our system the order was placed **12 days ago**, the total was **$89.99**, and it has already been delivered.\n\nBased on that information, the order is **still within our 30‑day return window**, so you’re eligible for a **full refund of $89.99**.\n\nIf you were referring to a different purchase that was actually made **45 days ago**, that would fall outside the standard return period and a refund would not be possible under our usual policy. Please let me know if you’d like me to check a different order number or if there’s anything else I can help with!"
+    }
+  ],
+  "final_score": 9.80204081632653,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly states the order was placed 12 days ago, confirms the $89.99 amount, notes it is within the 30‑day return window, and affirms eligibility for a full refund, matching all required facts from the reference. The extra hypothetical about a 45‑day purchase does not contradict the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The answer correctly states the actual purchase date (12 days) and confirms eligibility for a full refund of $89.99, matching the tool output and reference. It also appropriately notes that a 45‑day‑old purchase would be outside the 30‑day window, covering the hypothetical scenario. Both parts are fully addressed.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's response exactly mirrors the tool output: it reports the order was placed 12 days ago, total $89.99, delivered, and confirms eligibility for a full refund, which matches the tool's indication of eligibility. No contradictory or fabricated information is present.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent correctly used order_lookup to retrieve the actual purchase date and amount, then used refund_calculator to apply the 30‑day return policy and determine the refund eligibility. Both tools were relevant; no unnecessary calls were made. The answer addresses the user's hypothetical scenario by clarifying the real order details and policy.",
+    "confidence": 0.97
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval provides the correct purchase age (12 days) and refund eligibility, directly addressing the user's question about a 45‑day claim and confirming a full refund is possible.",
+    "confidence": 0.98
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "2/2 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "c0a119493857",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

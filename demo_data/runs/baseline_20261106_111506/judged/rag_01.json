@@ -1,0 +1,138 @@
+{
+  "scenario_id": "rag_01",
+  "question": "Will I have to pay import fees when my order is sent abroad?",
+  "category": "normal",
+  "answer": "International shipments can be subject to customs duties, taxes, and other fees that are imposed by the destination country’s government. Those charges are the buyer’s responsibility and are not included in the order total you see at checkout. If you have any further questions about a specific destination or need more details, just let me know!",
+  "tools_used": [
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 7.95,
+  "usage": {
+    "input_tokens": 1085,
+    "output_tokens": 274,
+    "total_tokens": 1359
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Will I have to pay import fees when my order is sent abroad?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_f96bb976-a5e1-4078-a87e-a7b0b12045a3",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"import fees abroad\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_f96bb976-a5e1-4078-a87e-a7b0b12045a3",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_4b158464-6b16-4648-bb32-e5e5b4b2ecc2",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"customs fees\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_4b158464-6b16-4648-bb32-e5e5b4b2ecc2",
+      "content": "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+    },
+    {
+      "role": "assistant",
+      "content": "International shipments can be subject to customs duties, taxes, and other fees that are imposed by the destination country’s government. Those charges are the buyer’s responsibility and are not included in the order total you see at checkout. If you have any further questions about a specific destination or need more details, just let me know!"
+    }
+  ],
+  "final_score": 9.264033264033266,
+  "disagreement": false,
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent’s answer includes all required facts: international shipments may be subject to customs duties, taxes and fees imposed by the destination country, and these charges are the buyer’s responsibility and not included in the order total. No contradictory or prohibited statements are present, and the extra invitation for further questions does not conflict with the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single question part asks whether import fees apply to overseas orders. The agent correctly states that international shipments may be subject to customs duties, taxes, and fees imposed by the destination country, that these are the buyer's responsibility, and that they are not included in the order total—exactly matching the reference answer. No extra or invented information is present.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's response mirrors the tool's information that international shipments may incur customs duties, taxes, and fees which are the buyer's responsibility and not included in the order total. No unsupported claims were added, so the answer is well‑grounded.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 7,
+    "reason": "The agent correctly used the FAQ search tool to retrieve information about import fees, which is appropriate for the question. However, it called the same tool twice without apparent need, indicating a redundant call. The final answer aligns with typical FAQ content, but the extra call prevents a perfect score.",
+    "confidence": 0.85
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved passage directly states that international shipments may incur customs duties, taxes, and fees which are the buyer's responsibility and not included in the order total, fully answering the question.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called; repeated (not penalised): faq_search",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": [
+      "faq_search"
+    ]
+  },
+  "answer_key_hash": "40993e3f2de3",
+  "regraded_from": "experiment_v1",
+  "regraded_judges": "all"
+}

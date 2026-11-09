@@ -1,0 +1,159 @@
+{
+  "scenario_id": "edge_01",
+  "question": "I want a refund for order A1002, and if I can't get one, I want to speak to someone.",
+  "category": "edge",
+  "answer": "I’m sorry, but based on our return policy, refunds are only available within 30 days of purchase. Since your order was placed 45 days ago, it isn’t eligible for a refund.\n\nI’ve escalated your request so a human support representative can review it and assist you further. Someone will be with you shortly.",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Order A1002: status=delivered, total=$45.5, days_since_purchase=45",
+    "Not eligible for refund: purchase was made more than 30 days ago",
+    "Escalated to human support. Reason: User requested refund for order A1002 but is not eligible (45 days since purchase). User wants to speak to a human."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 6.787,
+  "usage": {
+    "input_tokens": 1656,
+    "output_tokens": 283,
+    "total_tokens": 1939
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "I want a refund for order A1002, and if I can't get one, I want to speak to someone."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_cef51ba4-377f-40ca-ac36-135992b2bd8c",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1002\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_cef51ba4-377f-40ca-ac36-135992b2bd8c",
+      "content": "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_1b54e869-5f6c-4812-a444-3aca59c2e779",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 45, \"order_total\": 45.5}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_1b54e869-5f6c-4812-a444-3aca59c2e779",
+      "content": "Not eligible for refund: purchase was made more than 30 days ago"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_647b89a3-e794-4e52-91da-6b2778ebbf6d",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"User requested refund for order A1002 but is not eligible (45 days since purchase). User wants to speak to a human.\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_647b89a3-e794-4e52-91da-6b2778ebbf6d",
+      "content": "Escalated to human support. Reason: User requested refund for order A1002 but is not eligible (45 days since purchase). User wants to speak to a human."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry, but based on our return policy, refunds are only available within 30 days of purchase. Since your order was placed 45 days ago, it isn’t eligible for a refund.\n\nI’ve escalated your request so a human support representative can review it and assist you further. Someone will be with you shortly."
+    }
+  ],
+  "final_score": 9.13163481953291,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 6,
+    "reason": "The agent correctly states the 30‑day policy, the 45‑day elapsed time, the ineligibility for a refund, and that the case is escalated to a human, matching the reference. However, the answer omits two required facts: the specific order number (A1002) and the purchase amount ($45.50). Missing these required details reduces the score, though there is no contradictory information.",
+    "confidence": 0.78,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The answer correctly informs the user that the refund is not possible because the purchase was 45 days ago (outside the 30‑day window) and confirms that the request has been escalated to a human support representative, covering both parts of the question. This matches the tool outputs and reference answer.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's response exactly matches the tool-provided information: it correctly states the 45‑day elapsed time, the 30‑day refund window, the ineligibility for a refund, and confirms escalation to human support as indicated by the tools. No hallucinated or contradictory details are present.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent correctly used order_lookup to retrieve the order details, then used refund_calculator to determine eligibility, and finally escalated to a human when the refund was denied, matching the user's request. All calls were necessary and in a logical sequence, with no extraneous tool usage.",
+    "confidence": 0.97
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval includes the order details (status, amount, days since purchase) and the policy that purchases over 30 days are not eligible for refunds, which fully addresses the user's request and supports escalating to a human.",
+    "confidence": 0.98
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "3/3 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "a968ab855e0f",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

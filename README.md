@@ -366,10 +366,36 @@ has its own rate limiter (it is a separate process), so its calls are not in the
 
 ## Dashboards
 
-`python app.py`, then:
+`python app.py`, then open localhost:5000. A top nav links every page:
 
-- **`/`**: the Track 1 investigator, with plain-English questions answered from the strong/weak trace and judge data (the system prompt is built on the server; rate-limited).
-- **`/experiments`**: every run with its pass rate, score, tokens, cost and verdict; a quality-vs-cost scatter (one dot per run); click a run for its ▲/▼/═ comparison and diagnosis. Read-only from `runs/` and `baselines/`, no API calls.
+- **`/` Overview**: what the framework does, the truth-test table (smoke, A/A, known-bad, judge fix, tests 4-5), the latest verdict per experiment (its latest compared run that covers the most questions) and key findings. Every number is read from the run files (`overview.py`); nothing is typed into the page.
+- **`/experiments`**: every run with its pass rate, score, tokens, cost and verdict; a quality-vs-cost scatter (one dot per run); click a run for its ▲/▼/═ comparison, diagnosis and step timelines (`/runs/<run>/<scenario>`).
+  - **Ask box**: plain-language answers (under 150 words, citing scenario ids and scores, ending with "Try this:") to questions like *"Why did exp_01 decline?"* or *"Which questions were invented answers?"*. The server builds the context from `comparison.json`, `diagnosis.json`, `summary.json`, `judged/`, the baselines and the noise file (`ask_context.py`); the browser sends only the question. Rate-limited per IP (10/minute). 4 suggestion cards for the common questions.
+- **`/evidence`**: the write-ups in `evidence/*.md`, one page each.
+- **`/systems`**: every target in `targets.yaml` with its description, judge set and judges (N/A ones crossed out), scenario count, pass threshold and baseline: the same framework, any system.
+- **`/approvals`**: actions waiting for a human (see "Making any agent's actions safe").
+- **`/track1`**: the original strong-vs-weak investigator, with its own Ask box.
+
+## Live demo
+
+A read-only copy of the dashboard runs with `DEMO_MODE=1`: [live demo](https://YOUR-SERVICE.onrender.com) *(link added after the first deploy)*.
+
+- It reads only `demo_data/`, a committed snapshot of the runs behind the truth tests (smoke, baseline, A/A, exp_01), the summarizer run, baselines, noise bands and evidence. Rebuild it with `python make_demo_data.py` (0 API calls).
+- The Ask box serves only the recorded answers to the suggestion cards (`demo_data/ask_cache.json`, made with `python make_demo_data.py --ask`: one Groq call per card, asks first; `--redo invented` re-records one card). Every recorded answer was checked against the data before it was committed; one that was wrong is withheld (marked in the cache), so its card is not shown. Any other question gets a "read-only demo" message; no LLM is ever called and no key is configured.
+- Approval decisions are disabled; every page shows a "Demo: recorded results, read-only" banner.
+- No LLM client, LangChain or SciPy is imported in demo mode: about **45 MB per worker** after every page has been opened once (`python tests/measure_demo_memory.py`), well inside Render's free 512 MB.
+
+**Deploy on Render** (Web Service, from this repo):
+
+| setting | value |
+|---|---|
+| Runtime | Python 3 |
+| Build command | `pip install -r requirements-demo.txt` |
+| Start command | `gunicorn app:app` |
+| Environment | `DEMO_MODE=1`, `TRUST_PROXY=1`, `PYTHON_VERSION=3.11.9` (no `GROQ_API_KEY`) |
+| Health check path | `/` |
+
+`requirements-demo.txt` holds only what the dashboard needs (Flask, Markdown, PyYAML, requests, python-dotenv, gunicorn). `TRUST_PROXY=1` makes the per-IP rate limit see the visitor's address behind Render's proxy instead of the proxy's.
 
 ## Key features
 
@@ -421,7 +447,9 @@ compare.py                          paired comparison vs the baseline (McNemar +
 diagnose.py                         likely cause per regression, fine-tune signal, drafts
 experiment_pipeline.py              run -> judge -> compare -> diagnose in one command
 export_finetune.py                  train-split fine-tuning export with leakage guard
-app.py / templates/                 dashboards: / (investigator) and /experiments
+app.py / templates/                 dashboards: / overview, /experiments, /evidence, /systems, /approvals, /track1
+overview.py / ask_context.py        overview + evidence + systems data; the Ask box context (no LLM imports)
+make_demo_data.py / demo_data/      the DEMO_MODE=1 snapshot (+ recorded Ask answers) for the live demo
 tests/                              offline tests (python tests/test_<name>.py)
 .github/workflows/                  CI: regression-check.yml (Track 1), experiment-check.yml (Track 2)
 ```
@@ -439,7 +467,8 @@ python store.py                       # seed the database
 
 python pipeline.py                    # Track 1: run the full pipeline
 python experiment_pipeline.py experiments/baseline.yaml   # Track 2: one experiment end to end
-python app.py                         # dashboards at localhost:5000 and localhost:5000/experiments
+python app.py                         # dashboards at localhost:5000 (nav: Overview, Experiments, Evidence, ...)
+DEMO_MODE=1 python app.py             # the read-only live-demo version, from demo_data/
 ```
 
 ## Results

@@ -1,0 +1,77 @@
+{
+  "scenario_id": "normal_05",
+  "question": "Is order A1003 eligible for a refund?",
+  "category": "normal",
+  "answer": "Yes, order **A1003** is eligible for a full refund. The refund amount would be **$210.00**. Let me know if you’d like me to process the refund for you or if you have any other questions!",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator"
+  ],
+  "tool_outputs": [
+    "Order A1003: status=shipped, total=$210.0, days_since_purchase=3",
+    "Eligible for full refund of $210.0"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 8.282,
+  "usage": {
+    "input_tokens": 1083,
+    "output_tokens": 208,
+    "total_tokens": 1291
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Is order A1003 eligible for a refund?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_94d6d465-aef1-48d4-a0f0-de932c51a278",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1003\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_94d6d465-aef1-48d4-a0f0-de932c51a278",
+      "content": "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_4d20d5d5-d167-4fbc-a336-ec9a29307ae7",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 3, \"order_total\": 210}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_4d20d5d5-d167-4fbc-a336-ec9a29307ae7",
+      "content": "Eligible for full refund of $210.0"
+    },
+    {
+      "role": "assistant",
+      "content": "Yes, order **A1003** is eligible for a full refund. The refund amount would be **$210.00**. Let me know if you’d like me to process the refund for you or if you have any other questions!"
+    }
+  ]
+}

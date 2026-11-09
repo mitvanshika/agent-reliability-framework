@@ -1,0 +1,118 @@
+{
+  "scenario_id": "gen_007",
+  "question": "I tried logging into my account but keep getting an error, can you fix it?",
+  "category": "edge",
+  "answer": "I’m sorry you’re having trouble accessing your account. I’ve escalated this issue to a human support specialist who will be able to look into your login problem and get you back in as quickly as possible. Thank you for your patience!",
+  "tools_used": [
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Escalated to human support. Reason: User unable to log into account; requires account access assistance."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.31,
+  "usage": {
+    "input_tokens": 704,
+    "output_tokens": 196,
+    "total_tokens": 900
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "I tried logging into my account but keep getting an error, can you fix it?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_c5f5e5cb-2842-47d3-b4e2-295acc1c475e",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"User unable to log into account; requires account access assistance.\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_c5f5e5cb-2842-47d3-b4e2-295acc1c475e",
+      "content": "Escalated to human support. Reason: User unable to log into account; requires account access assistance."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry you’re having trouble accessing your account. I’ve escalated this issue to a human support specialist who will be able to look into your login problem and get you back in as quickly as possible. Thank you for your patience!"
+    }
+  ],
+  "final_score": 9.09375,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The answer correctly states that the issue is escalated to a human support specialist, aligning with the reference that the agent cannot access or fix the account. No prohibited or invented details are included.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single part of the question—request to fix a login error—was addressed by acknowledging the issue and correctly escalating to human support, matching the tool output and reference answer without inventing any troubleshooting details.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's response directly mirrors the tool output, stating that the issue has been escalated to human support for login assistance, which is exactly what the tool returned. No additional or contradictory information is introduced, demonstrating perfect grounding.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 6,
+    "reason": "The agent escalated to a human, which is a valid tool for a login problem that may require account verification, but it did not attempt any preliminary troubleshooting steps (e.g., password reset, checking error messages) before escalating. This makes the tool usage partially appropriate but not optimal, leading to a moderate score.",
+    "confidence": 0.87
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "no retrieval happened (no tool outputs from retrieval tools)"
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "daf245c6c817",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "scenario_id": "gen_014",
+  "question": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!",
+  "category": "edge",
+  "answer": "I’m really sorry to hear that your order still hasn’t arrived—that’s definitely frustrating. To look into this right away and see what we can do about a refund, could you please share your order number? Once I have that, I’ll check the shipment status and the refund eligibility for you.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 5.106,
+  "usage": {
+    "input_tokens": 269,
+    "output_tokens": 165,
+    "total_tokens": 434
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m really sorry to hear that your order still hasn’t arrived—that’s definitely frustrating. To look into this right away and see what we can do about a refund, could you please share your order number? Once I have that, I’ll check the shipment status and the refund eligibility for you."
+    }
+  ],
+  "final_score": 5.784366576819408,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance"
+  ],
+  "correctness_gt_result": {
+    "score": 7,
+    "reason": "The agent correctly asks for the missing order ID and does not guarantee a refund, aligning with the reference. However, it fails to mention that the issue should be escalated to a human, which is a required fact. No contradictory statements are present, but the missing escalation lowers the score.",
+    "confidence": 0.92,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 5,
+    "reason": "The agent correctly asked for the missing order number, which fulfills the first required part. However, the answer does not mention escalating the issue to a human representative, which the reference answer specifies as necessary for an upset customer with a missing package. Thus only one of the two parts is complete, giving a 5/10 score.",
+    "confidence": 0.86
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent did not fabricate any details despite the lack of tool output; instead, it politely asked for the order number to investigate further, which is appropriate behavior when no data is available.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "score": 2,
+    "reason": "The agent did not invoke any tools, missing the opportunity to verify the order status and refund eligibility before responding. While it asked for the order number, it should have used the appropriate order‑lookup or refund‑processing tool, so tool usage was insufficient and not sensible.",
+    "confidence": 0.95
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "no retrieval happened (no tool outputs from retrieval tools)"
+  },
+  "tool_match_result": {
+    "score": 0.0,
+    "reason": "0/1 expected tools called; missing: escalate_to_human",
+    "missing": [
+      "escalate_to_human"
+    ],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "15c42b9bd62f",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

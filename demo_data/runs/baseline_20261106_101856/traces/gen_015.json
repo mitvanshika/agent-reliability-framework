@@ -1,0 +1,56 @@
+{
+  "scenario_id": "gen_015",
+  "question": "Do you have the blue version of the XYZ smartwatch in stock?",
+  "category": "edge",
+  "answer": "I’m sorry—I don’t have the inventory details for that item. I’ve escalated your request to a human colleague, and they’ll get back to you shortly with the information you need. Thank you for your patience!",
+  "tools_used": [
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Escalated to human support. Reason: Product inventory inquiry: user asked about stock of blue XYZ smartwatch"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.724,
+  "usage": {
+    "input_tokens": 696,
+    "output_tokens": 273,
+    "total_tokens": 969
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Do you have the blue version of the XYZ smartwatch in stock?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_270107ca-e6dd-4e54-a908-c16bcdfe6873",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"Product inventory inquiry: user asked about stock of blue XYZ smartwatch\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_270107ca-e6dd-4e54-a908-c16bcdfe6873",
+      "content": "Escalated to human support. Reason: Product inventory inquiry: user asked about stock of blue XYZ smartwatch"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry—I don’t have the inventory details for that item. I’ve escalated your request to a human colleague, and they’ll get back to you shortly with the information you need. Thank you for your patience!"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "scenario_id": "gen_002",
+  "question": "Can I get a refund for order A1001 if it was purchased 45 days ago?",
+  "category": "edge",
+  "answer": "I’ve checked the details for order **A1001**. It was placed **12 days ago** (not 45 days ago) and the total amount was **$89.99**.  \n\nAccording to our refund policy, purchases made within 30 days are eligible for a full refund, and the refund calculator confirms that you qualify for a **full refund of $89.99**.\n\nIf you’d like to proceed, I can start the refund process right away. Just let me know!",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator"
+  ],
+  "tool_outputs": [
+    "Order A1001: status=delivered, total=$89.99, days_since_purchase=12",
+    "Eligible for full refund of $89.99"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 1.885,
+  "usage": {
+    "input_tokens": 1112,
+    "output_tokens": 416,
+    "total_tokens": 1528
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can I get a refund for order A1001 if it was purchased 45 days ago?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_5dfb6e81-96c4-48c8-a393-b6aae67d0226",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1001\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_5dfb6e81-96c4-48c8-a393-b6aae67d0226",
+      "content": "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_b8c6b5e2-7c5f-40f0-9831-9ed4f098c63d",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 12, \"order_total\": 89.99}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_b8c6b5e2-7c5f-40f0-9831-9ed4f098c63d",
+      "content": "Eligible for full refund of $89.99"
+    },
+    {
+      "role": "assistant",
+      "content": "I’ve checked the details for order **A1001**. It was placed **12 days ago** (not 45 days ago) and the total amount was **$89.99**.  \n\nAccording to our refund policy, purchases made within 30 days are eligible for a full refund, and the refund calculator confirms that you qualify for a **full refund of $89.99**.\n\nIf you’d like to proceed, I can start the refund process right away. Just let me know!"
+    }
+  ]
+}

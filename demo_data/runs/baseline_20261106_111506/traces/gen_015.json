@@ -1,0 +1,56 @@
+{
+  "scenario_id": "gen_015",
+  "question": "Do you have the blue version of the XYZ smartwatch in stock?",
+  "category": "edge",
+  "answer": "I’ve forwarded your question about the blue XYZ smartwatch to a human colleague who can check our inventory and get back to you with the most accurate information. Thank you for your patience!",
+  "tools_used": [
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Escalated to human support. Reason: Product availability inquiry for blue XYZ smartwatch"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.453,
+  "usage": {
+    "input_tokens": 686,
+    "output_tokens": 243,
+    "total_tokens": 929
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Do you have the blue version of the XYZ smartwatch in stock?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_2945e14d-4fc8-42d6-8ff3-2646fab20356",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"Product availability inquiry for blue XYZ smartwatch\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_2945e14d-4fc8-42d6-8ff3-2646fab20356",
+      "content": "Escalated to human support. Reason: Product availability inquiry for blue XYZ smartwatch"
+    },
+    {
+      "role": "assistant",
+      "content": "I’ve forwarded your question about the blue XYZ smartwatch to a human colleague who can check our inventory and get back to you with the most accurate information. Thank you for your patience!"
+    }
+  ]
+}

@@ -22,3 +22,9 @@ actions.db
 .venv-deepeval/
 # support_actions.py refund ledger (sample agent, runtime data)
 refunds.db
+
+# demo_data/ is the committed DEMO_MODE snapshot: keep its runs and traces
+!demo_data/runs/
+!demo_data/runs/*/traces/
+!demo_data/judged_traces/
+!demo_data/judged_traces_weak/

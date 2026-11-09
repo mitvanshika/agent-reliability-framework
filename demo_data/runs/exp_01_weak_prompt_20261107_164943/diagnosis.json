@@ -1,0 +1,83 @@
+{
+  "run_dir": "runs\\exp_01_weak_prompt_20261107_164943",
+  "diagnoses": [
+    {
+      "scenario_id": "edge_03",
+      "cause": "PROMPT (used info badly)",
+      "evidence": "no retrieval on either side, but correctness_gt -5. final_score 7.53684 -> 4.53763 (-2.9992); judge deltas: correctness_gt -5, completeness +0, groundedness +0, tool_efficiency -7, tool_match +0",
+      "suggestion": "try a prompt change: 'answer only from the most relevant source material, and repeat exact numbers, dates and statuses'",
+      "setting": "prompt"
+    },
+    {
+      "scenario_id": "gen_004",
+      "cause": "RAG",
+      "evidence": "context_relevance dropped -8: retrieval did not bring back what was needed. final_score 8.96391 -> 3.32181 (-5.6421); judge deltas: correctness_gt -8, completeness -5, groundedness -8, tool_efficiency +2, context_relevance -8, tool_match +0",
+      "suggestion": "try a retrieval change: a better search method or more results (demo agent: retrieval.method embeddings, or top_k: 2)",
+      "setting": "retrieval"
+    },
+    {
+      "scenario_id": "gen_005",
+      "cause": "RAG",
+      "evidence": "context_relevance dropped -5: retrieval did not bring back what was needed. final_score 5.64425 -> 2.17719 (-3.4671); judge deltas: correctness_gt -5, completeness -5, groundedness -8, tool_efficiency +6, context_relevance -5, tool_match +0",
+      "suggestion": "try a retrieval change: a better search method or more results (demo agent: retrieval.method embeddings, or top_k: 2)",
+      "setting": "retrieval"
+    },
+    {
+      "scenario_id": "gen_006",
+      "cause": "PROMPT (missed part)",
+      "evidence": "completeness dropped -10. final_score 9.01232 -> 6.78914 (-2.2232); judge deltas: correctness_gt +0, completeness -10, groundedness +0, tool_efficiency -1, context_relevance +0, tool_match +0",
+      "suggestion": "try a prompt change: 'list every part of the question first, then answer each'",
+      "setting": "prompt"
+    },
+    {
+      "scenario_id": "gen_007",
+      "cause": "PROMPT (used info badly)",
+      "evidence": "no retrieval on either side, but correctness_gt -8. final_score 9.09375 -> 4.70649 (-4.3873); judge deltas: correctness_gt -8, completeness -10, groundedness -1, tool_efficiency +2, tool_match -10",
+      "suggestion": "try a prompt change: 'answer only from the most relevant source material, and repeat exact numbers, dates and statuses'",
+      "setting": "prompt"
+    },
+    {
+      "scenario_id": "gen_013",
+      "cause": "PROMPT (missed part)",
+      "evidence": "completeness dropped -10. final_score 9.09032 -> 2.98731 (-6.103); judge deltas: correctness_gt -9, completeness -10, groundedness -8, tool_efficiency +3, tool_match +0",
+      "suggestion": "try a prompt change: 'list every part of the question first, then answer each'",
+      "setting": "prompt"
+    },
+    {
+      "scenario_id": "gen_014",
+      "cause": "TOOL DESCRIPTIONS",
+      "evidence": "tool_efficiency -7. final_score 8.10615 -> 5.78437 (-2.3218); judge deltas: correctness_gt +1, completeness -3, groundedness +0, tool_efficiency -7, tool_match +0",
+      "suggestion": "try clearer tool descriptions (demo agent: start from docstrings/detailed.yaml)",
+      "setting": "docstrings"
+    },
+    {
+      "scenario_id": "gen_015",
+      "cause": "PROMPT (used info badly)",
+      "evidence": "no retrieval on either side, but correctness_gt -8. final_score 8.06122 -> 3 (-5.0612); judge deltas: correctness_gt -8, completeness -10, groundedness -1, tool_efficiency -1, tool_match -10",
+      "suggestion": "try a prompt change: 'answer only from the most relevant source material, and repeat exact numbers, dates and statuses'",
+      "setting": "prompt"
+    },
+    {
+      "scenario_id": "normal_01",
+      "cause": "PROMPT (used info badly)",
+      "evidence": "context was fine, but correctness_gt -3, groundedness -5. final_score 7.22934 -> 5.6405 (-1.5888); judge deltas: correctness_gt -3, completeness +0, groundedness -5, tool_efficiency +0, context_relevance +0, tool_match +0",
+      "suggestion": "try a prompt change: 'answer only from the most relevant source material, and repeat exact numbers, dates and statuses'",
+      "setting": "prompt"
+    },
+    {
+      "scenario_id": "rag_02",
+      "cause": "RAG",
+      "evidence": "context_relevance dropped -7: retrieval did not bring back what was needed. final_score 9.24948 -> 4.97863 (-4.2708); judge deltas: correctness_gt -3, completeness -5, groundedness -8, tool_efficiency +2, context_relevance -7, tool_match +0",
+      "suggestion": "try a retrieval change: a better search method or more results (demo agent: retrieval.method embeddings, or top_k: 2)",
+      "setting": "retrieval"
+    },
+    {
+      "scenario_id": "rag_06",
+      "cause": "PROMPT (missed part)",
+      "evidence": "completeness dropped -10. final_score 8.22154 -> 3.01015 (-5.2114); judge deltas: correctness_gt -9, completeness -10, groundedness -8, tool_efficiency +8, tool_match +0",
+      "suggestion": "try a prompt change: 'list every part of the question first, then answer each'",
+      "setting": "prompt"
+    }
+  ],
+  "fine_tune_candidates": {}
+}

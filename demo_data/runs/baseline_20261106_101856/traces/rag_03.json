@@ -1,0 +1,56 @@
+{
+  "scenario_id": "rag_03",
+  "question": "Which credit cards or online wallets can I pay with?",
+  "category": "normal",
+  "answer": "We accept the major credit cards — Visa and Mastercard — as well as PayPal for online wallet payments. If you have any other payment‑method questions, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "We accept Visa, Mastercard, and PayPal."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.631,
+  "usage": {
+    "input_tokens": 668,
+    "output_tokens": 171,
+    "total_tokens": 839
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Which credit cards or online wallets can I pay with?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_6da3cf63-2801-4856-b2d1-d6aa0c7f1549",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"payment methods credit cards online wallets\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_6da3cf63-2801-4856-b2d1-d6aa0c7f1549",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    },
+    {
+      "role": "assistant",
+      "content": "We accept the major credit cards — Visa and Mastercard — as well as PayPal for online wallet payments. If you have any other payment‑method questions, just let me know!"
+    }
+  ]
+}

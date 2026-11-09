@@ -1,0 +1,33 @@
+{
+  "scenario_id": "gen_014",
+  "question": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!",
+  "category": "edge",
+  "answer": "I’m really sorry to hear that your order still hasn’t arrived—that’s definitely frustrating.  \nCould you please share your order number with me? Once I have that, I can look up the shipment details and let you know the next steps for a refund or replacement.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 2.858,
+  "usage": {
+    "input_tokens": 321,
+    "output_tokens": 127,
+    "total_tokens": 448
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m really sorry to hear that your order still hasn’t arrived—that’s definitely frustrating.  \nCould you please share your order number with me? Once I have that, I can look up the shipment details and let you know the next steps for a refund or replacement."
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "scenario_id": "normal_05",
+  "question": "Is order A1003 eligible for a refund?",
+  "category": "normal",
+  "answer": "Yes, order **A1003** is eligible for a full refund. The refund amount would be **$210.00**. If you’d like to proceed with the refund or have any other questions, just let me know!",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator"
+  ],
+  "tool_outputs": [
+    "Order A1003: status=shipped, total=$210.0, days_since_purchase=3",
+    "Eligible for full refund of $210.0"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 9.251,
+  "usage": {
+    "input_tokens": 927,
+    "output_tokens": 211,
+    "total_tokens": 1138
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Is order A1003 eligible for a refund?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_93e41069-ec9a-4824-b760-a8f0f40102eb",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1003\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_93e41069-ec9a-4824-b760-a8f0f40102eb",
+      "content": "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_1db3e71b-5e15-426a-93a9-4e0625bbb57f",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 3, \"order_total\": 210}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_1db3e71b-5e15-426a-93a9-4e0625bbb57f",
+      "content": "Eligible for full refund of $210.0"
+    },
+    {
+      "role": "assistant",
+      "content": "Yes, order **A1003** is eligible for a full refund. The refund amount would be **$210.00**. If you’d like to proceed with the refund or have any other questions, just let me know!"
+    }
+  ]
+}

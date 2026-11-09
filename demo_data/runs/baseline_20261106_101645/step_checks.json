@@ -1,0 +1,47 @@
+{
+  "run_dir": "runs/baseline_20261106_101645",
+  "experiment": "baseline",
+  "max_steps": 8,
+  "slow_step_s": 10.0,
+  "scenarios": 2,
+  "sources": {
+    "messages": 2
+  },
+  "counts": {},
+  "scenarios_with_findings": 0,
+  "mean_steps": 3.0,
+  "max_steps_seen": 3,
+  "rephrased_after_empty": 0,
+  "rows": [
+    {
+      "scenario_id": "normal_01",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 2.237,
+      "est_s_per_llm_turn": 1.12,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_02",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "order_lookup"
+      ],
+      "latency_s": 1.26,
+      "est_s_per_llm_turn": 0.63,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    }
+  ]
+}

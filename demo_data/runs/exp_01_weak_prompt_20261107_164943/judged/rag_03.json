@@ -1,0 +1,117 @@
+{
+  "scenario_id": "rag_03",
+  "question": "Which credit cards or online wallets can I pay with?",
+  "category": "normal",
+  "answer": "We accept the following payment methods:\n\n- **Credit cards:** Visa and Mastercard  \n- **Online wallets:** PayPal  \n\nIf you have any other questions about payments, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "We accept Visa, Mastercard, and PayPal."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 7.34,
+  "usage": {
+    "input_tokens": 564,
+    "output_tokens": 172,
+    "total_tokens": 736
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Which credit cards or online wallets can I pay with?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_48c1dd9b-9de4-4272-8609-22a848cb4eaf",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"payment methods credit cards online wallets\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_48c1dd9b-9de4-4272-8609-22a848cb4eaf",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    },
+    {
+      "role": "assistant",
+      "content": "We accept the following payment methods:\n\n- **Credit cards:** Visa and Mastercard  \n- **Online wallets:** PayPal  \n\nIf you have any other questions about payments, just let me know!"
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent's answer includes all required facts: Visa and Mastercard as credit cards and PayPal as an online wallet, matching the reference exactly, with no contradictory or extra claims.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The answer correctly lists Visa and Mastercard as accepted credit cards and PayPal as an online wallet, matching both the tool output and the reference answer. No part of the question is omitted or invented.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer precisely mirrors the information returned by the tools, listing Visa, Mastercard, and PayPal as the accepted payment methods without adding or omitting any details.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the answer required specific payment method information and used the appropriate faq_search tool to retrieve it. No unnecessary or irrelevant tools were called, and the tool was used in a straightforward manner to produce a concise, accurate response.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved statement lists Visa, Mastercard, and PayPal, which exactly matches the needed credit cards and online wallet options, providing a complete answer.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "2bf5dbb5a6d7",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "scenario_id": "gen_005",
+  "question": "I want to return my defective headphones and get a replacement, not a refund. How do I proceed?",
+  "category": "edge",
+  "answer": "I’m happy to help you with that. Could you please provide your order number so I can look up the details and confirm the best way to arrange a replacement for your defective headphones?",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 9.667,
+  "usage": {
+    "input_tokens": 1517,
+    "output_tokens": 352,
+    "total_tokens": 1869
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "I want to return my defective headphones and get a replacement, not a refund. How do I proceed?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_db08a53c-aef2-4525-ad37-ef18a2b3ed76",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"defective product replacement policy\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_db08a53c-aef2-4525-ad37-ef18a2b3ed76",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_79797893-e845-47a3-a858-847d3572267a",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"return defective product replacement\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_79797893-e845-47a3-a858-847d3572267a",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_2c9e864c-5a50-4581-bf04-734c1d7f8692",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"defective headphones replacement\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_2c9e864c-5a50-4581-bf04-734c1d7f8692",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m happy to help you with that. Could you please provide your order number so I can look up the details and confirm the best way to arrange a replacement for your defective headphones?"
+    }
+  ]
+}

@@ -5,6 +5,26 @@ should notice that the agent got worse.
 
 **Result: PASS on all 31 scenarios (DECLINED).** The earlier 12-scenario subset was underpowered (FAIL, kept below).
 
+## Update 2026-11-09: re-graded with completeness v2 (judge set experiment_v2) - still PASS
+The run's answers are unchanged; only the completeness judge was re-run (`regrade.py --to experiment_v2`, see
+`judge_fix_completeness.md`) and compared with the v2 baseline. The verdict is stronger, and both tests now agree.
+The v1 numbers below are kept as history.
+
+| | v1 (2026-11-07) | v2 (2026-11-09) |
+|---|---|---|
+| pass rate | 25/31 -> 19/31 | 27/31 (87%) -> 17/31 (55%) |
+| pass->fail / fail->pass | 6 / 0 | **10 / 0** |
+| McNemar | p=0.031 DECLINED | **p=0.002** DECLINED |
+| Wilcoxon | p=0.053 NO REAL DIFFERENCE | **p=0.019** DECLINED |
+| up / down / same | 3 / 8 / 20 | 4 / 11 / 16 |
+| verdict | DECLINED (tests disagreed) | **DECLINED (both tests)** |
+
+pass->fail under v2: edge_03, gen_004, gen_006, gen_007, gen_013, gen_014, gen_015, normal_01, rag_02, rag_06.
+Per-judge mean deltas (v2): completeness -1.97, correctness_gt -1.81, groundedness -1.61, context_relevance -0.61,
+tool_efficiency +0.36 (tool_match -0.68, check only). Completeness now drops with the others instead of rising
+(+0.84 in v1), because invented answers no longer get completeness 10: rag_06 (invented gift cards) 10 -> 0, final
+8.22 -> 3.01; gen_013 10 -> 0, groundedness 9 -> 1.
+
 ## Full run (31 scenarios) - PASS
 
 **Command:** `python experiment_pipeline.py experiments/exp_01_weak_prompt.yaml`

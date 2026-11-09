@@ -1,0 +1,56 @@
+{
+  "scenario_id": "normal_02",
+  "question": "Can you check the status of order A1001?",
+  "category": "normal",
+  "answer": "Sure! Here are the details for order **A1001**:\n\n- **Status:** Delivered  \n- **Total Amount:** $89.99  \n- **Days Since Purchase:** 12 days  \n\nLet me know if you need any further assistance—whether it’s about a return, refund, or anything else.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101645",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 1.26,
+  "usage": {
+    "input_tokens": 676,
+    "output_tokens": 155,
+    "total_tokens": 831
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can you check the status of order A1001?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_6adbd0fd-f662-40af-91b4-120a685a2503",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1001\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_6adbd0fd-f662-40af-91b4-120a685a2503",
+      "content": "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+    },
+    {
+      "role": "assistant",
+      "content": "Sure! Here are the details for order **A1001**:\n\n- **Status:** Delivered  \n- **Total Amount:** $89.99  \n- **Days Since Purchase:** 12 days  \n\nLet me know if you need any further assistance—whether it’s about a return, refund, or anything else."
+    }
+  ]
+}

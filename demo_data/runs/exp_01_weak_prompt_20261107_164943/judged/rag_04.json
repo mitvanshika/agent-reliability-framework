@@ -1,0 +1,117 @@
+{
+  "scenario_id": "rag_04",
+  "question": "How long does it take to arrive if I choose the quicker option?",
+  "category": "normal",
+  "answer": "When you select the faster (express) shipping option, your order typically arrives in **2‑3 business days** after it’s shipped.  \n\nFor reference, our standard shipping option usually takes **5‑7 business days**. Delivery times can vary slightly based on your exact location and any carrier delays, but express is the quickest option we offer.\n\nIf you need help placing an order with express shipping or have any other questions, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 5.609,
+  "usage": {
+    "input_tokens": 579,
+    "output_tokens": 229,
+    "total_tokens": 808
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "How long does it take to arrive if I choose the quicker option?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_b3bce16b-4257-438b-8a26-fa8aabd12cb7",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"shipping faster option delivery time\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_b3bce16b-4257-438b-8a26-fa8aabd12cb7",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "When you select the faster (express) shipping option, your order typically arrives in **2‑3 business days** after it’s shipped.  \n\nFor reference, our standard shipping option usually takes **5‑7 business days**. Delivery times can vary slightly based on your exact location and any carrier delays, but express is the quickest option we offer.\n\nIf you need help placing an order with express shipping or have any other questions, just let me know!"
+    }
+  ],
+  "final_score": 9.804878048780488,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly states that express shipping takes 2‑3 business days and that standard shipping takes 5‑7 business days, matching the reference. No contradictory or prohibited claims are made, and the extra contextual information does not conflict with the facts.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The question only asks for the arrival time of the quicker (express) option. The agent correctly states 2‑3 business days, matching the tool output and reference answer. No other parts are required, and the answer is accurate and complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer directly mirrors the information returned by the tools, stating express shipping takes 2‑3 business days and standard shipping takes 5‑7 business days. No contradictions or fabrications are present.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent correctly used the faq_search tool to retrieve shipping time information, which is the appropriate source for answering the question about the quicker (express) shipping option. No extraneous or irrelevant tools were called, and the single call was sufficient to provide an accurate answer.",
+    "confidence": 0.96
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved text includes both standard and express shipping times, directly providing the quicker option (express) as 2-3 business days, which fully answers the question.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "24e7ab24c598",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

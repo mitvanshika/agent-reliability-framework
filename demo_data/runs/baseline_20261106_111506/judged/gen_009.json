@@ -1,0 +1,159 @@
+{
+  "scenario_id": "gen_009",
+  "question": "My order A1004 arrived damaged, I need a refund and I want to speak to a manager now!",
+  "category": "edge",
+  "answer": "I’m sorry to hear that your order arrived damaged. I’ve escalated this case to a human support representative so they can review the situation and connect you with a manager right away. A team member will be in touch with you shortly. Thank you for your patience.",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Order A1004: status=delivered, total=$15.99, days_since_purchase=60",
+    "Not eligible for refund: purchase was made more than 30 days ago",
+    "Escalated to human support. Reason: Customer received damaged item after 60 days and requests refund and manager escalation"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 11.371,
+  "usage": {
+    "input_tokens": 1624,
+    "output_tokens": 402,
+    "total_tokens": 2026
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "My order A1004 arrived damaged, I need a refund and I want to speak to a manager now!"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_cab64ed8-bec2-4c4c-80e2-00d76c73f092",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1004\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_cab64ed8-bec2-4c4c-80e2-00d76c73f092",
+      "content": "Order A1004: status=delivered, total=$15.99, days_since_purchase=60"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_23427d92-1344-47b7-b917-ff2e7967f016",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 60, \"order_total\": 15.99}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_23427d92-1344-47b7-b917-ff2e7967f016",
+      "content": "Not eligible for refund: purchase was made more than 30 days ago"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_ac22c0ca-bfcb-4cae-831b-a6b5f015d596",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"Customer received damaged item after 60 days and requests refund and manager escalation\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_ac22c0ca-bfcb-4cae-831b-a6b5f015d596",
+      "content": "Escalated to human support. Reason: Customer received damaged item after 60 days and requests refund and manager escalation"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry to hear that your order arrived damaged. I’ve escalated this case to a human support representative so they can review the situation and connect you with a manager right away. A team member will be in touch with you shortly. Thank you for your patience."
+    }
+  ],
+  "final_score": 8.023255813953488,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 6,
+    "reason": "The answer correctly acknowledges the damage, escalates to a human, and promises a manager, matching the escalation requirement. However, it omits the crucial fact that the order was purchased 60 days ago and is outside the 30‑day refund window, so it fails to state that the refund is not eligible, which is a required fact. No prohibited promises are made, but the missing eligibility detail lowers the score.",
+    "confidence": 0.92,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 7,
+    "reason": "The answer correctly acknowledges the damaged order and escalates to a human who can connect the customer with a manager, covering those parts. However, it does not address the refund request; the tools indicate the purchase is beyond the 30‑day window and thus ineligible, which the answer should have communicated. Because the refund portion is missing, only 2 of the 3 parts are complete, yielding a score of about 6.7 → 7.",
+    "confidence": 0.93
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's response accurately reflects the tool output by acknowledging the damaged order, noting the escalation to human support, and offering a manager connection, without making unsupported claims about refund eligibility. No hallucination is present.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent called all three relevant tools: it looked up the order to verify details, calculated the refund amount, and then escalated to a human for manager involvement. This sequence follows a logical order (lookup → calculate → escalate) and avoids unnecessary calls. The final response appropriately informs the user that a human will handle the refund and manager request.",
+    "confidence": 0.96
+  },
+  "context_relevance_result": {
+    "score": 9,
+    "reason": "The retrieval provides the order ID, purchase date (60 days ago) and the policy that refunds are not allowed after 30 days, which is sufficient to answer the refund eligibility and need for escalation. The only missing detail is an explicit mention of the damage, but that is supplied by the user query itself, so the retrieved data is essentially complete for the required response.",
+    "confidence": 0.94
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "3/3 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "7c7e152dd1b8",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

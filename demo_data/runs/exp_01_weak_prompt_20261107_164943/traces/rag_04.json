@@ -1,0 +1,56 @@
+{
+  "scenario_id": "rag_04",
+  "question": "How long does it take to arrive if I choose the quicker option?",
+  "category": "normal",
+  "answer": "When you select the faster (express) shipping option, your order typically arrives in **2‑3 business days** after it’s shipped.  \n\nFor reference, our standard shipping option usually takes **5‑7 business days**. Delivery times can vary slightly based on your exact location and any carrier delays, but express is the quickest option we offer.\n\nIf you need help placing an order with express shipping or have any other questions, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 5.609,
+  "usage": {
+    "input_tokens": 579,
+    "output_tokens": 229,
+    "total_tokens": 808
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "How long does it take to arrive if I choose the quicker option?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_b3bce16b-4257-438b-8a26-fa8aabd12cb7",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"shipping faster option delivery time\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_b3bce16b-4257-438b-8a26-fa8aabd12cb7",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "When you select the faster (express) shipping option, your order typically arrives in **2‑3 business days** after it’s shipped.  \n\nFor reference, our standard shipping option usually takes **5‑7 business days**. Delivery times can vary slightly based on your exact location and any carrier delays, but express is the quickest option we offer.\n\nIf you need help placing an order with express shipping or have any other questions, just let me know!"
+    }
+  ]
+}

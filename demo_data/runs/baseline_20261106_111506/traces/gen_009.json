@@ -1,0 +1,98 @@
+{
+  "scenario_id": "gen_009",
+  "question": "My order A1004 arrived damaged, I need a refund and I want to speak to a manager now!",
+  "category": "edge",
+  "answer": "I’m sorry to hear that your order arrived damaged. I’ve escalated this case to a human support representative so they can review the situation and connect you with a manager right away. A team member will be in touch with you shortly. Thank you for your patience.",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Order A1004: status=delivered, total=$15.99, days_since_purchase=60",
+    "Not eligible for refund: purchase was made more than 30 days ago",
+    "Escalated to human support. Reason: Customer received damaged item after 60 days and requests refund and manager escalation"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 11.371,
+  "usage": {
+    "input_tokens": 1624,
+    "output_tokens": 402,
+    "total_tokens": 2026
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "My order A1004 arrived damaged, I need a refund and I want to speak to a manager now!"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_cab64ed8-bec2-4c4c-80e2-00d76c73f092",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1004\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_cab64ed8-bec2-4c4c-80e2-00d76c73f092",
+      "content": "Order A1004: status=delivered, total=$15.99, days_since_purchase=60"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_23427d92-1344-47b7-b917-ff2e7967f016",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 60, \"order_total\": 15.99}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_23427d92-1344-47b7-b917-ff2e7967f016",
+      "content": "Not eligible for refund: purchase was made more than 30 days ago"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_ac22c0ca-bfcb-4cae-831b-a6b5f015d596",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"Customer received damaged item after 60 days and requests refund and manager escalation\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_ac22c0ca-bfcb-4cae-831b-a6b5f015d596",
+      "content": "Escalated to human support. Reason: Customer received damaged item after 60 days and requests refund and manager escalation"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry to hear that your order arrived damaged. I’ve escalated this case to a human support representative so they can review the situation and connect you with a manager right away. A team member will be in touch with you shortly. Thank you for your patience."
+    }
+  ]
+}

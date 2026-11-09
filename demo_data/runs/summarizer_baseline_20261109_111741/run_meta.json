@@ -1,0 +1,44 @@
+{
+  "experiment": "summarizer_baseline",
+  "description": "The example summarizer as it is (a plain function: no settings)",
+  "experiment_file": "examples/summarizer/summarizer_baseline.yaml",
+  "parent": null,
+  "chain": [
+    "summarizer_baseline"
+  ],
+  "changes_vs_parent": [],
+  "resolved_config": {
+    "target": "summarizer",
+    "settings": {}
+  },
+  "target_function": "examples.summarizer.summarizer.summarize",
+  "accepts_settings": false,
+  "git": {
+    "commit": "70728972bcf1f437442453b9269eeee5f04423ee",
+    "dirty": false,
+    "changed_files": 0
+  },
+  "timestamp": "20261109_111741",
+  "python": "3.11.9",
+  "scenario_ids": [
+    "news_01",
+    "news_02",
+    "news_03"
+  ],
+  "scenario_dir": "examples/summarizer/scenarios",
+  "suite": "main",
+  "status": "complete",
+  "totals": {
+    "scenarios": 3,
+    "scenarios_with_usage": 0,
+    "input_tokens": null,
+    "output_tokens": null,
+    "total_tokens": null,
+    "latency_mean_s": 0.002,
+    "latency_p95_s": 0.006,
+    "errors": 0,
+    "errors_by_type": {},
+    "estimated_cost_usd": null,
+    "cost_note": "no pricing.yaml: tokens only"
+  }
+}

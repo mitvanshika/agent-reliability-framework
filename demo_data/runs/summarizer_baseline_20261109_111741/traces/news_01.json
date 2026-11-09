@@ -1,0 +1,17 @@
+{
+  "scenario_id": "news_01",
+  "question": "Summarise: The city council voted 7-2 on Tuesday to build a new public library on Elm Street. Construction starts in March and the library is due to open in 2027. The project will cost 12 million dollars.",
+  "category": "normal",
+  "answer": "The city council voted 7-2 on Tuesday to build a new public library on Elm Street. Construction starts in March and the library is due to open in 2027.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261109_111741",
+  "error": null,
+  "error_type": null,
+  "experiment": "summarizer_baseline",
+  "latency_s": 0.006,
+  "usage": null,
+  "messages": null,
+  "trajectory": null
+}

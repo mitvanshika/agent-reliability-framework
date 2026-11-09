@@ -158,8 +158,8 @@ ok("one baseline per target, note returned as data", len(bl) == 1 and bl[0]["tar
 
 print("no secrets, existing routes untouched:")
 ok("the API key never appears in any response", all(SECRET not in body for body in bodies))
-ok("GET / still the investigator page", client.get("/").status_code == 200
-   and "Agent Reliability Investigator" in client.get("/").get_data(as_text=True))
+ok("GET /track1 is the investigator page", client.get("/track1").status_code == 200
+   and "Agent Reliability Investigator" in client.get("/track1").get_data(as_text=True))
 appmod.STRONG_FOLDER, appmod.WEAK_FOLDER = os.path.join(root, "nope1"), os.path.join(root, "nope2")
 ok("GET /api/data still works", client.get("/api/data").get_json() == {"strong": {}, "weak": {}})
 

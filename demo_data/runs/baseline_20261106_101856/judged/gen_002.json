@@ -1,0 +1,138 @@
+{
+  "scenario_id": "gen_002",
+  "question": "Can I get a refund for order A1001 if it was purchased 45 days ago?",
+  "category": "edge",
+  "answer": "I’ve checked the details for order **A1001**. It was placed **12 days ago** (not 45 days ago) and the total amount was **$89.99**.  \n\nAccording to our refund policy, purchases made within 30 days are eligible for a full refund, and the refund calculator confirms that you qualify for a **full refund of $89.99**.\n\nIf you’d like to proceed, I can start the refund process right away. Just let me know!",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator"
+  ],
+  "tool_outputs": [
+    "Order A1001: status=delivered, total=$89.99, days_since_purchase=12",
+    "Eligible for full refund of $89.99"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 1.885,
+  "usage": {
+    "input_tokens": 1112,
+    "output_tokens": 416,
+    "total_tokens": 1528
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can I get a refund for order A1001 if it was purchased 45 days ago?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_5dfb6e81-96c4-48c8-a393-b6aae67d0226",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1001\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_5dfb6e81-96c4-48c8-a393-b6aae67d0226",
+      "content": "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_b8c6b5e2-7c5f-40f0-9831-9ed4f098c63d",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 12, \"order_total\": 89.99}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_b8c6b5e2-7c5f-40f0-9831-9ed4f098c63d",
+      "content": "Eligible for full refund of $89.99"
+    },
+    {
+      "role": "assistant",
+      "content": "I’ve checked the details for order **A1001**. It was placed **12 days ago** (not 45 days ago) and the total amount was **$89.99**.  \n\nAccording to our refund policy, purchases made within 30 days are eligible for a full refund, and the refund calculator confirms that you qualify for a **full refund of $89.99**.\n\nIf you’d like to proceed, I can start the refund process right away. Just let me know!"
+    }
+  ],
+  "final_score": 9.809426229508198,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly states the order was placed 12 days ago, the amount $89.99, that it is within the 30‑day window, and that it qualifies for a full refund of $89.99, matching all required facts without contradiction. The extra offer to start the refund process does not conflict with the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The answer correctly identifies that the order was actually purchased 12 days ago (not 45), confirms it is within the 30‑day refund window, and states the full refund amount of $89.99, matching both the tool output and reference answer. No part is missing or invented.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer directly mirrors the information returned by the tools: it correctly states the purchase was 12 days ago, the total amount $89.99, and confirms eligibility for a full refund. No contradictions or fabrications are present.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent called the appropriate tools—order_lookup to verify the actual purchase date and refund_calculator to assess eligibility—without any extraneous calls, and used them in a logical sequence. While the answer misinterpreted the hypothetical 45‑day scenario, the tool usage itself was sensible and complete.",
+    "confidence": 0.93
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval provides the correct purchase age (12 days) and refund eligibility, directly addressing the question and matching the reference answer.",
+    "confidence": 0.98
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "2/2 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "c0a119493857",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

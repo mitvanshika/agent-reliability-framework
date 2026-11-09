@@ -1,0 +1,51 @@
+{
+  "experiment": "baseline",
+  "run_dir": "runs\\baseline_20261106_101645",
+  "parent": null,
+  "changes_vs_parent": [],
+  "what_changed": "(baseline: no parent)",
+  "scenarios": 2,
+  "threshold": 7,
+  "passed": 2,
+  "pass_rate": 1.0,
+  "scored": 2,
+  "mean_final_score": 9.614,
+  "judge_set": {
+    "name": "experiment_v1",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "per_judge_mean": {
+    "correctness_gt": 10.0,
+    "completeness": 9.5,
+    "groundedness": 8.5,
+    "tool_efficiency": 10.0,
+    "context_relevance": 10.0
+  },
+  "per_judge_na": {},
+  "tool_match_mean": 10.0,
+  "correctness_fallbacks": [],
+  "not_judged": [],
+  "judge_errors": [],
+  "agent_errors": 0,
+  "errors_by_type": {},
+  "tokens": {
+    "input_tokens": 1335,
+    "output_tokens": 332,
+    "total_tokens": 1667
+  },
+  "scenarios_with_usage": 2,
+  "latency_mean_s": 1.748,
+  "latency_p95_s": 2.237,
+  "estimated_cost_usd": null,
+  "cost_note": "no pricing.yaml: tokens only"
+}

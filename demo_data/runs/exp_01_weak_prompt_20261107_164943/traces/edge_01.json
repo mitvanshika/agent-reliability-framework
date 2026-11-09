@@ -1,0 +1,98 @@
+{
+  "scenario_id": "edge_01",
+  "question": "I want a refund for order A1002, and if I can't get one, I want to speak to someone.",
+  "category": "edge",
+  "answer": "I’m sorry, but your order (A1002) is outside the 30‑day window for a refund, so it isn’t eligible for a return. I’ve escalated your request so a human support representative can review it and get back to you as soon as possible. Thank you for your patience!",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Order A1002: status=delivered, total=$45.5, days_since_purchase=45",
+    "Not eligible for refund: purchase was made more than 30 days ago",
+    "Escalated to human support. Reason: Customer requested escalation after refund ineligibility for order A1002."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 4.17,
+  "usage": {
+    "input_tokens": 1424,
+    "output_tokens": 602,
+    "total_tokens": 2026
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "I want a refund for order A1002, and if I can't get one, I want to speak to someone."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_f4e658c3-dab6-4e6a-a00a-72a31ddeab1b",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1002\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_f4e658c3-dab6-4e6a-a00a-72a31ddeab1b",
+      "content": "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_7c088c3b-bd4c-4e07-8ad4-b858a8aa75d0",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 45, \"order_total\": 45.5}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_7c088c3b-bd4c-4e07-8ad4-b858a8aa75d0",
+      "content": "Not eligible for refund: purchase was made more than 30 days ago"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_4dafab97-fcf4-4118-8e1f-fb1e3019490f",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"Customer requested escalation after refund ineligibility for order A1002.\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_4dafab97-fcf4-4118-8e1f-fb1e3019490f",
+      "content": "Escalated to human support. Reason: Customer requested escalation after refund ineligibility for order A1002."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry, but your order (A1002) is outside the 30‑day window for a refund, so it isn’t eligible for a return. I’ve escalated your request so a human support representative can review it and get back to you as soon as possible. Thank you for your patience!"
+    }
+  ]
+}

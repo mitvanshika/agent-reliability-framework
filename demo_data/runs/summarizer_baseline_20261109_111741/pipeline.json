@@ -1,0 +1,13 @@
+{
+  "experiment_file": "examples/summarizer/summarizer_baseline.yaml",
+  "steps": {
+    "run": "ok",
+    "judge": "ok",
+    "compare": "skipped: no baseline"
+  },
+  "run_dir": "runs\\summarizer_baseline_20261109_111741",
+  "pass_rate": 0.6667,
+  "mean_final_score": 8.347,
+  "verdict": null,
+  "exit_code": 0
+}

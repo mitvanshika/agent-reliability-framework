@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-11-09T18:42:45",
+  "model": "openai/gpt-oss-120b",
+  "answers": [
+    {
+      "id": "why_declined",
+      "question": "Why did exp_01 decline?",
+      "answer": "exp_01 declined because weakening the system prompt caused many answers to drop below the pass threshold, pulling the overall pass rate from 87 % to 55 % and the mean score from 8.40 to 7.14.  \n\n- edge_03 fell from 7.54 to 4.54 (pass→fail) – diagnosis **PROMPT** (used info badly).  \n- gen_004 collapsed from 8.96 to 3.32 – diagnosis **RAG** (retrieval problem).  \n- gen_015 dropped from 8.06 to 3.00 – diagnosis **PROMPT** (used info badly).  \n- Several answers now have groundedness ≤ 3 (e.g., gen_003 groundedness 1, final 2.97), meaning the agent “made it up.”  \n\nTry this: run **exp_07_hardened_prompt** (baseline + universal prompt addons) to see if a stronger, more constrained prompt restores scores and reduces the “made‑up” answers.",
+      "context_hash": "0b38fdeddad24a38",
+      "recorded_at": "2026-11-09T18:37:51"
+    },
+    {
+      "id": "invented",
+      "question": "Which questions were invented answers?",
+      "answer": null,
+      "context_hash": "d9fccd26e4b3c40c",
+      "recorded_at": "2026-11-09T18:42:45",
+      "withheld": "recorded answers twice recommended exp_02_vague_docstrings as 'clearer tool descriptions' (it makes them vaguer); withheld from the demo rather than edited by hand"
+    },
+    {
+      "id": "next",
+      "question": "What should I try next?",
+      "answer": "You should try the hardened‑prompt experiment next.  \n\nThe weak‑prompt run dropped dramatically: gen 007 fell from 9.09 to 4.71 (diagnosis PROMPT), rag 06 fell from 8.22 to 3.01 (diagnosis PROMPT), and RAG‑related cases also suffered – gen 004 went from 8.96 to 3.32 (diagnosis RAG) and rag 02 from 9.25 to 4.98 (diagnosis RAG). Many answers now have groundedness ≤ 3, meaning the agent “made it up.”  \n\n**Try this:** run exp_07_hardened_prompt, which adds the universal prompt add‑ons (no‑invention, injection‑resistance, and scope) to see if it reduces the prompt‑related drops and fabricated answers.",
+      "context_hash": "0b38fdeddad24a38",
+      "recorded_at": "2026-11-09T18:37:51"
+    },
+    {
+      "id": "noise",
+      "question": "How noisy are the judges, and can I trust a single run?",
+      "answer": "Judges are fairly noisy, so a single run shouldn’t be taken as definitive.  \n\nThe two identical baseline runs differed by 10 percentage points in pass rate (87 % → 77 %) and the mean score shifted by 0.19; the same answer for edge_03 got a tool‑efficiency score of 9 then 2. Jumpy scenarios also show large swings, e.g., rag_06 fell from 8.22 to 3.23 and gen_005 dropped from 5.64 to 2.60 between the identical runs. These variations indicate judge‑level noise beyond the scenario content.\n\n**Try this:** run the baseline configuration at least three times and average the scores (or compare them with a repeat run of exp_07_hardened_prompt) to smooth out judge noise before drawing conclusions.",
+      "context_hash": "0b38fdeddad24a38",
+      "recorded_at": "2026-11-09T18:37:51"
+    }
+  ]
+}

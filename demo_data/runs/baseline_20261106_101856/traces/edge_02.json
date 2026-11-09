@@ -1,0 +1,56 @@
+{
+  "scenario_id": "edge_02",
+  "question": "Can you check order Z9999 for me?",
+  "category": "edge",
+  "answer": "I’m sorry, but I couldn’t find any order with the ID **Z9999** in our system. Could you double‑check the order number and let me know the correct one? If you need help with anything else—like locating the right ID, checking a different order, or learning about our policies—just let me know!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "No order found with ID Z9999"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 0.858,
+  "usage": {
+    "input_tokens": 661,
+    "output_tokens": 148,
+    "total_tokens": 809
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can you check order Z9999 for me?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_fee66778-4514-4565-a7bb-35a8e4c964c0",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"Z9999\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_fee66778-4514-4565-a7bb-35a8e4c964c0",
+      "content": "No order found with ID Z9999"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry, but I couldn’t find any order with the ID **Z9999** in our system. Could you double‑check the order number and let me know the correct one? If you need help with anything else—like locating the right ID, checking a different order, or learning about our policies—just let me know!"
+    }
+  ]
+}

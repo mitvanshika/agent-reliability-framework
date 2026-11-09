@@ -1,0 +1,164 @@
+{
+  "scenario_id": "edge_05",
+  "question": "Can I return order A1004 for store credit instead of a refund?",
+  "category": "edge",
+  "answer": "I’m sorry, but A1004 was delivered 60 days ago. Our return policy (and the store‑credit option) only applies to items returned within 30 days of purchase, so this order is no longer eligible for a return or a store‑credit exchange.\n\nIf you have any extenuating circumstances or need further assistance, please let me know and I can have a member of our support team look into it for you.",
+  "tools_used": [
+    "order_lookup",
+    "faq_search",
+    "refund_calculator"
+  ],
+  "tool_outputs": [
+    "Order A1004: status=delivered, total=$15.99, days_since_purchase=60",
+    "Items can be returned within 30 days of purchase for a full refund.",
+    "Not eligible for refund: purchase was made more than 30 days ago"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 2.71,
+  "usage": {
+    "input_tokens": 1354,
+    "output_tokens": 488,
+    "total_tokens": 1842
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Can I return order A1004 for store credit instead of a refund?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_0e8fad57-0b0e-4578-af3b-92647190220a",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1004\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_0e8fad57-0b0e-4578-af3b-92647190220a",
+      "content": "Order A1004: status=delivered, total=$15.99, days_since_purchase=60"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_a8e5e9ba-cbb5-4f63-ad61-516f27bf86b8",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"return policy store credit\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_a8e5e9ba-cbb5-4f63-ad61-516f27bf86b8",
+      "content": "Items can be returned within 30 days of purchase for a full refund."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_ac178197-5678-40e5-a7fa-540ebf4f2918",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 60, \"order_total\": 15.99}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_ac178197-5678-40e5-a7fa-540ebf4f2918",
+      "content": "Not eligible for refund: purchase was made more than 30 days ago"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry, but A1004 was delivered 60 days ago. Our return policy (and the store‑credit option) only applies to items returned within 30 days of purchase, so this order is no longer eligible for a return or a store‑credit exchange.\n\nIf you have any extenuating circumstances or need further assistance, please let me know and I can have a member of our support team look into it for you."
+    }
+  ],
+  "final_score": 9.09185803757829,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly states that order A1004 was delivered 60 days ago, exceeds the 30‑day return window, and therefore is not eligible for a return or store‑credit exchange. The response also offers to involve a support team member, which aligns with the required escalation. No prohibited promises or contradictory facts are present.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The answer correctly addresses both parts of the question: it states that the order is 60 days old, beyond the 30‑day return window, and therefore not eligible for a return or store credit, matching the tool data and reference answer. It also offers escalation, which is appropriate. No invented information is present.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's response directly reflects the tool-provided data: the order was delivered 60 days ago, exceeding the 30‑day return window, making it ineligible for a refund or store‑credit exchange. No contradictions or hallucinations are present.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 6,
+    "reason": "The agent correctly used order_lookup to retrieve the order's delivery date, which is essential for answering the return eligibility question. It also used faq_search to confirm the store‑credit policy. However, the refund_calculator tool was unnecessary because no monetary refund amount needed to be computed. The extra tool call shows a lack of precision, lowering the score.",
+    "confidence": 0.84
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved data includes the order's age (60 days), the 30‑day return window for a full refund, and explicitly notes that store credit cannot be offered, which fully addresses the user's request to return for store credit.",
+    "confidence": 0.98
+  },
+  "tool_match_result": {
+    "score": 3.0,
+    "reason": "1/2 expected tools called; missing: escalate_to_human; extra: faq_search, refund_calculator",
+    "missing": [
+      "escalate_to_human"
+    ],
+    "extras": [
+      "faq_search",
+      "refund_calculator"
+    ],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "eeabc04324b7",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "scenario_id": "gen_006",
+  "question": "Is there a way to track my package for order A1002?",
+  "category": "normal",
+  "answer": "Your order **A1002** has already been **delivered** (45 days ago). Since it’s been delivered, there isn’t a live tracking link available. If you haven’t received it or have any other concerns, please let me know and I’ll be happy to help!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 3.29,
+  "usage": {
+    "input_tokens": 682,
+    "output_tokens": 186,
+    "total_tokens": 868
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Is there a way to track my package for order A1002?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_17f4585a-f94e-4aa9-83ae-ed927d4e41a9",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1002\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_17f4585a-f94e-4aa9-83ae-ed927d4e41a9",
+      "content": "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+    },
+    {
+      "role": "assistant",
+      "content": "Your order **A1002** has already been **delivered** (45 days ago). Since it’s been delivered, there isn’t a live tracking link available. If you haven’t received it or have any other concerns, please let me know and I’ll be happy to help!"
+    }
+  ],
+  "final_score": 9.012320328542094,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 7,
+    "reason": "The agent correctly states that order A1002 was delivered 45 days ago and that no live tracking link is available, matching the reference. However, the answer omits the required price detail ($45.50), so it does not include all mandatory facts. No contradictory or invented information is present.",
+    "confidence": 0.96,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single part of the question asks if there is a way to track order A1002. The agent correctly states the order was delivered 45 days ago and that no live tracking link is available, matching the tool output and reference answer without inventing details. Hence the answer is complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's answer accurately reflects the tool output, stating the order is delivered and noting that no live tracking link is available, which aligns with the delivered status and 45‑day timeframe returned by the tool. No contradictory or fabricated information is present.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the order_lookup tool was needed to retrieve the status of order A1002, called it once, and used the returned information to answer the tracking question accurately, without any unnecessary or incorrect tool calls.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 9,
+    "reason": "The retrieved data provides the order status (delivered) and purchase timing, which is sufficient to answer that the package cannot be tracked because it has already been delivered. While it doesn't explicitly state that no tracking tool is available, the delivery status implies tracking is no longer applicable, covering the needed answer.",
+    "confidence": 0.95
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "449084d046c4",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

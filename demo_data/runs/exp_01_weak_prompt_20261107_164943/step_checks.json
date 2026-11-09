@@ -1,0 +1,494 @@
+{
+  "run_dir": "runs/exp_01_weak_prompt_20261107_164943",
+  "experiment": "exp_01_weak_prompt",
+  "max_steps": 8,
+  "slow_step_s": 10.0,
+  "scenarios": 31,
+  "sources": {
+    "messages": 31
+  },
+  "counts": {
+    "same_result_repeat": 1
+  },
+  "scenarios_with_findings": 1,
+  "mean_steps": 3.19,
+  "max_steps_seen": 7,
+  "rephrased_after_empty": 0,
+  "rows": [
+    {
+      "scenario_id": "edge_01",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "order_lookup",
+        "refund_calculator",
+        "escalate_to_human"
+      ],
+      "latency_s": 4.17,
+      "est_s_per_llm_turn": 1.04,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "edge_02",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "order_lookup"
+      ],
+      "latency_s": 1.223,
+      "est_s_per_llm_turn": 0.61,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "edge_03",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 0.74,
+      "est_s_per_llm_turn": 0.74,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "edge_04",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 1.587,
+      "est_s_per_llm_turn": 0.79,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "edge_05",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "order_lookup",
+        "faq_search",
+        "refund_calculator"
+      ],
+      "latency_s": 2.71,
+      "est_s_per_llm_turn": 0.68,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_001",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "order_lookup"
+      ],
+      "latency_s": 1.158,
+      "est_s_per_llm_turn": 0.58,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_002",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "order_lookup",
+        "refund_calculator"
+      ],
+      "latency_s": 2.116,
+      "est_s_per_llm_turn": 0.71,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_003",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 1.698,
+      "est_s_per_llm_turn": 1.7,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_004",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 2.175,
+      "est_s_per_llm_turn": 0.72,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": [
+        {
+          "check": "same_result_repeat",
+          "tool": "faq_search",
+          "count": 2,
+          "args": [
+            {
+              "query": "PO box shipping"
+            },
+            {
+              "query": "shipping to PO boxes"
+            }
+          ],
+          "detail": "faq_search returned the same output for 2 different arguments ({\"query\": \"PO box shipping\"}, {\"query\": \"shipping to PO boxes\"}): 1 call(s) added nothing"
+        }
+      ]
+    },
+    {
+      "scenario_id": "gen_005",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 6.315,
+      "est_s_per_llm_turn": 3.16,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_006",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "order_lookup"
+      ],
+      "latency_s": 11.322,
+      "est_s_per_llm_turn": 5.66,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_007",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 1.182,
+      "est_s_per_llm_turn": 1.18,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_008",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 5.382,
+      "est_s_per_llm_turn": 2.69,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_009",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "order_lookup",
+        "refund_calculator",
+        "escalate_to_human"
+      ],
+      "latency_s": 16.085,
+      "est_s_per_llm_turn": 4.02,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_010",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 2.939,
+      "est_s_per_llm_turn": 2.94,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_011",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 4.513,
+      "est_s_per_llm_turn": 2.26,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_012",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "order_lookup",
+        "refund_calculator",
+        "faq_search"
+      ],
+      "latency_s": 13.72,
+      "est_s_per_llm_turn": 3.43,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_013",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 7.373,
+      "est_s_per_llm_turn": 7.37,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_014",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 5.106,
+      "est_s_per_llm_turn": 5.11,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_015",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 0.666,
+      "est_s_per_llm_turn": 0.67,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_01",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 6.795,
+      "est_s_per_llm_turn": 3.4,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_02",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "order_lookup"
+      ],
+      "latency_s": 9.782,
+      "est_s_per_llm_turn": 4.89,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_03",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 2.165,
+      "est_s_per_llm_turn": 1.08,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_04",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 7.142,
+      "est_s_per_llm_turn": 3.57,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_05",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "order_lookup",
+        "refund_calculator"
+      ],
+      "latency_s": 9.251,
+      "est_s_per_llm_turn": 3.08,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_01",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 3.815,
+      "est_s_per_llm_turn": 1.91,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_02",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 6.246,
+      "est_s_per_llm_turn": 3.12,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_03",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 7.34,
+      "est_s_per_llm_turn": 3.67,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_04",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 5.609,
+      "est_s_per_llm_turn": 2.8,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_05",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 6.954,
+      "est_s_per_llm_turn": 3.48,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_06",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 3.703,
+      "est_s_per_llm_turn": 3.7,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    }
+  ]
+}

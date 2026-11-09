@@ -1,0 +1,77 @@
+{
+  "scenario_id": "news_02",
+  "question": "Summarise: Researchers at Lakeside University have found that a common garden plant can absorb heavy metals from soil. The team tested the plant in three polluted sites over two years. They say it could offer a cheap way to clean contaminated land.",
+  "category": "normal",
+  "answer": "Researchers at Lakeside University have found that a common garden plant can absorb heavy metals from soil. The team tested the plant in three polluted sites over two years.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261109_111741",
+  "error": null,
+  "error_type": null,
+  "experiment": "summarizer_baseline",
+  "latency_s": 0.0,
+  "usage": null,
+  "messages": null,
+  "trajectory": null,
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "context_relevance",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The output includes all required facts: Lakeside University researchers found a garden plant that absorbs heavy metals, and it was tested at three polluted sites over two years. No extra or contradictory information is present.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "All required parts are complete: the output accurately summarizes the key findings (garden plant absorbs heavy metals, tested at three sites over two years), stays within the two\u2011sentence limit, and does not add any invented details. This matches the reference answer and respects the constraints.",
+    "confidence": 0.98
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific claims in the output (researchers at Lakeside University, common garden plant absorbing heavy metals, testing at three polluted sites over two years) are directly stated in the input. No unsupported information is added.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "e383362e574c",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v1",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "context_relevance",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "scenario_id": "gen_005",
+  "question": "I want to return my defective headphones and get a replacement, not a refund. How do I proceed?",
+  "category": "edge",
+  "answer": "I’m happy to help you with that. Could you please provide your order number so I can check the purchase date and confirm that the item is still within our 30‑day return window? Once I have that information, I can let you know the next steps.",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query",
+    "Items can be returned within 30 days of purchase for a full refund."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.016,
+  "usage": {
+    "input_tokens": 1524,
+    "output_tokens": 477,
+    "total_tokens": 2001
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "I want to return my defective headphones and get a replacement, not a refund. How do I proceed?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_a0af8f68-a39a-4140-b3ce-ee30c0e173d3",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"defective product replacement policy\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_a0af8f68-a39a-4140-b3ce-ee30c0e173d3",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_f4a36dbd-4454-4d6a-a195-8a4a02a6b34c",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"return defective product replacement\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_f4a36dbd-4454-4d6a-a195-8a4a02a6b34c",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_42f83e79-7830-4445-8671-ccd49637eb3e",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"return policy defective\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_42f83e79-7830-4445-8671-ccd49637eb3e",
+      "content": "Items can be returned within 30 days of purchase for a full refund."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m happy to help you with that. Could you please provide your order number so I can check the purchase date and confirm that the item is still within our 30‑day return window? Once I have that information, I can let you know the next steps."
+    }
+  ],
+  "final_score": 5.644251626898047,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 6,
+    "reason": "The answer correctly asks for the order number and mentions checking the 30‑day return window, matching the reference’s return policy and not promising a replacement. However, it omits the required fact that replacements cannot be arranged by the agent and that the request should be escalated to a human, which is a missing required element. No contradictory statements are present, so the score is moderate rather than very low.",
+    "confidence": 0.93,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 5,
+    "reason": "The answer correctly asks for the order number to verify the 30‑day return window, covering the return‑process part. However it does not address the request for a replacement or explain that only a refund is possible, leaving the replacement part incomplete.",
+    "confidence": 0.93
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The tool output only provided a generic 30‑day return policy and no specific guidance on replacements. The agent did not fabricate any details; instead, they asked for the order number to verify the purchase date and confirm eligibility, which aligns with the limited information available. Since the agent's response is honest about the lack of specifics and does not make unsupported claims, it is well‑grounded.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "score": 3,
+    "reason": "The agent called the FAQ search tool three times, which is excessive for a single query and did not incorporate any retrieved information into its response. It asked for an order number without first providing the relevant return/replacement policy, indicating the tool calls were not used sensibly or in a useful order.",
+    "confidence": 0.92
+  },
+  "context_relevance_result": {
+    "score": 5,
+    "reason": "The retrieved information includes the return window and refund policy, which is relevant, but it lacks any mention that replacements cannot be arranged and that the request should be escalated to a human. Therefore, only part of the needed answer is present.",
+    "confidence": 0.86
+  },
+  "tool_match_result": {
+    "score": 5.0,
+    "reason": "1/2 expected tools called; missing: escalate_to_human; repeated (not penalised): faq_search",
+    "missing": [
+      "escalate_to_human"
+    ],
+    "extras": [],
+    "order_ok": true,
+    "repeated": [
+      "faq_search"
+    ]
+  },
+  "answer_key_hash": "24a59d235e42",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

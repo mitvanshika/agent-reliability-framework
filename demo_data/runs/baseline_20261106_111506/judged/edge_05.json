@@ -1,0 +1,184 @@
+{
+  "scenario_id": "edge_05",
+  "question": "Can I return order A1004 for store credit instead of a refund?",
+  "category": "edge",
+  "answer": "I’m sorry, but your order is outside our standard return window (returns are accepted within 30 days of purchase). Because of that, we can’t process a return for store credit or a refund for this order.\n\nI’ve escalated your request to a human support specialist who can review it further and see if any exception can be made. They’ll be in touch with you shortly. If you have any other questions in the meantime, please let me know.",
+  "tools_used": [
+    "order_lookup",
+    "faq_search",
+    "faq_search",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Order A1004: status=delivered, total=$15.99, days_since_purchase=60",
+    "No matching FAQ found for this query",
+    "Items can be returned within 30 days of purchase for a full refund.",
+    "Escalated to human support. Reason: Customer requests return for store credit after 60 days, outside return policy"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 2.942,
+  "usage": {
+    "input_tokens": 2065,
+    "output_tokens": 535,
+    "total_tokens": 2600
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can I return order A1004 for store credit instead of a refund?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_16eacf0c-cd21-42d9-b234-800ab38f191b",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1004\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_16eacf0c-cd21-42d9-b234-800ab38f191b",
+      "content": "Order A1004: status=delivered, total=$15.99, days_since_purchase=60"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_682a4113-2d5c-4350-8e5e-6d69ddcab220",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"return for store credit instead of refund\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_682a4113-2d5c-4350-8e5e-6d69ddcab220",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_236e3cd0-0940-4230-bcda-e4ff29d46f8c",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"return policy store credit\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_236e3cd0-0940-4230-bcda-e4ff29d46f8c",
+      "content": "Items can be returned within 30 days of purchase for a full refund."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_22eb21b9-422b-4a40-aeea-8866b73247e4",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"Customer requests return for store credit after 60 days, outside return policy\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_22eb21b9-422b-4a40-aeea-8866b73247e4",
+      "content": "Escalated to human support. Reason: Customer requests return for store credit after 60 days, outside return policy"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry, but your order is outside our standard return window (returns are accepted within 30 days of purchase). Because of that, we can’t process a return for store credit or a refund for this order.\n\nI’ve escalated your request to a human support specialist who can review it further and see if any exception can be made. They’ll be in touch with you shortly. If you have any other questions in the meantime, please let me know."
+    }
+  ],
+  "final_score": 8.13852813852814,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 7,
+    "reason": "The answer correctly states that the order is outside the 30‑day return window, cannot be returned for store credit, and that the request is escalated to a human specialist, matching the reference. However, it omits the specific detail that the order was purchased 60 days ago, which is a required fact. No contradictory or prohibited claims are made.",
+    "confidence": 0.92,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The answer correctly states that the order is outside the 30‑day return window, therefore a store‑credit return cannot be processed, and it escalates the request to human support, matching the reference answer and tool data. No part of the question is omitted or answered with invented information.",
+    "confidence": 0.98
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's response correctly reflects the tool data: the order is 60 days old, beyond the 30‑day return window, and the policy only allows returns within 30 days. The agent also notes the escalation, matching the tool's escalation note. No hallucinated details are present.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "score": 5,
+    "reason": "The agent correctly used order_lookup to verify the order and its eligibility, and used faq_search to retrieve the return policy. However, it called faq_search twice unnecessarily and escalated to a human even though the policy answer was clear, making the tool usage inefficient.",
+    "confidence": 0.78
+  },
+  "context_relevance_result": {
+    "score": 9,
+    "reason": "The retrieval provides the order age (60 days) and the 30‑day return window for a full refund, which together allow the agent to determine the request is outside the return period and that store credit is not offered. The only missing piece is an explicit statement about store credit, but it can be inferred from the policy, so the answer can be correctly formed.",
+    "confidence": 0.96
+  },
+  "tool_match_result": {
+    "score": 9.0,
+    "reason": "2/2 expected tools called; extra: faq_search; repeated (not penalised): faq_search",
+    "missing": [],
+    "extras": [
+      "faq_search"
+    ],
+    "order_ok": true,
+    "repeated": [
+      "faq_search"
+    ]
+  },
+  "answer_key_hash": "eeabc04324b7",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

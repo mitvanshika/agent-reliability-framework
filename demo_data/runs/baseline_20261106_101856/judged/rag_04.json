@@ -1,0 +1,117 @@
+{
+  "scenario_id": "rag_04",
+  "question": "How long does it take to arrive if I choose the quicker option?",
+  "category": "normal",
+  "answer": "If you select the faster shipping method (our Express option), your order should arrive in **2‑3 business days**. By comparison, the standard shipping method takes about **5‑7 business days**. Let me know if you’d like help placing an order or have any other questions!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.716,
+  "usage": {
+    "input_tokens": 683,
+    "output_tokens": 200,
+    "total_tokens": 883
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "How long does it take to arrive if I choose the quicker option?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_3e6917d9-8554-4893-b756-6c83832f0d30",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"shipping faster option delivery time\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_3e6917d9-8554-4893-b756-6c83832f0d30",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "If you select the faster shipping method (our Express option), your order should arrive in **2‑3 business days**. By comparison, the standard shipping method takes about **5‑7 business days**. Let me know if you’d like help placing an order or have any other questions!"
+    }
+  ],
+  "final_score": 9.803245436105477,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly states that Express shipping takes 2‑3 business days and that standard shipping takes 5‑7 business days, matching the reference exactly. No contradictory or extra prohibited claims are present.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The agent correctly states that the quicker (Express) shipping option takes 2‑3 business days, matching both the tool output and reference answer. The extra mention of standard shipping does not detract from completeness.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer directly reflects the tool-provided information, stating that the quicker (Express) option takes 2‑3 business days, which matches the returned data. No hallucination or contradiction is present.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent correctly identified that the question required factual shipping‑time information and used the appropriate faq_search tool to retrieve it. It made a single, relevant call and did not invoke any unnecessary or unrelated tools, then provided a clear answer based on the retrieved data. The only minor deduction is that we cannot verify the exact content of the search result, but the overall tool usage was sensible.",
+    "confidence": 0.97
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval includes the express shipping time (2-3 business days), which directly answers the question about the quicker option, so the needed information is fully present.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "24e7ab24c598",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

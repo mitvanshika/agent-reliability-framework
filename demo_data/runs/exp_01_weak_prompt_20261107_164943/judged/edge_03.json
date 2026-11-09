@@ -1,0 +1,97 @@
+{
+  "scenario_id": "edge_03",
+  "question": "I'm really upset, my order never arrived and it's been a month, I want a full refund immediately.",
+  "category": "edge",
+  "answer": "I’m really sorry to hear that your order still hasn’t arrived—that must be frustrating, especially after a month. Let’s get this sorted out for you right away.\n\nCould you please share your order number (or the email address you used when placing the order)? Once I have that, I can check the order status and start the refund process for you.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 0.74,
+  "usage": {
+    "input_tokens": 271,
+    "output_tokens": 137,
+    "total_tokens": 408
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "I'm really upset, my order never arrived and it's been a month, I want a full refund immediately."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m really sorry to hear that your order still hasn’t arrived—that must be frustrating, especially after a month. Let’s get this sorted out for you right away.\n\nCould you please share your order number (or the email address you used when placing the order)? Once I have that, I can check the order status and start the refund process for you."
+    }
+  ],
+  "final_score": 4.537634408602151,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance"
+  ],
+  "correctness_gt_result": {
+    "score": 2,
+    "reason": "The answer asks for the order ID, which matches the reference, but it incorrectly promises to start the refund process without order details and does not mention escalating the issue to a human. These omissions and prohibited promises violate the required facts, resulting in a low score.",
+    "confidence": 0.96,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 5,
+    "reason": "The answer correctly asks for the missing order ID, addressing the need to look up the order. However, it incorrectly promises to start a refund process without noting the 30‑day policy or escalating to a human, which the reference answer requires. Thus only the order‑ID request part is complete.",
+    "confidence": 0.86
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "No tool output was provided, and the agent did not fabricate any details. Instead, it appropriately asked for the order number or email to retrieve the necessary information before proceeding with a refund, which aligns with the correct handling of missing data.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "score": 2,
+    "reason": "The agent did not call any tools, but handling a missing order and refund typically requires accessing order data or initiating a refund via internal systems. By only asking for the order number without using the appropriate lookup/refund tool, the agent missed an essential step, indicating poor tool usage.",
+    "confidence": 0.92
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "no retrieval happened (no tool outputs from retrieval tools)"
+  },
+  "tool_match_result": {
+    "score": 0.0,
+    "reason": "0/1 expected tools called; missing: escalate_to_human",
+    "missing": [
+      "escalate_to_human"
+    ],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "5a8e1f854828",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

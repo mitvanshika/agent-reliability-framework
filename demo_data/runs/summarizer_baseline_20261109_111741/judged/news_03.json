@@ -1,0 +1,77 @@
+{
+  "scenario_id": "news_03",
+  "question": "Summarise: The annual marathon took place on Sunday under clear skies. Thousands of spectators lined the route through the old town. The race was won by first-time runner Maya Ortiz in a new course record of 2 hours 21 minutes.",
+  "category": "edge",
+  "answer": "The annual marathon took place on Sunday under clear skies. Thousands of spectators lined the route through the old town.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261109_111741",
+  "error": null,
+  "error_type": null,
+  "experiment": "summarizer_baseline",
+  "latency_s": 0.0,
+  "usage": null,
+  "messages": null,
+  "trajectory": null,
+  "final_score": 5.0410958904109595,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "context_relevance",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 2,
+    "reason": "The output mentions the marathon occurring on Sunday but completely omits the essential facts that Maya Ortiz, a first-time runner, won the race and set a new course record of 2:21. These are required by the reference; their absence significantly lowers the score. No contradictory statements are made, but the main point is missing.",
+    "confidence": 0.97,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 3,
+    "reason": "The output meets the length requirement (two sentences) \u2013 that part is COMPLETE. However it omits the essential information that Maya Ortiz won and set a new course record, so the parts requiring inclusion of the winner/record and covering the main point are NOT complete. Thus only 1 of 3 parts is complete (\u224833% \u2192 score 3).",
+    "confidence": 0.96
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "Both sentences in the output are directly taken from the input text and contain no additional or unsupported details. All specific claims (date, weather, spectator count, location) are present in the input, so the output is fully grounded.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "65d2a5362715",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v1",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "context_relevance",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

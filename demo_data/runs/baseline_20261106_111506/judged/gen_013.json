@@ -1,0 +1,163 @@
+{
+  "scenario_id": "gen_013",
+  "question": "Are there any discounts for bulk purchases of the same product?",
+  "category": "edge",
+  "answer": "I’ve escalated your question to a human specialist who can provide detailed information about bulk‑purchase discounts. They’ll get back to you shortly. Thank you for your patience!",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query",
+    "Escalated to human support. Reason: User asked about bulk purchase discounts, not covered in FAQ"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 11.103,
+  "usage": {
+    "input_tokens": 1498,
+    "output_tokens": 392,
+    "total_tokens": 1890
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Are there any discounts for bulk purchases of the same product?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_75ff7ddc-b716-4d98-b179-1d324ad54272",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"bulk purchase discounts\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_75ff7ddc-b716-4d98-b179-1d324ad54272",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_d5aec521-cb2c-4aea-ae5d-b99a28f17ef8",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"discounts\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_d5aec521-cb2c-4aea-ae5d-b99a28f17ef8",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_367f2d43-f4b3-40f6-8da8-caa5f85184e0",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"User asked about bulk purchase discounts, not covered in FAQ\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_367f2d43-f4b3-40f6-8da8-caa5f85184e0",
+      "content": "Escalated to human support. Reason: User asked about bulk purchase discounts, not covered in FAQ"
+    },
+    {
+      "role": "assistant",
+      "content": "I’ve escalated your question to a human specialist who can provide detailed information about bulk‑purchase discounts. They’ll get back to you shortly. Thank you for your patience!"
+    }
+  ],
+  "final_score": 8.868921775898519,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 8,
+    "reason": "The agent correctly escalates to a human and does not invent any discount, matching two of the required facts. However, it does not explicitly state the reference fact that no information about bulk‑purchase discounts is currently available, which is a required element, so the answer is not fully complete.",
+    "confidence": 0.92,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single part of the question asks about bulk‑purchase discounts. The answer correctly escalates to a human specialist without providing invented information, matching the reference guidance. Hence the part is complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The tools returned no relevant FAQ and indicated escalation to human support. The agent accurately reflected this by stating the query was escalated, without fabricating any information. This aligns with the correct handling of missing data, demonstrating honest grounding.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 7,
+    "reason": "The agent correctly used the FAQ search tool, which is appropriate for finding bulk‑purchase discount information. It called the tool twice, which is slightly redundant, but not harmful. After not finding a satisfactory answer, it escalated to a human, which is a reasonable fallback. The overall sequence is sensible, though the duplicate search call and lack of any attempt to present found information reduce the score.",
+    "confidence": 0.84
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval returned 'No matching FAQ found' which correctly indicates that no information about bulk-purchase discounts is available, matching the required answer that the info is missing.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 9.0,
+    "reason": "1/1 expected tools called; extra: faq_search; repeated (not penalised): faq_search",
+    "missing": [],
+    "extras": [
+      "faq_search"
+    ],
+    "order_ok": true,
+    "repeated": [
+      "faq_search"
+    ]
+  },
+  "answer_key_hash": "e10761638dc4",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

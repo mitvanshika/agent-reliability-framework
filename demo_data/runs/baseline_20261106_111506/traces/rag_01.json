@@ -1,0 +1,77 @@
+{
+  "scenario_id": "rag_01",
+  "question": "Will I have to pay import fees when my order is sent abroad?",
+  "category": "normal",
+  "answer": "International shipments can be subject to customs duties, taxes, and other fees that are imposed by the destination country’s government. Those charges are the buyer’s responsibility and are not included in the order total you see at checkout. If you have any further questions about a specific destination or need more details, just let me know!",
+  "tools_used": [
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 7.95,
+  "usage": {
+    "input_tokens": 1085,
+    "output_tokens": 274,
+    "total_tokens": 1359
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Will I have to pay import fees when my order is sent abroad?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_f96bb976-a5e1-4078-a87e-a7b0b12045a3",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"import fees abroad\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_f96bb976-a5e1-4078-a87e-a7b0b12045a3",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_4b158464-6b16-4648-bb32-e5e5b4b2ecc2",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"customs fees\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_4b158464-6b16-4648-bb32-e5e5b4b2ecc2",
+      "content": "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+    },
+    {
+      "role": "assistant",
+      "content": "International shipments can be subject to customs duties, taxes, and other fees that are imposed by the destination country’s government. Those charges are the buyer’s responsibility and are not included in the order total you see at checkout. If you have any further questions about a specific destination or need more details, just let me know!"
+    }
+  ]
+}

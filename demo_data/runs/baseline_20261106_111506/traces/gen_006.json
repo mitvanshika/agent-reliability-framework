@@ -1,0 +1,56 @@
+{
+  "scenario_id": "gen_006",
+  "question": "Is there a way to track my package for order A1002?",
+  "category": "normal",
+  "answer": "Your order **A1002** has already been **delivered** (it’s been 45 days since the purchase). Since the package is marked as delivered, there isn’t a live tracking link available any more. If you haven’t received it or you have any other concerns about this order, please let me know and I can help you further.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.305,
+  "usage": {
+    "input_tokens": 682,
+    "output_tokens": 182,
+    "total_tokens": 864
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Is there a way to track my package for order A1002?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_299b88cd-9d3e-43a1-b07e-a716786e6926",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1002\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_299b88cd-9d3e-43a1-b07e-a716786e6926",
+      "content": "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+    },
+    {
+      "role": "assistant",
+      "content": "Your order **A1002** has already been **delivered** (it’s been 45 days since the purchase). Since the package is marked as delivered, there isn’t a live tracking link available any more. If you haven’t received it or you have any other concerns about this order, please let me know and I can help you further."
+    }
+  ]
+}

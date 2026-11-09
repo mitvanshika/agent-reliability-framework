@@ -1,0 +1,13 @@
+{
+  "experiment_file": "experiments/baseline.yaml",
+  "steps": {
+    "run": "ok",
+    "judge": "ok",
+    "compare": "skipped: no baseline"
+  },
+  "run_dir": "runs\\baseline_20261106_101856",
+  "pass_rate": 0.8065,
+  "mean_final_score": 8.275,
+  "verdict": null,
+  "exit_code": 0
+}

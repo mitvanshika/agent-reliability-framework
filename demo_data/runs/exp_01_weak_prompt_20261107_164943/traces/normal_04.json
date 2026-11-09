@@ -1,0 +1,56 @@
+{
+  "scenario_id": "normal_04",
+  "question": "What payment methods do you accept?",
+  "category": "normal",
+  "answer": "We accept Visa, Mastercard, and PayPal.",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "We accept Visa, Mastercard, and PayPal."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 7.142,
+  "usage": {
+    "input_tokens": 552,
+    "output_tokens": 120,
+    "total_tokens": 672
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "What payment methods do you accept?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_2ead35d2-7908-4428-8ffa-8ef96654d58e",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"payment methods\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_2ead35d2-7908-4428-8ffa-8ef96654d58e",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    },
+    {
+      "role": "assistant",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    }
+  ]
+}

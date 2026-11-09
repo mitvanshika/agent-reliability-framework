@@ -1,0 +1,56 @@
+{
+  "scenario_id": "normal_04",
+  "question": "What payment methods do you accept?",
+  "category": "normal",
+  "answer": "We accept the following payment methods:\n\n- **Visa**\n- **Mastercard**\n- **PayPal**\n\nIf you have any other questions or need further assistance, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "We accept Visa, Mastercard, and PayPal."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.284,
+  "usage": {
+    "input_tokens": 657,
+    "output_tokens": 140,
+    "total_tokens": 797
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "What payment methods do you accept?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_379669ed-fdb8-4f77-aa45-53fdc69d84f9",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"payment methods accepted\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_379669ed-fdb8-4f77-aa45-53fdc69d84f9",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    },
+    {
+      "role": "assistant",
+      "content": "We accept the following payment methods:\n\n- **Visa**\n- **Mastercard**\n- **PayPal**\n\nIf you have any other questions or need further assistance, just let me know!"
+    }
+  ]
+}
