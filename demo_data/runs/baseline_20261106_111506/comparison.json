@@ -1,14 +1,14 @@
 {
-  "run_dir": "runs/baseline_20261106_111506",
+  "run_dir": "runs\\baseline_20261106_111506",
   "experiment": "baseline",
   "target": "configurable",
   "baseline_file": "baselines\\configurable.json",
   "baseline_experiment": "baseline",
   "baseline_run_dir": "runs/baseline_20261106_101856",
   "config_diff": [],
-  "noise_bands": "no noise\\configurable_noise.json: using default band 1.0 for every scenario",
+  "noise_bands": "noise\\configurable_noise.json (from_runs mode, 2 runs; floor 0.5, default 1.0 if a scenario is missing)",
   "judge_set": {
-    "name": "experiment_v1",
+    "name": "experiment_v2",
     "llm_judges": [
       "correctness_gt",
       "completeness",
@@ -19,72 +19,76 @@
     "checks": [
       "tool_match"
     ],
+    "versions": {
+      "completeness": "v2"
+    },
     "judge_model": "openai/gpt-oss-120b"
   },
   "alpha": 0.05,
-  "pairs": 21,
+  "pairs": 31,
   "per_judge": {
     "correctness_gt": {
-      "baseline_mean": 7.476,
-      "run_mean": 7.143,
-      "delta": -0.333,
-      "n": 21,
+      "baseline_mean": 8.194,
+      "run_mean": 7.677,
+      "delta": -0.516,
+      "n": 31,
       "in_final_score": true
     },
     "completeness": {
-      "baseline_mean": 7.476,
-      "run_mean": 6.667,
-      "delta": -0.81,
-      "n": 21,
+      "baseline_mean": 8.258,
+      "run_mean": 8.097,
+      "delta": -0.161,
+      "n": 31,
       "in_final_score": true
     },
     "groundedness": {
-      "baseline_mean": 8.238,
-      "run_mean": 8.667,
-      "delta": 0.429,
-      "n": 21,
+      "baseline_mean": 8.742,
+      "run_mean": 8.742,
+      "delta": 0.0,
+      "n": 31,
       "in_final_score": true
     },
     "tool_efficiency": {
-      "baseline_mean": 7.81,
-      "run_mean": 7.19,
-      "delta": -0.619,
-      "n": 21,
+      "baseline_mean": 7.968,
+      "run_mean": 7.742,
+      "delta": -0.226,
+      "n": 31,
       "in_final_score": true
     },
     "context_relevance": {
-      "baseline_mean": 8.059,
-      "run_mean": 8.059,
-      "delta": 0.0,
-      "n": 17,
+      "baseline_mean": 8.778,
+      "run_mean": 8.741,
+      "delta": -0.037,
+      "n": 27,
       "in_final_score": true
     },
     "tool_match": {
-      "baseline_mean": 7.095,
-      "run_mean": 8.143,
-      "delta": 1.048,
-      "n": 21,
+      "baseline_mean": 7.71,
+      "run_mean": 8.419,
+      "delta": 0.71,
+      "n": 31,
       "in_final_score": false
     }
   },
   "rows": [
     {
       "scenario_id": "edge_01",
-      "baseline_score": 9.604081632653061,
-      "run_score": 8.921108742004266,
-      "delta": -0.683,
-      "band": 1.0,
+      "baseline_score": 9.60569105691057,
+      "run_score": 9.13163481953291,
+      "delta": -0.4741,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
       "judges_moved": [
-        "correctness_gt 8->6"
+        "correctness_gt 8->6",
+        "tool_efficiency 10->9"
       ],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": -2,
-        "completeness": -1,
+        "completeness": 0,
         "groundedness": 0,
         "tool_efficiency": -1,
         "context_relevance": 0,
@@ -100,7 +104,7 @@
       },
       "run_judges": {
         "correctness_gt": 6,
-        "completeness": 9,
+        "completeness": 10,
         "groundedness": 10,
         "tool_efficiency": 9,
         "context_relevance": 10,
@@ -116,19 +120,21 @@
     },
     {
       "scenario_id": "edge_02",
-      "baseline_score": 9.802845528455284,
-      "run_score": 9.410204081632651,
-      "delta": -0.3926,
-      "band": 1.0,
+      "baseline_score": 10.000000000000002,
+      "run_score": 9.803245436105477,
+      "delta": -0.1968,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
-      "judges_moved": [],
+      "judges_moved": [
+        "tool_efficiency 10->9"
+      ],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": 0,
-        "completeness": -1,
+        "completeness": 0,
         "groundedness": 0,
         "tool_efficiency": -1,
         "context_relevance": 0,
@@ -136,7 +142,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 10,
-        "completeness": 9,
+        "completeness": 10,
         "groundedness": 10,
         "tool_efficiency": 10,
         "context_relevance": 10,
@@ -144,7 +150,7 @@
       },
       "run_judges": {
         "correctness_gt": 10,
-        "completeness": 8,
+        "completeness": 10,
         "groundedness": 10,
         "tool_efficiency": 9,
         "context_relevance": 10,
@@ -160,10 +166,10 @@
     },
     {
       "scenario_id": "edge_03",
-      "baseline_score": 7.266318537859008,
-      "run_score": 5.587131367292225,
-      "delta": -1.6792,
-      "band": 1.0,
+      "baseline_score": 7.536842105263158,
+      "run_score": 6.1035422343324255,
+      "delta": -1.4333,
+      "band": 1.433,
       "direction": "down",
       "baseline_passed": true,
       "run_passed": false,
@@ -174,21 +180,21 @@
       "notes": [],
       "judge_deltas": {
         "correctness_gt": 0,
-        "completeness": 0,
+        "completeness": 1,
         "groundedness": 0,
         "tool_efficiency": -7,
         "tool_match": 0.0
       },
       "baseline_judges": {
         "correctness_gt": 7,
-        "completeness": 4,
+        "completeness": 5,
         "groundedness": 9,
         "tool_efficiency": 9,
         "tool_match": 0.0
       },
       "run_judges": {
         "correctness_gt": 7,
-        "completeness": 4,
+        "completeness": 6,
         "groundedness": 9,
         "tool_efficiency": 2,
         "tool_match": 0.0
@@ -206,7 +212,7 @@
       "baseline_score": 9.802845528455286,
       "run_score": 9.802845528455286,
       "delta": 0.0,
-      "band": 1.0,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
@@ -247,16 +253,18 @@
     },
     {
       "scenario_id": "edge_05",
-      "baseline_score": 8.614107883817427,
-      "run_score": 7.92407809110629,
-      "delta": -0.69,
-      "band": 1.0,
+      "baseline_score": 8.820247933884298,
+      "run_score": 8.13852813852814,
+      "delta": -0.6817,
+      "band": 0.682,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
       "judges_moved": [
+        "groundedness 10->9",
         "tool_efficiency 9->5",
+        "context_relevance 8->9",
         "tool_match 4.0->9.0"
       ],
       "notes": [],
@@ -270,7 +278,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 7,
-        "completeness": 9,
+        "completeness": 10,
         "groundedness": 10,
         "tool_efficiency": 9,
         "context_relevance": 8,
@@ -278,7 +286,7 @@
       },
       "run_judges": {
         "correctness_gt": 7,
-        "completeness": 9,
+        "completeness": 10,
         "groundedness": 9,
         "tool_efficiency": 5,
         "context_relevance": 9,
@@ -294,15 +302,17 @@
     },
     {
       "scenario_id": "gen_001",
-      "baseline_score": 9.010162601626018,
+      "baseline_score": 9.010162601626016,
       "run_score": 8.8130081300813,
       "delta": -0.1972,
-      "band": 1.0,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
-      "judges_moved": [],
+      "judges_moved": [
+        "correctness_gt 6->5"
+      ],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": -1,
@@ -338,14 +348,14 @@
     },
     {
       "scenario_id": "gen_002",
-      "baseline_score": 8.211934156378602,
-      "run_score": 6.893081761006289,
-      "delta": -1.3189,
-      "band": 1.0,
+      "baseline_score": 9.809426229508198,
+      "run_score": 8.526096033402924,
+      "delta": -1.2833,
+      "band": 1.283,
       "direction": "down",
       "baseline_passed": true,
-      "run_passed": false,
-      "flip": "pass->fail",
+      "run_passed": true,
+      "flip": null,
       "judges_moved": [
         "tool_efficiency 9->3"
       ],
@@ -360,7 +370,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 10,
-        "completeness": 2,
+        "completeness": 10,
         "groundedness": 10,
         "tool_efficiency": 9,
         "context_relevance": 10,
@@ -368,7 +378,7 @@
       },
       "run_judges": {
         "correctness_gt": 10,
-        "completeness": 2,
+        "completeness": 10,
         "groundedness": 9,
         "tool_efficiency": 3,
         "context_relevance": 10,
@@ -379,22 +389,22 @@
       "run_error": null,
       "run_disagreement": true,
       "run_low_confidence": [],
-      "baseline_disagreement": true,
+      "baseline_disagreement": false,
       "baseline_low_confidence": []
     },
     {
       "scenario_id": "gen_003",
-      "baseline_score": 4.39549180327869,
-      "run_score": 4.143790849673203,
-      "delta": -0.2517,
-      "band": 1.0,
-      "direction": "same",
+      "baseline_score": 2.3668032786885247,
+      "run_score": 5.642082429501085,
+      "delta": 3.2753,
+      "band": 3.275,
+      "direction": "up",
       "baseline_passed": false,
       "run_passed": false,
       "flip": null,
       "judges_moved": [
         "correctness_gt 2->6",
-        "completeness 10->3",
+        "completeness 0->10",
         "groundedness 1->9",
         "tool_efficiency 9->3",
         "tool_match 0.0->9.0"
@@ -402,7 +412,7 @@
       "notes": [],
       "judge_deltas": {
         "correctness_gt": 4,
-        "completeness": -7,
+        "completeness": 10,
         "groundedness": 8,
         "tool_efficiency": -6,
         "context_relevance": 0,
@@ -410,7 +420,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 2,
-        "completeness": 10,
+        "completeness": 0,
         "groundedness": 1,
         "tool_efficiency": 9,
         "context_relevance": 0,
@@ -418,7 +428,7 @@
       },
       "run_judges": {
         "correctness_gt": 6,
-        "completeness": 3,
+        "completeness": 10,
         "groundedness": 9,
         "tool_efficiency": 3,
         "context_relevance": 0,
@@ -434,15 +444,17 @@
     },
     {
       "scenario_id": "gen_004",
-      "baseline_score": 8.752665245202559,
-      "run_score": 8.587234042553192,
-      "delta": -0.1654,
-      "band": 1.0,
+      "baseline_score": 8.963906581740977,
+      "run_score": 8.798728813559324,
+      "delta": -0.1652,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
-      "judges_moved": [],
+      "judges_moved": [
+        "tool_efficiency 5->4"
+      ],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": 0,
@@ -454,7 +466,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 10,
-        "completeness": 9,
+        "completeness": 10,
         "groundedness": 9,
         "tool_efficiency": 5,
         "context_relevance": 10,
@@ -462,7 +474,7 @@
       },
       "run_judges": {
         "correctness_gt": 10,
-        "completeness": 9,
+        "completeness": 10,
         "groundedness": 9,
         "tool_efficiency": 4,
         "context_relevance": 10,
@@ -478,22 +490,23 @@
     },
     {
       "scenario_id": "gen_005",
-      "baseline_score": 5.433189655172414,
-      "run_score": 3.2117400419287208,
-      "delta": -2.2214,
-      "band": 1.0,
-      "direction": "down",
+      "baseline_score": 5.644251626898047,
+      "run_score": 2.596234309623431,
+      "delta": -3.048,
+      "band": 3.048,
+      "direction": "same",
       "baseline_passed": false,
       "run_passed": false,
       "flip": null,
       "judges_moved": [
         "correctness_gt 6->2",
+        "completeness 5->0",
         "context_relevance 5->0"
       ],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": -4,
-        "completeness": -1,
+        "completeness": -5,
         "groundedness": 0,
         "tool_efficiency": -1,
         "context_relevance": -5,
@@ -501,7 +514,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 6,
-        "completeness": 4,
+        "completeness": 5,
         "groundedness": 9,
         "tool_efficiency": 3,
         "context_relevance": 5,
@@ -509,7 +522,7 @@
       },
       "run_judges": {
         "correctness_gt": 2,
-        "completeness": 3,
+        "completeness": 0,
         "groundedness": 9,
         "tool_efficiency": 2,
         "context_relevance": 0,
@@ -525,19 +538,22 @@
     },
     {
       "scenario_id": "gen_006",
-      "baseline_score": 9.00824742268041,
-      "run_score": 9.209876543209875,
-      "delta": 0.2016,
-      "band": 1.0,
+      "baseline_score": 9.012320328542094,
+      "run_score": 9.41188524590164,
+      "delta": 0.3996,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
-      "judges_moved": [],
+      "judges_moved": [
+        "correctness_gt 7->8",
+        "groundedness 9->10"
+      ],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": 1,
-        "completeness": -1,
+        "completeness": 0,
         "groundedness": 1,
         "tool_efficiency": 0,
         "context_relevance": 0,
@@ -553,7 +569,7 @@
       },
       "run_judges": {
         "correctness_gt": 8,
-        "completeness": 9,
+        "completeness": 10,
         "groundedness": 10,
         "tool_efficiency": 10,
         "context_relevance": 9,
@@ -569,11 +585,11 @@
     },
     {
       "scenario_id": "gen_007",
-      "baseline_score": 8.100795755968168,
-      "run_score": 9.053984575835473,
-      "delta": 0.9532,
-      "band": 1.0,
-      "direction": "same",
+      "baseline_score": 9.09375,
+      "run_score": 10.0,
+      "delta": 0.9062,
+      "band": 0.906,
+      "direction": "up",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
@@ -590,14 +606,14 @@
       },
       "baseline_judges": {
         "correctness_gt": 10,
-        "completeness": 6,
+        "completeness": 10,
         "groundedness": 10,
         "tool_efficiency": 6,
         "tool_match": 10.0
       },
       "run_judges": {
         "correctness_gt": 10,
-        "completeness": 6,
+        "completeness": 10,
         "groundedness": 10,
         "tool_efficiency": 10,
         "tool_match": 10.0
@@ -605,22 +621,23 @@
       "baseline_error_type": null,
       "run_error_type": null,
       "run_error": null,
-      "run_disagreement": true,
+      "run_disagreement": false,
       "run_low_confidence": [],
       "baseline_disagreement": true,
       "baseline_low_confidence": []
     },
     {
       "scenario_id": "gen_008",
-      "baseline_score": 9.23155737704918,
+      "baseline_score": 9.231557377049182,
       "run_score": 9.604887983706721,
       "delta": 0.3733,
-      "band": 1.0,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
       "judges_moved": [
+        "correctness_gt 10->9",
         "tool_efficiency 7->10"
       ],
       "notes": [],
@@ -658,19 +675,23 @@
     },
     {
       "scenario_id": "gen_009",
-      "baseline_score": 7.921397379912664,
-      "run_score": 8.040860215053764,
-      "delta": 0.1195,
-      "band": 1.0,
-      "direction": "same",
+      "baseline_score": 7.274891774891775,
+      "run_score": 8.023255813953488,
+      "delta": 0.7484,
+      "band": 0.748,
+      "direction": "up",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
-      "judges_moved": [],
+      "judges_moved": [
+        "correctness_gt 5->6",
+        "completeness 3->7",
+        "context_relevance 10->9"
+      ],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": 1,
-        "completeness": 1,
+        "completeness": 4,
         "groundedness": 0,
         "tool_efficiency": 0,
         "context_relevance": -1,
@@ -678,7 +699,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 5,
-        "completeness": 6,
+        "completeness": 3,
         "groundedness": 9,
         "tool_efficiency": 9,
         "context_relevance": 10,
@@ -702,19 +723,23 @@
     },
     {
       "scenario_id": "gen_010",
-      "baseline_score": 3.771855010660981,
-      "run_score": 3.3556485355648538,
-      "delta": -0.4162,
-      "band": 1.0,
+      "baseline_score": 1.6609808102345418,
+      "run_score": 1.510460251046025,
+      "delta": -0.1505,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": false,
       "run_passed": false,
       "flip": null,
-      "judges_moved": [],
+      "judges_moved": [
+        "correctness_gt 2->1",
+        "groundedness 1->2",
+        "context_relevance 1->0"
+      ],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": -1,
-        "completeness": -1,
+        "completeness": 0,
         "groundedness": 1,
         "tool_efficiency": 0,
         "context_relevance": -1,
@@ -722,7 +747,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 2,
-        "completeness": 10,
+        "completeness": 0,
         "groundedness": 1,
         "tool_efficiency": 5,
         "context_relevance": 1,
@@ -730,7 +755,7 @@
       },
       "run_judges": {
         "correctness_gt": 1,
-        "completeness": 9,
+        "completeness": 0,
         "groundedness": 2,
         "tool_efficiency": 5,
         "context_relevance": 0,
@@ -749,7 +774,7 @@
       "baseline_score": 10.0,
       "run_score": 10.0,
       "delta": 0.0,
-      "band": 1.0,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
@@ -790,11 +815,11 @@
     },
     {
       "scenario_id": "gen_012",
-      "baseline_score": 4.9445628997867805,
-      "run_score": 6.183157894736842,
-      "delta": 1.2386,
-      "band": 1.0,
-      "direction": "up",
+      "baseline_score": 4.158562367864693,
+      "run_score": 5.366315789473684,
+      "delta": 1.2078,
+      "band": 1.208,
+      "direction": "same",
       "baseline_passed": false,
       "run_passed": false,
       "flip": null,
@@ -812,7 +837,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 2,
-        "completeness": 9,
+        "completeness": 5,
         "groundedness": 3,
         "tool_efficiency": 6,
         "context_relevance": 5,
@@ -820,7 +845,7 @@
       },
       "run_judges": {
         "correctness_gt": 2,
-        "completeness": 9,
+        "completeness": 5,
         "groundedness": 3,
         "tool_efficiency": 7,
         "context_relevance": 10,
@@ -836,16 +861,17 @@
     },
     {
       "scenario_id": "gen_013",
-      "baseline_score": 7.200863930885529,
-      "run_score": 6.997881355932204,
-      "delta": -0.203,
-      "band": 1.0,
+      "baseline_score": 9.09032258064516,
+      "run_score": 8.868921775898519,
+      "delta": -0.2214,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
-      "run_passed": false,
-      "flip": "pass->fail",
+      "run_passed": true,
+      "flip": null,
       "judges_moved": [
         "correctness_gt 10->8",
+        "context_relevance 9->10",
         "tool_match 0.0->9.0"
       ],
       "notes": [],
@@ -859,7 +885,7 @@
       },
       "baseline_judges": {
         "correctness_gt": 10,
-        "completeness": 1,
+        "completeness": 10,
         "groundedness": 9,
         "tool_efficiency": 7,
         "context_relevance": 9,
@@ -867,7 +893,7 @@
       },
       "run_judges": {
         "correctness_gt": 8,
-        "completeness": 1,
+        "completeness": 10,
         "groundedness": 9,
         "tool_efficiency": 7,
         "context_relevance": 10,
@@ -876,43 +902,42 @@
       "baseline_error_type": null,
       "run_error_type": null,
       "run_error": null,
-      "run_disagreement": true,
+      "run_disagreement": false,
       "run_low_confidence": [],
-      "baseline_disagreement": true,
+      "baseline_disagreement": false,
       "baseline_low_confidence": []
     },
     {
       "scenario_id": "gen_014",
-      "baseline_score": 7.616666666666668,
-      "run_score": 5.733681462140992,
-      "delta": -1.883,
-      "band": 1.0,
-      "direction": "down",
+      "baseline_score": 8.106145251396647,
+      "run_score": 6.026455026455026,
+      "delta": -2.0797,
+      "band": 2.08,
+      "direction": "same",
       "baseline_passed": true,
       "run_passed": false,
       "flip": "pass->fail",
       "judges_moved": [
-        "correctness_gt 6->4",
-        "completeness 6->2"
+        "completeness 8->3"
       ],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": -2,
-        "completeness": -4,
+        "completeness": -5,
         "groundedness": 0,
         "tool_efficiency": -1,
         "tool_match": 0.0
       },
       "baseline_judges": {
         "correctness_gt": 6,
-        "completeness": 6,
+        "completeness": 8,
         "groundedness": 9,
         "tool_efficiency": 9,
         "tool_match": 0.0
       },
       "run_judges": {
         "correctness_gt": 4,
-        "completeness": 2,
+        "completeness": 3,
         "groundedness": 9,
         "tool_efficiency": 8,
         "tool_match": 0.0
@@ -927,14 +952,14 @@
     },
     {
       "scenario_id": "gen_015",
-      "baseline_score": 6.051150895140664,
-      "run_score": 7.779187817258882,
-      "delta": 1.728,
-      "band": 1.0,
-      "direction": "up",
-      "baseline_passed": false,
+      "baseline_score": 8.061224489795919,
+      "run_score": 9.75,
+      "delta": 1.6888,
+      "band": 1.689,
+      "direction": "same",
+      "baseline_passed": true,
       "run_passed": true,
-      "flip": "fail->pass",
+      "flip": null,
       "judges_moved": [
         "tool_efficiency 2->10"
       ],
@@ -948,16 +973,63 @@
       },
       "baseline_judges": {
         "correctness_gt": 10,
-        "completeness": 2,
+        "completeness": 10,
         "groundedness": 10,
         "tool_efficiency": 2,
         "tool_match": 10.0
       },
       "run_judges": {
         "correctness_gt": 10,
-        "completeness": 2,
+        "completeness": 10,
         "groundedness": 9,
         "tool_efficiency": 10,
+        "tool_match": 10.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": false,
+      "run_low_confidence": [],
+      "baseline_disagreement": true,
+      "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "normal_01",
+      "baseline_score": 7.229338842975207,
+      "run_score": 7.377049180327869,
+      "delta": 0.1477,
+      "band": 0.5,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": true,
+      "flip": null,
+      "judges_moved": [
+        "groundedness 7->9",
+        "tool_efficiency 10->9"
+      ],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": 0,
+        "completeness": 0,
+        "groundedness": 2,
+        "tool_efficiency": -1,
+        "context_relevance": 0,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 9,
+        "completeness": 0,
+        "groundedness": 7,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "run_judges": {
+        "correctness_gt": 9,
+        "completeness": 0,
+        "groundedness": 9,
+        "tool_efficiency": 9,
+        "context_relevance": 10,
         "tool_match": 10.0
       },
       "baseline_error_type": null,
@@ -969,40 +1041,169 @@
       "baseline_low_confidence": []
     },
     {
-      "scenario_id": "normal_01",
-      "baseline_score": 9.21604938271605,
-      "run_score": 9.014553014553014,
-      "delta": -0.2015,
-      "band": 1.0,
+      "scenario_id": "normal_02",
+      "baseline_score": 10.000000000000002,
+      "run_score": 10.0,
+      "delta": -0.0,
+      "band": 0.5,
       "direction": "same",
       "baseline_passed": true,
       "run_passed": true,
       "flip": null,
-      "judges_moved": [
-        "completeness 10->8",
-        "groundedness 7->9"
-      ],
+      "judges_moved": [],
       "notes": [],
       "judge_deltas": {
         "correctness_gt": 0,
-        "completeness": -2,
-        "groundedness": 2,
-        "tool_efficiency": -1,
+        "completeness": 0,
+        "groundedness": 0,
+        "tool_efficiency": 0,
         "context_relevance": 0,
         "tool_match": 0.0
       },
       "baseline_judges": {
-        "correctness_gt": 9,
+        "correctness_gt": 10,
         "completeness": 10,
-        "groundedness": 7,
+        "groundedness": 10,
         "tool_efficiency": 10,
         "context_relevance": 10,
         "tool_match": 10.0
       },
       "run_judges": {
-        "correctness_gt": 9,
-        "completeness": 8,
-        "groundedness": 9,
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": false,
+      "run_low_confidence": [],
+      "baseline_disagreement": false,
+      "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "normal_03",
+      "baseline_score": 10.0,
+      "run_score": 10.0,
+      "delta": 0.0,
+      "band": 0.5,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": true,
+      "flip": null,
+      "judges_moved": [],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": 0,
+        "completeness": 0,
+        "groundedness": 0,
+        "tool_efficiency": 0,
+        "context_relevance": 0,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "run_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": false,
+      "run_low_confidence": [],
+      "baseline_disagreement": false,
+      "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "normal_04",
+      "baseline_score": 10.0,
+      "run_score": 10.0,
+      "delta": 0.0,
+      "band": 0.5,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": true,
+      "flip": null,
+      "judges_moved": [],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": 0,
+        "completeness": 0,
+        "groundedness": 0,
+        "tool_efficiency": 0,
+        "context_relevance": 0,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "run_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": false,
+      "run_low_confidence": [],
+      "baseline_disagreement": false,
+      "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "normal_05",
+      "baseline_score": 9.265135699373696,
+      "run_score": 9.232510288065845,
+      "delta": -0.0326,
+      "band": 0.5,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": true,
+      "flip": null,
+      "judges_moved": [],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": 0,
+        "completeness": 0,
+        "groundedness": 0,
+        "tool_efficiency": 0,
+        "context_relevance": 0,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 7,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 9,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "run_judges": {
+        "correctness_gt": 7,
+        "completeness": 10,
+        "groundedness": 10,
         "tool_efficiency": 9,
         "context_relevance": 10,
         "tool_match": 10.0
@@ -1014,86 +1215,317 @@
       "run_low_confidence": [],
       "baseline_disagreement": false,
       "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "rag_01",
+      "baseline_score": 9.293139293139294,
+      "run_score": 9.264033264033266,
+      "delta": -0.0291,
+      "band": 0.5,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": true,
+      "flip": null,
+      "judges_moved": [
+        "groundedness 10->9",
+        "tool_efficiency 6->7"
+      ],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": 0,
+        "completeness": 0,
+        "groundedness": -1,
+        "tool_efficiency": 1,
+        "context_relevance": 0,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 6,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "run_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 9,
+        "tool_efficiency": 7,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": false,
+      "run_low_confidence": [],
+      "baseline_disagreement": true,
+      "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "rag_02",
+      "baseline_score": 9.24948024948025,
+      "run_score": 9.258333333333333,
+      "delta": 0.0089,
+      "band": 0.5,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": true,
+      "flip": null,
+      "judges_moved": [],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": 0,
+        "completeness": 0,
+        "groundedness": 0,
+        "tool_efficiency": 0,
+        "context_relevance": 0,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 9,
+        "tool_efficiency": 7,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "run_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 9,
+        "tool_efficiency": 7,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": false,
+      "run_low_confidence": [],
+      "baseline_disagreement": false,
+      "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "rag_03",
+      "baseline_score": 10.0,
+      "run_score": 10.0,
+      "delta": 0.0,
+      "band": 0.5,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": true,
+      "flip": null,
+      "judges_moved": [],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": 0,
+        "completeness": 0,
+        "groundedness": 0,
+        "tool_efficiency": 0,
+        "context_relevance": 0,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "run_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": false,
+      "run_low_confidence": [],
+      "baseline_disagreement": false,
+      "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "rag_04",
+      "baseline_score": 9.803245436105477,
+      "run_score": 10.0,
+      "delta": 0.1968,
+      "band": 0.5,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": true,
+      "flip": null,
+      "judges_moved": [
+        "tool_efficiency 9->10"
+      ],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": 0,
+        "completeness": 0,
+        "groundedness": 0,
+        "tool_efficiency": 1,
+        "context_relevance": 0,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 9,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "run_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": false,
+      "run_low_confidence": [],
+      "baseline_disagreement": false,
+      "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "rag_05",
+      "baseline_score": 10.0,
+      "run_score": 10.0,
+      "delta": 0.0,
+      "band": 0.5,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": true,
+      "flip": null,
+      "judges_moved": [],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": 0,
+        "completeness": 0,
+        "groundedness": 0,
+        "tool_efficiency": 0,
+        "context_relevance": 0,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "run_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 10,
+        "tool_efficiency": 10,
+        "context_relevance": 10,
+        "tool_match": 10.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": false,
+      "run_low_confidence": [],
+      "baseline_disagreement": false,
+      "baseline_low_confidence": []
+    },
+    {
+      "scenario_id": "rag_06",
+      "baseline_score": 8.221544715447155,
+      "run_score": 3.2278481012658222,
+      "delta": -4.9937,
+      "band": 4.994,
+      "direction": "same",
+      "baseline_passed": true,
+      "run_passed": false,
+      "flip": "pass->fail",
+      "judges_moved": [
+        "correctness_gt 10->1",
+        "completeness 10->0",
+        "groundedness 9->1"
+      ],
+      "notes": [],
+      "judge_deltas": {
+        "correctness_gt": -9,
+        "completeness": -10,
+        "groundedness": -8,
+        "tool_efficiency": 4,
+        "context_relevance": -1,
+        "tool_match": 0.0
+      },
+      "baseline_judges": {
+        "correctness_gt": 10,
+        "completeness": 10,
+        "groundedness": 9,
+        "tool_efficiency": 2,
+        "context_relevance": 10,
+        "tool_match": 0.0
+      },
+      "run_judges": {
+        "correctness_gt": 1,
+        "completeness": 0,
+        "groundedness": 1,
+        "tool_efficiency": 6,
+        "context_relevance": 9,
+        "tool_match": 0.0
+      },
+      "baseline_error_type": null,
+      "run_error_type": null,
+      "run_error": null,
+      "run_disagreement": true,
+      "run_low_confidence": [],
+      "baseline_disagreement": true,
+      "baseline_low_confidence": []
     }
   ],
   "missing_in_run": [],
   "missing_in_baseline": [],
-  "excluded": [
-    {
-      "scenario_id": "normal_02",
-      "reason": "run judge_error"
-    },
-    {
-      "scenario_id": "normal_03",
-      "reason": "run judge_error"
-    },
-    {
-      "scenario_id": "normal_04",
-      "reason": "run judge_error"
-    },
-    {
-      "scenario_id": "normal_05",
-      "reason": "run judge_error"
-    },
-    {
-      "scenario_id": "rag_01",
-      "reason": "run judge_error"
-    },
-    {
-      "scenario_id": "rag_02",
-      "reason": "run judge_error"
-    },
-    {
-      "scenario_id": "rag_03",
-      "reason": "run judge_error"
-    },
-    {
-      "scenario_id": "rag_04",
-      "reason": "run judge_error"
-    },
-    {
-      "scenario_id": "rag_05",
-      "reason": "run judge_error"
-    },
-    {
-      "scenario_id": "rag_06",
-      "reason": "run judge_error"
-    }
-  ],
+  "excluded": [],
   "counts": {
-    "up": 2,
-    "down": 4,
-    "same": 15
+    "up": 3,
+    "down": 2,
+    "same": 26
   },
   "down": [
     "edge_03",
-    "gen_002",
-    "gen_005",
-    "gen_014"
+    "gen_002"
   ],
   "up": [
-    "gen_012",
-    "gen_015"
+    "gen_003",
+    "gen_007",
+    "gen_009"
   ],
   "flips": {
-    "pass_to_fail": 4,
-    "fail_to_pass": 1
+    "pass_to_fail": 3,
+    "fail_to_pass": 0
   },
   "mcnemar": {
-    "b_pass_to_fail": 4,
-    "c_fail_to_pass": 1,
-    "p": 0.375,
+    "b_pass_to_fail": 3,
+    "c_fail_to_pass": 0,
+    "p": 0.25,
     "verdict": "NO REAL DIFFERENCE"
   },
   "wilcoxon": {
-    "n_nonzero": 19,
-    "median_diff": -0.2015,
-    "p": 0.14468765258789062,
+    "n_nonzero": 24,
+    "median_diff": 0.0,
+    "p": 0.501925730466406,
     "verdict": "NO REAL DIFFERENCE",
     "note": ""
   },
   "verdict": "NO REAL DIFFERENCE",
-  "verdict_reason": "McNemar -> NO REAL DIFFERENCE (p=0.3750); Wilcoxon -> NO REAL DIFFERENCE (p=0.1447)",
+  "verdict_reason": "McNemar -> NO REAL DIFFERENCE (p=0.2500); Wilcoxon -> NO REAL DIFFERENCE (p=0.5019)",
   "resources": {
     "total_tokens": {
       "baseline": 39726,
@@ -1125,36 +1557,23 @@
       "delta": null,
       "pct": null
     },
-    "errors_by_type": {}
+    "errors_by_type": {},
+    "scenarios": 31
   },
   "diagnosis": [
     {
       "scenario_id": "edge_03",
       "cause": "TOOL DESCRIPTIONS",
-      "evidence": "tool_efficiency -7. final_score 7.26632 -> 5.58713 (-1.6792); judge deltas: correctness_gt +0, completeness +0, groundedness +0, tool_efficiency -7, tool_match +0",
-      "suggestion": "try a docstrings change: clearer tool descriptions (start from docstrings/detailed.yaml)",
+      "evidence": "tool_efficiency -7. final_score 7.53684 -> 6.10354 (-1.4333); judge deltas: correctness_gt +0, completeness +1, groundedness +0, tool_efficiency -7, tool_match +0",
+      "suggestion": "try clearer tool descriptions (demo agent: start from docstrings/detailed.yaml)",
       "setting": "docstrings"
     },
     {
       "scenario_id": "gen_002",
       "cause": "TOOL DESCRIPTIONS",
-      "evidence": "tool_efficiency -6. final_score 8.21193 -> 6.89308 (-1.3189); judge deltas: correctness_gt +0, completeness +0, groundedness -1, tool_efficiency -6, context_relevance +0, tool_match -1",
-      "suggestion": "try a docstrings change: clearer tool descriptions (start from docstrings/detailed.yaml)",
+      "evidence": "tool_efficiency -6. final_score 9.80943 -> 8.5261 (-1.2833); judge deltas: correctness_gt +0, completeness +0, groundedness -1, tool_efficiency -6, context_relevance +0, tool_match -1",
+      "suggestion": "try clearer tool descriptions (demo agent: start from docstrings/detailed.yaml)",
       "setting": "docstrings"
-    },
-    {
-      "scenario_id": "gen_005",
-      "cause": "RAG",
-      "evidence": "context_relevance dropped -5: retrieval did not bring back what was needed. final_score 5.43319 -> 3.21174 (-2.2214); judge deltas: correctness_gt -4, completeness -1, groundedness +0, tool_efficiency -1, context_relevance -5, tool_match +0",
-      "suggestion": "try a retrieval change: retrieval.method embeddings, or top_k: 2",
-      "setting": "retrieval"
-    },
-    {
-      "scenario_id": "gen_014",
-      "cause": "PROMPT (used info badly)",
-      "evidence": "no retrieval on either side, but correctness_gt -2. final_score 7.61667 -> 5.73368 (-1.883); judge deltas: correctness_gt -2, completeness -4, groundedness +0, tool_efficiency -1, tool_match +0",
-      "suggestion": "try a prompt change: 'answer only from the most relevant FAQ / tool output, and repeat exact numbers, dates and statuses'",
-      "setting": "prompt"
     }
   ]
 }
