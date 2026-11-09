@@ -1,0 +1,163 @@
+{
+  "scenario_id": "gen_005",
+  "question": "I want to return my defective headphones and get a replacement, not a refund. How do I proceed?",
+  "category": "edge",
+  "answer": "I’m happy to help you with that. Could you please provide your order number so I can look up the details and confirm the best way to arrange a replacement for your defective headphones?",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 9.667,
+  "usage": {
+    "input_tokens": 1517,
+    "output_tokens": 352,
+    "total_tokens": 1869
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "I want to return my defective headphones and get a replacement, not a refund. How do I proceed?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_db08a53c-aef2-4525-ad37-ef18a2b3ed76",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"defective product replacement policy\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_db08a53c-aef2-4525-ad37-ef18a2b3ed76",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_79797893-e845-47a3-a858-847d3572267a",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"return defective product replacement\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_79797893-e845-47a3-a858-847d3572267a",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_2c9e864c-5a50-4581-bf04-734c1d7f8692",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"defective headphones replacement\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_2c9e864c-5a50-4581-bf04-734c1d7f8692",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m happy to help you with that. Could you please provide your order number so I can look up the details and confirm the best way to arrange a replacement for your defective headphones?"
+    }
+  ],
+  "final_score": 2.596234309623431,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 2,
+    "reason": "The answer does not mention the 30‑day return for a full refund and incorrectly suggests the agent can arrange a replacement, which contradicts the reference that replacements must be escalated to a human. It only asks for an order number, which is fine, but the missing required fact and the contradictory promise heavily reduce the score.",
+    "confidence": 0.97,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 0,
+    "reason": "The answer fails to follow the reference guidance: it incorrectly suggests the agent can arrange a replacement, whereas replacements cannot be promised and the request should be escalated. It also does not state the 30‑day return‑for‑refund policy. Therefore the part of the question is not addressed correctly.",
+    "confidence": 0.98
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The tools provided no relevant FAQ information. The agent did not fabricate a procedure; instead, they requested the order number to look up details, which is an appropriate response given the lack of data. This aligns with the guideline for handling missing information, so the answer is grounded.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "score": 2,
+    "reason": "The agent made three faq_search calls but never used any of the retrieved information, and the final response only asks for an order number without providing the needed return/replacement instructions. The tool calls were unnecessary and not integrated into the answer, indicating poor tool usage.",
+    "confidence": 0.87
+  },
+  "context_relevance_result": {
+    "score": 0,
+    "reason": "The retrieval returned only 'No matching FAQ found' entries, providing no information about return or replacement policies, so nothing relevant to answer the user's request was retrieved.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 5.0,
+    "reason": "1/2 expected tools called; missing: escalate_to_human; repeated (not penalised): faq_search",
+    "missing": [
+      "escalate_to_human"
+    ],
+    "extras": [],
+    "order_ok": true,
+    "repeated": [
+      "faq_search"
+    ]
+  },
+  "answer_key_hash": "24a59d235e42",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

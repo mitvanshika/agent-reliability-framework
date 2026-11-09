@@ -1,0 +1,17 @@
+{
+  "scenario_id": "news_02",
+  "question": "Summarise: Researchers at Lakeside University have found that a common garden plant can absorb heavy metals from soil. The team tested the plant in three polluted sites over two years. They say it could offer a cheap way to clean contaminated land.",
+  "category": "normal",
+  "answer": "Researchers at Lakeside University have found that a common garden plant can absorb heavy metals from soil. The team tested the plant in three polluted sites over two years.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261109_111741",
+  "error": null,
+  "error_type": null,
+  "experiment": "summarizer_baseline",
+  "latency_s": 0.0,
+  "usage": null,
+  "messages": null,
+  "trajectory": null
+}

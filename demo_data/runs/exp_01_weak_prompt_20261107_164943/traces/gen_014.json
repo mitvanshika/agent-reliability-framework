@@ -1,0 +1,33 @@
+{
+  "scenario_id": "gen_014",
+  "question": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!",
+  "category": "edge",
+  "answer": "I’m really sorry to hear that your order still hasn’t arrived—that’s definitely frustrating. To look into this right away and see what we can do about a refund, could you please share your order number? Once I have that, I’ll check the shipment status and the refund eligibility for you.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 5.106,
+  "usage": {
+    "input_tokens": 269,
+    "output_tokens": 165,
+    "total_tokens": 434
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m really sorry to hear that your order still hasn’t arrived—that’s definitely frustrating. To look into this right away and see what we can do about a refund, could you please share your order number? Once I have that, I’ll check the shipment status and the refund eligibility for you."
+    }
+  ]
+}

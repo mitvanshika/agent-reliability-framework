@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+{% include "_style.html" %}
+</head>
+<body>
+{% include "_nav.html" %}
+<main>
+  <div class="crumb"><a href="/evidence">&larr; Evidence</a> <span class="mono faint">/ {{ name }}.md</span></div>
+  <article class="panel md">{{ html|safe }}</article>
+</main>
+</body>
+</html>

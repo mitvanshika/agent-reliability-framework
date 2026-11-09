@@ -1,0 +1,98 @@
+{
+  "scenario_id": "gen_013",
+  "question": "Are there any discounts for bulk purchases of the same product?",
+  "category": "edge",
+  "answer": "I’ve escalated your question to a human specialist who can provide detailed information about bulk‑purchase discounts. They’ll get back to you shortly. Thank you for your patience!",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "No matching FAQ found for this query",
+    "Escalated to human support. Reason: User asked about bulk purchase discounts, not covered in FAQ"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 11.103,
+  "usage": {
+    "input_tokens": 1498,
+    "output_tokens": 392,
+    "total_tokens": 1890
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Are there any discounts for bulk purchases of the same product?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_75ff7ddc-b716-4d98-b179-1d324ad54272",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"bulk purchase discounts\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_75ff7ddc-b716-4d98-b179-1d324ad54272",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_d5aec521-cb2c-4aea-ae5d-b99a28f17ef8",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"discounts\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_d5aec521-cb2c-4aea-ae5d-b99a28f17ef8",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_367f2d43-f4b3-40f6-8da8-caa5f85184e0",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"User asked about bulk purchase discounts, not covered in FAQ\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_367f2d43-f4b3-40f6-8da8-caa5f85184e0",
+      "content": "Escalated to human support. Reason: User asked about bulk purchase discounts, not covered in FAQ"
+    },
+    {
+      "role": "assistant",
+      "content": "I’ve escalated your question to a human specialist who can provide detailed information about bulk‑purchase discounts. They’ll get back to you shortly. Thank you for your patience!"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "experiment": "baseline",
+  "description": "The strong demo agent, described as settings (same prompt, tools, model as test_agent.py)",
+  "experiment_file": "experiments/baseline.yaml",
+  "parent": null,
+  "chain": [
+    "baseline"
+  ],
+  "changes_vs_parent": [],
+  "resolved_config": {
+    "target": "configurable",
+    "settings": {
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0,
+      "prompt": "prompts/v1.txt",
+      "docstrings": "docstrings/detailed.yaml",
+      "retrieval": {
+        "method": "substring"
+      },
+      "recursion_limit": 25
+    }
+  },
+  "target_function": "agent_configurable.run_agent",
+  "accepts_settings": true,
+  "git": {
+    "commit": "e1c18866456b80e5c7e0a02547a1f38a10d28d1e",
+    "dirty": true,
+    "changed_files": 2
+  },
+  "timestamp": "20261106_111506",
+  "python": "3.11.9",
+  "scenario_ids": [
+    "edge_01",
+    "edge_02",
+    "edge_03",
+    "edge_04",
+    "edge_05",
+    "gen_001",
+    "gen_002",
+    "gen_003",
+    "gen_004",
+    "gen_005",
+    "gen_006",
+    "gen_007",
+    "gen_008",
+    "gen_009",
+    "gen_010",
+    "gen_011",
+    "gen_012",
+    "gen_013",
+    "gen_014",
+    "gen_015",
+    "normal_01",
+    "normal_02",
+    "normal_03",
+    "normal_04",
+    "normal_05",
+    "rag_01",
+    "rag_02",
+    "rag_03",
+    "rag_04",
+    "rag_05",
+    "rag_06"
+  ],
+  "status": "complete",
+  "totals": {
+    "scenarios": 31,
+    "scenarios_with_usage": 31,
+    "input_tokens": 31363,
+    "output_tokens": 8910,
+    "total_tokens": 40273,
+    "latency_mean_s": 5.843,
+    "latency_p95_s": 11.371,
+    "errors": 0,
+    "errors_by_type": {},
+    "estimated_cost_usd": null,
+    "cost_note": "no pricing.yaml: tokens only"
+  }
+}

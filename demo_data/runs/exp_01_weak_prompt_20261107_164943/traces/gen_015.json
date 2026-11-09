@@ -1,0 +1,33 @@
+{
+  "scenario_id": "gen_015",
+  "question": "Do you have the blue version of the XYZ smartwatch in stock?",
+  "category": "edge",
+  "answer": "I’m happy to help with that! Let me check our current inventory for the blue XYZ Smartwatch. Could you please confirm the exact model or SKU you’re interested in (if you have it handy)? That’ll ensure I pull up the right information for you.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 0.666,
+  "usage": {
+    "input_tokens": 263,
+    "output_tokens": 201,
+    "total_tokens": 464
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Do you have the blue version of the XYZ smartwatch in stock?"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m happy to help with that! Let me check our current inventory for the blue XYZ Smartwatch. Could you please confirm the exact model or SKU you’re interested in (if you have it handy)? That’ll ensure I pull up the right information for you."
+    }
+  ]
+}

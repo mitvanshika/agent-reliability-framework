@@ -1,0 +1,12 @@
+{
+  "created": "2026-11-09T18:42:42",
+  "git_commit": "7072897",
+  "runs": [
+    "baseline_20261106_101645",
+    "baseline_20261106_101856",
+    "baseline_20261106_111506",
+    "exp_01_weak_prompt_20261107_164943",
+    "summarizer_baseline_20261109_111741"
+  ],
+  "note": "snapshot for DEMO_MODE=1; rebuild with python make_demo_data.py"
+}

@@ -1,0 +1,140 @@
+{
+  "scenario_id": "gen_003",
+  "question": "My credit card was declined when I tried to place an order, can you tell me why?",
+  "category": "edge",
+  "answer": "I’m sorry you’re having trouble with your payment. I’ve escalated this issue to a human support specialist who can look into the specific reason your credit‑card transaction was declined and help resolve it. Someone will be in touch with you shortly. Thank you for your patience!",
+  "tools_used": [
+    "faq_search",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "Escalated to human support. Reason: User inquiry about credit card decline, no relevant FAQ found, requires human assistance"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 2.223,
+  "usage": {
+    "input_tokens": 1109,
+    "output_tokens": 459,
+    "total_tokens": 1568
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "My credit card was declined when I tried to place an order, can you tell me why?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_58b3d6cd-9619-47ef-a91e-773b579e0ec7",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"credit card declined why\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_58b3d6cd-9619-47ef-a91e-773b579e0ec7",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_c968f6b3-77ab-4c0f-a6eb-d645fdb68c14",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"User inquiry about credit card decline, no relevant FAQ found, requires human assistance\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_c968f6b3-77ab-4c0f-a6eb-d645fdb68c14",
+      "content": "Escalated to human support. Reason: User inquiry about credit card decline, no relevant FAQ found, requires human assistance"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry you’re having trouble with your payment. I’ve escalated this issue to a human support specialist who can look into the specific reason your credit‑card transaction was declined and help resolve it. Someone will be in touch with you shortly. Thank you for your patience!"
+    }
+  ],
+  "final_score": 5.642082429501085,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 6,
+    "reason": "The answer correctly escalates to a human and does not invent a decline reason, aligning with the reference. However, it omits the required information about accepted payment methods (Visa, Mastercard, PayPal) and does not explicitly state that the agent lacks access to payment details, which are required facts. Hence the score is reduced.",
+    "confidence": 0.78,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The user asked why their credit card was declined. The agent correctly stated it cannot determine the reason and escalated to human support, matching the reference answer and not inventing any reason. This fully addresses the only part of the query.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The tools indicated no relevant FAQ and that the issue was escalated to human support. The agent accurately reflected this by stating the issue was escalated and did not provide unfounded specifics, which aligns with the tool output. This demonstrates correct, grounded behavior.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "score": 3,
+    "reason": "The question asks for the reason a credit‑card payment was declined. The appropriate tool would be a FAQ search to retrieve common decline reasons and provide a helpful answer. The agent called faq_search but never used any result, and then escalated to a human, which is unnecessary for a generic explanation. The tool usage was therefore suboptimal and included an unnecessary escalation.",
+    "confidence": 0.87
+  },
+  "context_relevance_result": {
+    "score": 0,
+    "reason": "The retrieval returned only a generic 'no matching FAQ' message, which provides no information about decline reasons, payment methods, or escalation guidance needed to answer the question.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 9.0,
+    "reason": "1/1 expected tools called; extra: faq_search",
+    "missing": [],
+    "extras": [
+      "faq_search"
+    ],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "7e9997d0d5da",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

@@ -64,12 +64,29 @@
   .cause { margin: 0 0 12px; padding: 10px 12px; background: var(--panel-2); border-radius: 8px; }
   .cause b { font-family: var(--font-display); }
   .empty { color: var(--text-dim); padding: 8px 0; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .card-q { text-align: left; background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+            border-radius: 8px; padding: 10px 12px; font: inherit; cursor: pointer; }
+  .card-q:hover, .card-q:focus-visible { border-color: var(--accent); outline: none; }
+  .card-q:disabled { opacity: .5; cursor: wait; }
+  .askrow { display: flex; gap: 8px; }
+  .askrow input { flex: 1; min-width: 0; background: #0a1020; color: var(--text); border: 1px solid var(--border);
+                  border-radius: 8px; padding: 9px 12px; font: inherit; }
+  .askrow input:focus { border-color: var(--accent); outline: none; }
+  .askrow button { background: var(--accent); color: #04102b; border: 0; border-radius: 8px; padding: 0 16px;
+                   font-weight: 600; cursor: pointer; }
+  .askrow button:disabled { opacity: .5; cursor: wait; }
+  .answer { margin-top: 12px; padding: 12px 14px; background: var(--panel-2); border-radius: 8px; line-height: 1.55;
+            white-space: pre-wrap; }
+  .answer .try { display: block; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-hi); }
+  .answer.err { color: var(--warn); }
+  .answer-meta { color: var(--text-faint); font-size: 12px; margin-top: 6px; font-family: var(--font-mono); }
 </style>
 </head>
 <body>
+{% include "_nav.html" %}
 <header>
   <h1>Experiments</h1>
-  <a href="/">&larr; Investigator</a>
   <span class="sub" id="subtitle">reading runs/ and baselines/ from disk</span>
 </header>
 <main>
@@ -80,6 +97,18 @@
         <th>tokens</th><th>cost</th><th>verdict</th></tr></thead>
       <tbody id="runs"><tr><td colspan="8" class="empty">Loading...</td></tr></tbody>
     </table>
+  </section>
+
+  <section class="panel" id="ask-panel">
+    <h2>Ask about the results</h2>
+    <p class="dim" style="margin:0 0 12px">Answers come from the run files on the server (comparisons, diagnoses,
+      summaries, baselines); your browser sends only the question.</p>
+    <div class="cards" id="ask-cards"></div>
+    <form class="askrow" id="ask-form">
+      <input id="ask-input" maxlength="1000" placeholder="Ask about any experiment, e.g. which questions got worse?" aria-label="Question">
+      <button type="submit" id="ask-btn">Ask</button>
+    </form>
+    <div id="ask-out"></div>
   </section>
 
   <section class="panel">
@@ -246,6 +275,56 @@ async function load() {
   renderScatter();
 }
 load();
+
+// ---- Ask box
+let ASK_DEMO = false;
+function renderAnswer(text) {
+  // Plain text only; the "Try this:" paragraph gets its own block.
+  const i = text.search(/Try this:/i);
+  if (i < 0) return esc(text);
+  return esc(text.slice(0, i).trim()) + `<span class="try">${esc(text.slice(i).trim())}</span>`;
+}
+async function ask(question) {
+  const out = document.getElementById('ask-out');
+  const busy = on => document.querySelectorAll('#ask-panel button').forEach(b => b.disabled = on);
+  busy(true);
+  out.innerHTML = '<div class="answer dim">Thinking...</div>';
+  try {
+    const res = await fetch('/api/experiments/ask', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }) });
+    const d = await res.json();
+    if (!res.ok || d.error) {
+      out.innerHTML = `<div class="answer err">${esc(d.error || ('HTTP ' + res.status))}</div>`;
+    } else {
+      const meta = d.source === 'recorded'
+        ? `recorded answer (${esc(d.model || '')}${d.recorded_at ? ', ' + esc(d.recorded_at) : ''})`
+        : `live answer (${esc(d.model || '')})`;
+      out.innerHTML = `<div class="answer">${renderAnswer(d.answer)}</div><div class="answer-meta">${meta}</div>`;
+    }
+  } catch (e) {
+    out.innerHTML = `<div class="answer err">Could not reach the server: ${esc(e)}</div>`;
+  }
+  busy(false);
+}
+async function loadSuggestions() {
+  try {
+    const d = await (await fetch('/api/experiments/ask/suggestions')).json();
+    ASK_DEMO = d.demo;
+    document.getElementById('ask-cards').innerHTML = d.suggestions.map(s =>
+      `<button type="button" class="card-q" data-q="${esc(s.question)}">${esc(s.label)}</button>`).join('');
+    document.querySelectorAll('.card-q').forEach(b => b.addEventListener('click', () => {
+      document.getElementById('ask-input').value = b.dataset.q;
+      ask(b.dataset.q);
+    }));
+    if (ASK_DEMO) document.getElementById('ask-input').placeholder = 'Demo: pick one of the suggested questions above';
+  } catch (e) { /* the cards are optional */ }
+}
+document.getElementById('ask-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const q = document.getElementById('ask-input').value.trim();
+  if (q) ask(q);
+});
+loadSuggestions();
 </script>
 </body>
 </html>

@@ -1,0 +1,13 @@
+{
+  "experiment_file": "experiments/baseline.yaml",
+  "steps": {
+    "run": "ok",
+    "judge": "ok",
+    "compare": "failed: exited with code 2"
+  },
+  "run_dir": "runs\\baseline_20261106_111506",
+  "pass_rate": 0.4194,
+  "mean_final_score": 7.537,
+  "resume": "python compare.py runs\\baseline_20261106_111506",
+  "exit_code": 2
+}

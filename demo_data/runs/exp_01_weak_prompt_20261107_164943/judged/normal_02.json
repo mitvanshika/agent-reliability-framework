@@ -1,0 +1,117 @@
+{
+  "scenario_id": "normal_02",
+  "question": "Can you check the status of order A1001?",
+  "category": "normal",
+  "answer": "Sure! Here are the details for order **A1001**:\n\n- **Status:** Delivered  \n- **Total:** $89.99  \n- **Days Since Purchase:** 12 days  \n\nLet me know if you need anything else—perhaps a return label, a refund check, or any other assistance.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 9.782,
+  "usage": {
+    "input_tokens": 572,
+    "output_tokens": 163,
+    "total_tokens": 735
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Can you check the status of order A1001?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_5df94fcd-0706-489a-bc17-057012a58e4c",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1001\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_5df94fcd-0706-489a-bc17-057012a58e4c",
+      "content": "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+    },
+    {
+      "role": "assistant",
+      "content": "Sure! Here are the details for order **A1001**:\n\n- **Status:** Delivered  \n- **Total:** $89.99  \n- **Days Since Purchase:** 12 days  \n\nLet me know if you need anything else—perhaps a return label, a refund check, or any other assistance."
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent’s answer includes all required facts—status delivered, total $89.99, and purchase 12 days ago—exactly matching the reference. No contradictory or invented details are present; the extra offer of assistance does not conflict with the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single part of the question (checking order A1001) is fully answered: the agent reports the status as Delivered, the total $89.99, and that it was purchased 12 days ago, exactly matching the tool output and reference answer.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer exactly matches the information returned by the tool (status delivered, total $89.99, 12 days since purchase) with no contradictions or omissions, demonstrating perfect grounding.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the order_lookup tool was required to retrieve the order status and used only that tool, providing accurate and complete information without any unnecessary or incorrect tool calls.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval includes the exact order A1001 with its status (delivered), total amount, and days since purchase, which fully answers the user's query.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "cec227f22091",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

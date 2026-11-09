@@ -1,0 +1,33 @@
+{
+  "scenario_id": "edge_03",
+  "question": "I'm really upset, my order never arrived and it's been a month, I want a full refund immediately.",
+  "category": "edge",
+  "answer": "I’m sorry to hear that your order hasn’t arrived—that must be frustrating. Could you please provide your order number so I can look up the details and see how we can resolve this for you?",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 0.664,
+  "usage": {
+    "input_tokens": 323,
+    "output_tokens": 105,
+    "total_tokens": 428
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "I'm really upset, my order never arrived and it's been a month, I want a full refund immediately."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry to hear that your order hasn’t arrived—that must be frustrating. Could you please provide your order number so I can look up the details and see how we can resolve this for you?"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "scenario_id": "gen_003",
+  "question": "My credit card was declined when I tried to place an order, can you tell me why?",
+  "category": "edge",
+  "answer": "I’m sorry you’re having trouble with your payment. I’ve escalated this issue to a human support specialist who can look into the specific reason your credit‑card transaction was declined and help resolve it. Someone will be in touch with you shortly. Thank you for your patience!",
+  "tools_used": [
+    "faq_search",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "No matching FAQ found for this query",
+    "Escalated to human support. Reason: User inquiry about credit card decline, no relevant FAQ found, requires human assistance"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 2.223,
+  "usage": {
+    "input_tokens": 1109,
+    "output_tokens": 459,
+    "total_tokens": 1568
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "My credit card was declined when I tried to place an order, can you tell me why?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_58b3d6cd-9619-47ef-a91e-773b579e0ec7",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"credit card declined why\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_58b3d6cd-9619-47ef-a91e-773b579e0ec7",
+      "content": "No matching FAQ found for this query"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_c968f6b3-77ab-4c0f-a6eb-d645fdb68c14",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"User inquiry about credit card decline, no relevant FAQ found, requires human assistance\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_c968f6b3-77ab-4c0f-a6eb-d645fdb68c14",
+      "content": "Escalated to human support. Reason: User inquiry about credit card decline, no relevant FAQ found, requires human assistance"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry you’re having trouble with your payment. I’ve escalated this issue to a human support specialist who can look into the specific reason your credit‑card transaction was declined and help resolve it. Someone will be in touch with you shortly. Thank you for your patience!"
+    }
+  ]
+}

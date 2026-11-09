@@ -1,0 +1,161 @@
+{
+  "scenario_id": "gen_004",
+  "question": "Do you ship to PO boxes and how long does it take?",
+  "category": "normal",
+  "answer": "Yes, we can ship to PO boxes, but only via the standard postal service. Our expedited carriers (FedEx, UPS, etc.) don’t deliver to PO boxes.  \n\n**Delivery time to a PO box:** typically **7–10 business days** using standard shipping. If you need a faster option, you’d need to provide a street address so we can use our express services. Let me know if you’d like any help updating your address or placing an order!",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.",
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.",
+    "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 6.03,
+  "usage": {
+    "input_tokens": 1579,
+    "output_tokens": 408,
+    "total_tokens": 1987
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Do you ship to PO boxes and how long does it take?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_b4753e0e-c961-41ca-b24f-a710f324b7b4",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"PO box shipping\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_b4753e0e-c961-41ca-b24f-a710f324b7b4",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_43b4e2ec-fedd-485f-a24b-1359a197db10",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"shipping to PO boxes\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_43b4e2ec-fedd-485f-a24b-1359a197db10",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_929bba10-6fbb-426a-8a93-4261b0ab9994",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"Do you ship to PO boxes\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_929bba10-6fbb-426a-8a93-4261b0ab9994",
+      "content": "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "Yes, we can ship to PO boxes, but only via the standard postal service. Our expedited carriers (FedEx, UPS, etc.) don’t deliver to PO boxes.  \n\n**Delivery time to a PO box:** typically **7–10 business days** using standard shipping. If you need a faster option, you’d need to provide a street address so we can use our express services. Let me know if you’d like any help updating your address or placing an order!"
+    }
+  ],
+  "final_score": 8.798728813559324,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent's answer includes all required facts: confirms shipping to PO boxes via standard postal service only, notes that FedEx/UPS cannot deliver, and states the typical delivery time of 7‑10 business days. No contradictions or prohibited claims are present, and extra information does not conflict with the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The answer correctly states that PO boxes can be shipped to via standard postal service only and that expedited carriers cannot deliver, matching the reference. It also provides the correct delivery timeframe of 7–10 business days for PO boxes, covering both parts of the question fully.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's answer directly reflects the tool output, correctly stating that PO boxes can be shipped via standard postal service only, with a delivery time of 7–10 business days, and noting that express carriers cannot deliver to PO boxes. No contradictions or hallucinations are present.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 4,
+    "reason": "The agent used the appropriate tool (faq_search) to retrieve shipping policy information, which is relevant to the question. However, it called the same tool three times unnecessarily, indicating redundant or inefficient usage. A single call would have sufficed, so the tool usage was not optimal.",
+    "confidence": 0.78
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved records contain the exact needed information: they state that PO boxes can be shipped to via standard postal service only (no FedEx/UPS) and give the delivery timeframe of 7-10 business days, which fully answers the question. The additional standard/express shipping times are extra but do not omit any required detail.",
+    "confidence": 0.97
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called; repeated (not penalised): faq_search",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": [
+      "faq_search"
+    ]
+  },
+  "answer_key_hash": "6173bd4b51e0",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

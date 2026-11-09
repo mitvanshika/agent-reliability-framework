@@ -33,7 +33,7 @@ import re
 import sys
 from collections import Counter
 
-import trajectory
+import trajectory_read as trajectory
 from trace_utils import load_latest_traces
 
 DEFAULT_MAX_STEPS = 8

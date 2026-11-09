@@ -1,0 +1,117 @@
+{
+  "scenario_id": "normal_03",
+  "question": "How long does standard shipping take?",
+  "category": "normal",
+  "answer": "Standard shipping typically takes **5–7 business days** to arrive after your order is processed. If you need your items faster, we also offer an express option that delivers in 2–3 business days. Let me know if you’d like more details or help with anything else!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 2.165,
+  "usage": {
+    "input_tokens": 563,
+    "output_tokens": 150,
+    "total_tokens": 713
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "How long does standard shipping take?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_a635a3f3-5a18-4a6d-931d-f853044ab69e",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"standard shipping time\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_a635a3f3-5a18-4a6d-931d-f853044ab69e",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "Standard shipping typically takes **5–7 business days** to arrive after your order is processed. If you need your items faster, we also offer an express option that delivers in 2–3 business days. Let me know if you’d like more details or help with anything else!"
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The answer states that standard shipping takes 5–7 business days, matching the required fact, and optionally mentions the express 2–3 business day option, which is allowed and does not contradict the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The only part of the question asks for the standard shipping duration. The agent correctly states it takes 5–7 business days, matching the tool output and reference answer. The extra express shipping detail is optional and does not detract from completeness.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer exactly mirrors the tool output, stating standard shipping takes 5–7 business days and express shipping takes 2–3 business days, with no contradictions or added unsupported claims.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the shipping time information is likely stored in the FAQ and called the 'faq_search' tool to retrieve it. No extra or irrelevant tools were used, and the answer directly addresses the question, indicating appropriate and efficient tool usage.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved text includes the exact answer that standard shipping takes 5-7 business days, which fully satisfies the question. No relevant information is missing.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "aafbc154ec10",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

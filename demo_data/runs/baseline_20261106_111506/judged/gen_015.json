@@ -1,0 +1,118 @@
+{
+  "scenario_id": "gen_015",
+  "question": "Do you have the blue version of the XYZ smartwatch in stock?",
+  "category": "edge",
+  "answer": "I’ve forwarded your question about the blue XYZ smartwatch to a human colleague who can check our inventory and get back to you with the most accurate information. Thank you for your patience!",
+  "tools_used": [
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Escalated to human support. Reason: Product availability inquiry for blue XYZ smartwatch"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.453,
+  "usage": {
+    "input_tokens": 686,
+    "output_tokens": 243,
+    "total_tokens": 929
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Do you have the blue version of the XYZ smartwatch in stock?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_2945e14d-4fc8-42d6-8ff3-2646fab20356",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"Product availability inquiry for blue XYZ smartwatch\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_2945e14d-4fc8-42d6-8ff3-2646fab20356",
+      "content": "Escalated to human support. Reason: Product availability inquiry for blue XYZ smartwatch"
+    },
+    {
+      "role": "assistant",
+      "content": "I’ve forwarded your question about the blue XYZ smartwatch to a human colleague who can check our inventory and get back to you with the most accurate information. Thank you for your patience!"
+    }
+  ],
+  "final_score": 9.75,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The answer correctly states that the AI cannot check inventory and escalates the request to a human colleague, matching the reference requirement and not inventing any stock status. No contradictory or extra prohibited claims are present.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single part of the question asks about stock of the blue XYZ smartwatch. The agent correctly escalated to a human, did not fabricate inventory information, and aligns with the reference guidance that the AI lacks stock data. Hence the part is complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The tool output indicated that the request was escalated to human support because no inventory information was available. The agent's answer correctly reflects this by stating the question was forwarded to a human colleague, without fabricating any stock details. This honest handling aligns with the guidelines for cases where the tools provide no useful information.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the question about specific inventory likely requires human verification and used the only appropriate tool, 'escalate_to_human', without any unnecessary calls. The tool usage was sensible and in proper order.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "no retrieval happened (no tool outputs from retrieval tools)"
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "a5b3d5fc6753",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

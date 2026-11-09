@@ -1,0 +1,117 @@
+{
+  "scenario_id": "normal_02",
+  "question": "Can you check the status of order A1001?",
+  "category": "normal",
+  "answer": "Sure! Order **A1001** was placed 12 days ago, the total amount was **$89.99**, and it has already been **delivered**. Let me know if you need anything else—perhaps help with a return, refund, or anything else related to this order.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.63,
+  "usage": {
+    "input_tokens": 676,
+    "output_tokens": 145,
+    "total_tokens": 821
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can you check the status of order A1001?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_01f7f914-92a5-4233-b319-4e086adc1fa6",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1001\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_01f7f914-92a5-4233-b319-4e086adc1fa6",
+      "content": "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+    },
+    {
+      "role": "assistant",
+      "content": "Sure! Order **A1001** was placed 12 days ago, the total amount was **$89.99**, and it has already been **delivered**. Let me know if you need anything else—perhaps help with a return, refund, or anything else related to this order."
+    }
+  ],
+  "final_score": 10.000000000000002,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly includes all required facts—order A1001 was purchased 12 days ago, total $89.99, and has been delivered—matching the reference exactly. No contradictory information is present; the extra offer to help with returns or refunds is permissible as non‑contradictory additional assistance.",
+    "confidence": 0.98,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The only question part is the order status. The agent correctly states that order A1001 is delivered, matching the tool output and reference answer. The extra details (total and days) are also accurate and not penalized.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer exactly matches the information returned by the tool (status delivered, total $89.99, 12 days since purchase) and does not add any unsupported claims. This demonstrates perfect grounding.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the order_lookup tool was required to retrieve the status of order A1001, called it, and used the returned information to provide an accurate answer without any unnecessary or incorrect tool calls. The tool usage was appropriate and in the right order.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval includes the exact order A1001 with its status (delivered), total amount, and days since purchase, which fully answers the user's query.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "cec227f22091",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "scenario_id": "gen_001",
+  "question": "What is the current status of order A1003?",
+  "category": "normal",
+  "answer": "Your order **A1003** is currently **shipped**. Let me know if you need any more details or assistance!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 1.127,
+  "usage": {
+    "input_tokens": 676,
+    "output_tokens": 119,
+    "total_tokens": 795
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "What is the current status of order A1003?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_9138e007-61ff-48ef-a0bf-5e9e58a0018f",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1003\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_9138e007-61ff-48ef-a0bf-5e9e58a0018f",
+      "content": "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+    },
+    {
+      "role": "assistant",
+      "content": "Your order **A1003** is currently **shipped**. Let me know if you need any more details or assistance!"
+    }
+  ]
+}

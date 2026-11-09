@@ -1,0 +1,56 @@
+{
+  "scenario_id": "gen_011",
+  "question": "Can you tell me which payment methods are accepted for international orders?",
+  "category": "normal",
+  "answer": "We accept Visa, Mastercard, and PayPal for international orders.",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "We accept Visa, Mastercard, and PayPal."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.348,
+  "usage": {
+    "input_tokens": 672,
+    "output_tokens": 133,
+    "total_tokens": 805
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can you tell me which payment methods are accepted for international orders?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_d8a2c9c8-b01d-4f1e-9b71-b79171fa0d3b",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"payment methods accepted for international orders\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_d8a2c9c8-b01d-4f1e-9b71-b79171fa0d3b",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    },
+    {
+      "role": "assistant",
+      "content": "We accept Visa, Mastercard, and PayPal for international orders."
+    }
+  ]
+}

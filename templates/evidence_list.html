@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evidence</title>
+{% include "_style.html" %}
+</head>
+<body>
+{% include "_nav.html" %}
+<main>
+  <section class="hero">
+    <h1>Evidence</h1>
+    <p>The write-ups behind each truth test: the command, the run, what was expected, what came out, and what broke
+      along the way. Rendered from <span class="mono">evidence/*.md</span>.</p>
+  </section>
+  <section class="panel">
+    <table>
+      <thead><tr><th>Note</th><th>Summary</th></tr></thead>
+      <tbody>
+      {% for e in notes %}
+        <tr><td><a href="/evidence/{{ e.name }}">{{ e.title }}</a><div class="q mono">{{ e.name }}.md</div></td>
+            <td class="dim">{{ e.summary }}</td></tr>
+      {% else %}
+        <tr><td colspan="2" class="dim">No evidence notes found.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>

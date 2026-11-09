@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Systems Under Test</title>
+{% include "_style.html" %}
+</head>
+<body>
+{% include "_nav.html" %}
+<main>
+  <section class="hero">
+    <h1>Systems under test</h1>
+    <p>Every entry in <span class="mono">targets.yaml</span>. A target is <strong>any Python function</strong> that takes a
+      question and returns an answer: an agent with tools, or a plain string function like the summarizer. Each one picks
+      its own judges, pass threshold and scenarios; the framework code is the same for all.</p>
+  </section>
+  <section class="panel">
+    <table>
+      <thead><tr><th>Target</th><th>Judge set &amp; judges</th><th class="num">Scenarios</th><th class="num">Pass at</th><th>Baseline</th><th class="num">Runs</th></tr></thead>
+      <tbody>
+      {% for s in systems %}
+        <tr>
+          <td><div class="mono">{{ s.name }} <span class="faint">· {{ s.track }}</span></div>
+              <div class="q">{{ s.description }}</div>
+              <div class="q mono">{{ s.function }}(question{% if s.accepts_settings %}, settings{% endif %})</div>
+              {% if s.action_tools %}<div class="q">acts: <span class="mono">{{ s.action_tools|join(", ") }}</span> (approval-gated)</div>{% endif %}</td>
+          <td><div class="mono" style="margin-bottom:6px">{{ s.judge_set }}</div>
+              <div class="chips">
+                {% for j in s.judges %}<span class="chip">{{ j }}</span>{% endfor %}
+                {% for j in s.checks %}<span class="chip" title="code check, display only">{{ j }} (check)</span>{% endfor %}
+                {% for j in s.not_applicable %}<span class="chip na" title="not applicable to this target">{{ j }}</span>{% endfor %}
+              </div></td>
+          <td class="num">{{ s.scenarios }}<div class="q mono">{{ s.scenarios_dir }}</div></td>
+          <td class="num">{{ "%g"|format(s.pass_threshold) }}</td>
+          <td>{% if s.baseline %}<span class="badge s-pass">yes</span>
+                <div class="q mono">{{ s.baseline.run }}</div>
+                <div class="q">{{ s.baseline.judge_set }}{% if s.baseline.pass_rate is not none %}, pass {{ "%.0f"|format(s.baseline.pass_rate * 100) }}%{% endif %}</div>
+              {% elif s.track == "Track 1" %}<span class="dim">n/a</span><div class="q">strong vs weak, compared directly</div>
+              {% else %}<span class="badge s-planned">no</span><div class="q">promote a run with promote_baseline.py</div>{% endif %}</td>
+          <td class="num">{{ s.runs }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>

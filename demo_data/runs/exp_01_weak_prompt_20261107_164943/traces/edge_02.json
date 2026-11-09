@@ -1,0 +1,56 @@
+{
+  "scenario_id": "edge_02",
+  "question": "Can you check order Z9999 for me?",
+  "category": "edge",
+  "answer": "I’m sorry—I wasn’t able to locate an order with the ID **Z9999**. Could you double‑check the order number and let me know the correct one? If you have any additional details (like the email address used for the purchase or the date), feel free to share them and I’ll look it up for you.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "No order found with ID Z9999"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 1.223,
+  "usage": {
+    "input_tokens": 557,
+    "output_tokens": 145,
+    "total_tokens": 702
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Can you check order Z9999 for me?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_4d232028-42ee-4304-bfb4-d1e2d091ae09",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"Z9999\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_4d232028-42ee-4304-bfb4-d1e2d091ae09",
+      "content": "No order found with ID Z9999"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry—I wasn’t able to locate an order with the ID **Z9999**. Could you double‑check the order number and let me know the correct one? If you have any additional details (like the email address used for the purchase or the date), feel free to share them and I’ll look it up for you."
+    }
+  ]
+}

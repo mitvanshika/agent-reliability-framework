@@ -1,0 +1,56 @@
+{
+  "scenario_id": "edge_02",
+  "question": "Can you check order Z9999 for me?",
+  "category": "edge",
+  "answer": "I’m sorry—I wasn’t able to locate an order with the ID **Z9999**. Could you double‑check the order number and let me know the correct one? If you need help with anything else (e.g., tracking, returns, or a different order), just let me know!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "No order found with ID Z9999"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 1.271,
+  "usage": {
+    "input_tokens": 661,
+    "output_tokens": 140,
+    "total_tokens": 801
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can you check order Z9999 for me?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_45aa1d1a-a71d-4865-b678-8dedf4f61cd9",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"Z9999\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_45aa1d1a-a71d-4865-b678-8dedf4f61cd9",
+      "content": "No order found with ID Z9999"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry—I wasn’t able to locate an order with the ID **Z9999**. Could you double‑check the order number and let me know the correct one? If you need help with anything else (e.g., tracking, returns, or a different order), just let me know!"
+    }
+  ]
+}

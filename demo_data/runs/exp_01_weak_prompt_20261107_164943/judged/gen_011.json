@@ -1,0 +1,117 @@
+{
+  "scenario_id": "gen_011",
+  "question": "Can you tell me which payment methods are accepted for international orders?",
+  "category": "normal",
+  "answer": "We accept Visa, Mastercard, and PayPal for international orders. If you have any other questions or need further assistance, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "We accept Visa, Mastercard, and PayPal."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 4.513,
+  "usage": {
+    "input_tokens": 568,
+    "output_tokens": 147,
+    "total_tokens": 715
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Can you tell me which payment methods are accepted for international orders?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_7bfce258-70f1-4c27-bed9-115455236ce1",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"payment methods accepted for international orders\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_7bfce258-70f1-4c27-bed9-115455236ce1",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    },
+    {
+      "role": "assistant",
+      "content": "We accept Visa, Mastercard, and PayPal for international orders. If you have any other questions or need further assistance, just let me know!"
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly lists Visa, Mastercard, and PayPal as the accepted payment methods for international orders, matching the reference. No contradictory or prohibited statements are made, and the optional note about customs fees is not required.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The question has a single part: which payment methods are accepted for international orders. The agent correctly listed Visa, Mastercard, and PayPal, matching the tool output and reference answer. No extra or invented information was needed, and the optional note about customs fees is not required. Hence the answer is fully complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The tool provided specific payment methods (Visa, Mastercard, PayPal) and the agent's answer exactly matches this information without adding or contradicting anything. The response is fully grounded in the retrieved data.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the FAQ database is the appropriate source for payment method information and made a single, relevant call to the 'faq_search' tool. No unnecessary or unrelated tools were used, and the answer directly addresses the question.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved statement lists Visa, Mastercard, and PayPal as accepted payment methods, which directly answers the question about payment methods for international orders; no additional details are required.",
+    "confidence": 0.97
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "3d14bc27ebf0",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

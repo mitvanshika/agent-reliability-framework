@@ -1,0 +1,77 @@
+{
+  "scenario_id": "news_01",
+  "question": "Summarise: The city council voted 7-2 on Tuesday to build a new public library on Elm Street. Construction starts in March and the library is due to open in 2027. The project will cost 12 million dollars.",
+  "category": "normal",
+  "answer": "The city council voted 7-2 on Tuesday to build a new public library on Elm Street. Construction starts in March and the library is due to open in 2027.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261109_111741",
+  "error": null,
+  "error_type": null,
+  "experiment": "summarizer_baseline",
+  "latency_s": 0.006,
+  "usage": null,
+  "messages": null,
+  "trajectory": null,
+  "final_score": 10.000000000000002,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "context_relevance",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The output includes all required facts: the 7-2 council vote, the new library on Elm Street, construction starting in March, and opening in 2027. No contradictory or invented details are present; the extra mention of Tuesday is supported by the input and does not conflict with the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "All evaluation criteria are met: the output is a two\u2011sentence summary, includes every fact from the input (vote 7\u20112, Tuesday, new library on Elm Street, construction starts March, opening in 2027), matches the reference answer, and adds no invented information. Hence every part is complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific claims in the output (vote count, date, location, construction start month, and opening year) are directly stated in the input. No unsupported information is added.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "6a62b9af4227",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v1",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "context_relevance",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "scenario_id": "gen_008",
+  "question": "How many days do I have to return an item after receiving it?",
+  "category": "normal",
+  "answer": "You have **30 days** from the day you receive the item to return it for a full refund. If you need any help starting a return, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Items can be returned within 30 days of purchase for a full refund."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 3.455,
+  "usage": {
+    "input_tokens": 676,
+    "output_tokens": 141,
+    "total_tokens": 817
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "How many days do I have to return an item after receiving it?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_d3784098-1e20-4776-ae5b-a63eebbffd62",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"return policy days\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_d3784098-1e20-4776-ae5b-a63eebbffd62",
+      "content": "Items can be returned within 30 days of purchase for a full refund."
+    },
+    {
+      "role": "assistant",
+      "content": "You have **30 days** from the day you receive the item to return it for a full refund. If you need any help starting a return, just let me know!"
+    }
+  ],
+  "final_score": 9.604887983706721,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 9,
+    "reason": "The agent correctly states the 30‑day return window and full refund, matching the reference. The only minor deviation is phrasing the start of the period as \"from the day you receive the item\" instead of \"from purchase,\" but this does not contradict the core fact and adds no false information.",
+    "confidence": 0.97,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single question asks how many days you have to return an item. The agent correctly states 30 days from receipt, matching both the tool output and reference answer, and adds no extraneous or invented information. Hence the part is complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The tool provided a clear answer that items can be returned within 30 days of purchase. The agent's response correctly conveys the 30‑day window, only rephrasing it as from the day of receipt, which is a reasonable interpretation and does not contradict the provided information.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the answer requires looking up the return policy and used the appropriate 'faq_search' tool once, then provided the accurate 30‑day timeframe without any extraneous calls.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved statement directly answers the question by specifying a 30‑day return window, which fully satisfies the query.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "2a3cc41844b2",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

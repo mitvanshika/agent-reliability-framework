@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Reliability Overview</title>
+{% include "_style.html" %}
+</head>
+<body>
+{% include "_nav.html" %}
+<main>
+  <section class="hero">
+    <h1>Did my AI agent get worse after I changed something?</h1>
+    <p>The framework runs a fixed set of test questions through the old and the new version of a system, scores every
+      answer with a panel of LLM judges, and uses <strong>paired statistics</strong> (McNemar, Wilcoxon) to say whether
+      the change made it <strong>worse, better, or no real difference</strong>, and which questions moved and why.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Truth tests: does the framework tell the truth?</h2>
+    <p class="lead">Each test has a known right answer. Numbers are read from the run files; each row links to its write-up.</p>
+    <table>
+      <thead><tr><th>Test</th><th>Expected</th><th>Got</th><th>Result</th><th>Evidence</th></tr></thead>
+      <tbody>
+      {% for t in data.truth_tests %}
+        <tr>
+          <td><div>{{ t.name }}</div><div class="q">{{ t.question }}</div></td>
+          <td class="mono">{{ t.expect }}</td>
+          <td><div>{% if t.got in ("DECLINED", "NO REAL DIFFERENCE") %}<span class="badge v-{{ t.got|replace(' ', '-') }}">{{ t.got }}</span>{% else %}<span class="mono">{{ t.got or "-" }}</span>{% endif %}</div>
+              <div class="q mono">{{ t.detail }}</div></td>
+          <td><span class="badge s-{{ t.status }}">{{ {"pass": "PASS", "fail": "FAIL", "planned": "not run", "missing": "no data"}[t.status] }}</span></td>
+          <td><a href="/evidence/{{ t.evidence }}">{{ t.evidence }}</a>{% if t.run %}<div class="q mono">{{ t.run }}</div>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Latest verdict per experiment</h2>
+    <p class="lead">Each experiment changes one setting from its parent. Its latest compared run against the baseline;
+      details on <a href="/experiments">Experiments</a>.</p>
+    <table>
+      <thead><tr><th>Experiment</th><th>Verdict</th><th class="num">Pass rate</th><th class="num">McNemar p</th><th class="num">Paired</th><th>Latest run</th></tr></thead>
+      <tbody>
+      {% for v in data.verdicts %}
+        <tr>
+          <td><div class="mono">{{ v.experiment }}</div><div class="q">{{ v.description }}</div></td>
+          <td>{% if v.verdict %}<span class="badge v-{{ v.verdict|replace(' ', '-') }}">{{ v.verdict }}</span>{% else %}<span class="dim">{{ v.status }}</span>{% endif %}</td>
+          <td class="num">{% if v.pass_rate is not none %}{{ "%.0f"|format(v.pass_rate * 100) }}%{% else %}<span class="faint">-</span>{% endif %}</td>
+          <td class="num">{% if v.p is not none %}{{ "%.3f"|format(v.p) }}{% else %}<span class="faint">-</span>{% endif %}</td>
+          <td class="num">{% if v.pairs %}{{ v.pairs }}{% else %}<span class="faint">-</span>{% endif %}</td>
+          <td class="mono dim">{{ v.run_id or "" }}{% if v.runs > 1 %} <span class="faint">({{ v.runs }} runs)</span>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Key findings</h2>
+    <p class="lead">What building and testing the framework turned up.</p>
+    <div class="findings">
+    {% for f in data.findings %}
+      <div class="finding"><h3>{{ f.title }}</h3><p>{{ f.text }}</p></div>
+    {% endfor %}
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,117 @@
+{
+  "scenario_id": "gen_001",
+  "question": "What is the current status of order A1003?",
+  "category": "normal",
+  "answer": "Your order **A1003** is currently **shipped**. Let me know if you need any more details or assistance!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 1.127,
+  "usage": {
+    "input_tokens": 676,
+    "output_tokens": 119,
+    "total_tokens": 795
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "What is the current status of order A1003?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_9138e007-61ff-48ef-a0bf-5e9e58a0018f",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1003\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_9138e007-61ff-48ef-a0bf-5e9e58a0018f",
+      "content": "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+    },
+    {
+      "role": "assistant",
+      "content": "Your order **A1003** is currently **shipped**. Let me know if you need any more details or assistance!"
+    }
+  ],
+  "final_score": 8.8130081300813,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 5,
+    "reason": "The agent correctly states that order A1003 is shipped, matching the required status. However, it omits two required facts: the order total of $210.00 and that the purchase was made 3 days ago. No contradictory or prohibited claims are present, but the missing information reduces the completeness of the answer.",
+    "confidence": 0.97,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The only part of the question asks for the current status of order A1003. The agent correctly states that the order is shipped, matching the tool output and reference answer. No other parts were required, and no invented information was provided.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent correctly reported the order status as 'shipped', which matches the tool output. No contradictory or fabricated details were added, so the answer is well‑grounded.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the order_lookup tool was required to retrieve the status of order A1003, called it, and used the returned information to provide an accurate answer without any extraneous or incorrect tool calls. The tool usage was necessary, sufficient, and in the proper order.",
+    "confidence": 0.98
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval includes the exact order A1003 with its status (shipped), total amount, and days since purchase, which fully answers the question and matches the reference answer.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "4c304353b548",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

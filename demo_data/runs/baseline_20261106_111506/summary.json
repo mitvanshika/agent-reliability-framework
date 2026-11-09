@@ -1,0 +1,56 @@
+{
+  "experiment": "baseline",
+  "run_dir": "runs/baseline_20261106_111506",
+  "parent": null,
+  "changes_vs_parent": [],
+  "what_changed": "(baseline: no parent)",
+  "scenarios": 31,
+  "threshold": 7,
+  "passed": 24,
+  "pass_rate": 0.7742,
+  "scored": 31,
+  "mean_final_score": 8.203,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "per_judge_mean": {
+    "correctness_gt": 7.677,
+    "completeness": 8.097,
+    "groundedness": 8.742,
+    "tool_efficiency": 7.742,
+    "context_relevance": 8.741
+  },
+  "per_judge_na": {
+    "context_relevance": 4
+  },
+  "tool_match_mean": 8.419,
+  "correctness_fallbacks": [],
+  "not_judged": [],
+  "judge_errors": [],
+  "agent_errors": 0,
+  "errors_by_type": {},
+  "tokens": {
+    "input_tokens": 31363,
+    "output_tokens": 8910,
+    "total_tokens": 40273
+  },
+  "scenarios_with_usage": 31,
+  "latency_mean_s": 5.843,
+  "latency_p95_s": 11.371,
+  "estimated_cost_usd": null,
+  "cost_note": "no pricing.yaml: tokens only"
+}

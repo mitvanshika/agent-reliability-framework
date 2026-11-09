@@ -1,0 +1,56 @@
+{
+  "scenario_id": "gen_007",
+  "question": "I tried logging into my account but keep getting an error, can you fix it?",
+  "category": "edge",
+  "answer": "I’m sorry you’re having trouble accessing your account. I’ve escalated this issue to a human support specialist who will be able to look into your login problem and get you back in as quickly as possible. Thank you for your patience!",
+  "tools_used": [
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Escalated to human support. Reason: User unable to log into account; requires account access assistance."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.31,
+  "usage": {
+    "input_tokens": 704,
+    "output_tokens": 196,
+    "total_tokens": 900
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "I tried logging into my account but keep getting an error, can you fix it?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_c5f5e5cb-2842-47d3-b4e2-295acc1c475e",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"User unable to log into account; requires account access assistance.\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_c5f5e5cb-2842-47d3-b4e2-295acc1c475e",
+      "content": "Escalated to human support. Reason: User unable to log into account; requires account access assistance."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry you’re having trouble accessing your account. I’ve escalated this issue to a human support specialist who will be able to look into your login problem and get you back in as quickly as possible. Thank you for your patience!"
+    }
+  ]
+}

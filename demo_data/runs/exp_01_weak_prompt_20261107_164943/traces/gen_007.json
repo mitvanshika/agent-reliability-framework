@@ -1,0 +1,33 @@
+{
+  "scenario_id": "gen_007",
+  "question": "I tried logging into my account but keep getting an error, can you fix it?",
+  "category": "edge",
+  "answer": "I’m sorry you’re having trouble logging in! Let’s see if we can get you back into your account quickly.\n\n**A few quick checks**\n\n1. **Error message** – What does the error say (e.g., “incorrect password,” “account not found,” “too many attempts,” etc.)?\n2. **Email/username** – Are you using the correct email address or username for the account?\n3. **Password** – Have you tried resetting your password? (You can click **“Forgot password?”** on the sign‑in page and we’ll send a reset link to your email.)\n4. **Browser** – Are you using a supported browser? Try clearing your cache/cookies or opening the site in an incognito/private window.\n5. **Two‑factor authentication** – If you have 2FA enabled, make sure you’re entering the correct code from your authenticator app or SMS.\n\nIf you can share the exact error message (or a screenshot) and confirm the email address you’re trying to log in with, I can look into the account status and help you reset the password or unlock the account if needed.  \n\nLet me know the details, and we’ll get this sorted out for you!",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 1.182,
+  "usage": {
+    "input_tokens": 267,
+    "output_tokens": 325,
+    "total_tokens": 592
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "I tried logging into my account but keep getting an error, can you fix it?"
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry you’re having trouble logging in! Let’s see if we can get you back into your account quickly.\n\n**A few quick checks**\n\n1. **Error message** – What does the error say (e.g., “incorrect password,” “account not found,” “too many attempts,” etc.)?\n2. **Email/username** – Are you using the correct email address or username for the account?\n3. **Password** – Have you tried resetting your password? (You can click **“Forgot password?”** on the sign‑in page and we’ll send a reset link to your email.)\n4. **Browser** – Are you using a supported browser? Try clearing your cache/cookies or opening the site in an incognito/private window.\n5. **Two‑factor authentication** – If you have 2FA enabled, make sure you’re entering the correct code from your authenticator app or SMS.\n\nIf you can share the exact error message (or a screenshot) and confirm the email address you’re trying to log in with, I can look into the account status and help you reset the password or unlock the account if needed.  \n\nLet me know the details, and we’ll get this sorted out for you!"
+    }
+  ]
+}

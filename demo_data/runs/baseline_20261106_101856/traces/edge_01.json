@@ -1,0 +1,98 @@
+{
+  "scenario_id": "edge_01",
+  "question": "I want a refund for order A1002, and if I can't get one, I want to speak to someone.",
+  "category": "edge",
+  "answer": "I’ve checked the details of your order (A1002) and, based on our return policy, refunds are only available within 30 days of purchase. Since it’s been 45 days, a refund isn’t eligible.\n\nI’ve escalated your request to a human support representative so they can review your case further and discuss any possible alternatives. Someone will be with you shortly.",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator",
+    "escalate_to_human"
+  ],
+  "tool_outputs": [
+    "Order A1002: status=delivered, total=$45.5, days_since_purchase=45",
+    "Not eligible for refund: purchase was made more than 30 days ago",
+    "Escalated to human support. Reason: User requested refund but is not eligible (45 days since purchase) and wants to speak to a human."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 3.249,
+  "usage": {
+    "input_tokens": 1646,
+    "output_tokens": 292,
+    "total_tokens": 1938
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "I want a refund for order A1002, and if I can't get one, I want to speak to someone."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_b528b506-a3b2-4b39-9a7b-a105704b15b3",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1002\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_b528b506-a3b2-4b39-9a7b-a105704b15b3",
+      "content": "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_ea46d5f2-5253-4bc1-81bf-827cd2d01a61",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 45, \"order_total\": 45.5}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_ea46d5f2-5253-4bc1-81bf-827cd2d01a61",
+      "content": "Not eligible for refund: purchase was made more than 30 days ago"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_f67a781b-1d6b-455b-bad6-6ab4c51868e4",
+          "type": "function",
+          "function": {
+            "name": "escalate_to_human",
+            "arguments": "{\"reason\": \"User requested refund but is not eligible (45 days since purchase) and wants to speak to a human.\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_f67a781b-1d6b-455b-bad6-6ab4c51868e4",
+      "content": "Escalated to human support. Reason: User requested refund but is not eligible (45 days since purchase) and wants to speak to a human."
+    },
+    {
+      "role": "assistant",
+      "content": "I’ve checked the details of your order (A1002) and, based on our return policy, refunds are only available within 30 days of purchase. Since it’s been 45 days, a refund isn’t eligible.\n\nI’ve escalated your request to a human support representative so they can review your case further and discuss any possible alternatives. Someone will be with you shortly."
+    }
+  ]
+}

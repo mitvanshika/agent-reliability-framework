@@ -1,0 +1,39 @@
+{
+  "experiment_file": "experiments/exp_01_weak_prompt.yaml",
+  "steps": {
+    "run": "ok",
+    "judge": "ok",
+    "compare": "ok",
+    "diagnose": "ok"
+  },
+  "run_dir": "runs\\exp_01_weak_prompt_20261107_164943",
+  "pass_rate": 0.6129,
+  "mean_final_score": 7.693,
+  "verdict": "DECLINED",
+  "down": [
+    "edge_03",
+    "gen_004",
+    "gen_006",
+    "gen_007",
+    "gen_013",
+    "gen_015",
+    "normal_01",
+    "rag_02"
+  ],
+  "up": [
+    "gen_001",
+    "gen_003",
+    "gen_010"
+  ],
+  "causes": {
+    "edge_03": "PROMPT (used info badly)",
+    "gen_004": "UNCLEAR",
+    "gen_006": "PROMPT (missed part)",
+    "gen_007": "PROMPT (used info badly)",
+    "gen_013": "MEASUREMENT UNSURE",
+    "gen_015": "PROMPT (used info badly)",
+    "normal_01": "PROMPT (used info badly)",
+    "rag_02": "RAG"
+  },
+  "exit_code": 1
+}

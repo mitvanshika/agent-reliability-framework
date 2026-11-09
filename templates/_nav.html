@@ -1,0 +1,22 @@
+<style>
+  .topnav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; padding: 10px 28px; background: #0a0f1d;
+            border-bottom: 1px solid #202a44; font-family: 'Inter', -apple-system, sans-serif; font-size: 13px; }
+  .topnav .brand { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #e8edf7; margin-right: 14px;
+                   text-decoration: none; }
+  .topnav a.item { color: #7c88a8; text-decoration: none; padding: 5px 10px; border-radius: 6px; }
+  .topnav a.item:hover { color: #e8edf7; background: #131a2d; }
+  .topnav a.item.active { color: #e8edf7; background: #26386b; }
+  .demo-banner { background: #3a2f14; color: #e8b85a; border-bottom: 1px solid #5a4818; padding: 7px 28px;
+                 font-family: 'Inter', -apple-system, sans-serif; font-size: 13px; }
+  .demo-banner b { color: #f3cf7e; }
+  @media (max-width: 640px) { .topnav { padding: 8px 16px; } .topnav .brand { width: 100%; margin-bottom: 4px; }
+                              .demo-banner { padding: 7px 16px; } }
+</style>
+{% if demo_mode %}<div class="demo-banner" role="status"><b>Demo: recorded results, read-only.</b>
+  The Ask box answers only the suggested questions, and approvals can't be decided here.</div>{% endif %}
+<nav class="topnav">
+  <a class="brand" href="/">Agent Reliability</a>
+  {% for path, label in nav_items %}
+  <a class="item{% if path == nav_active %} active{% endif %}" href="{{ path }}">{{ label }}</a>
+  {% endfor %}
+</nav>

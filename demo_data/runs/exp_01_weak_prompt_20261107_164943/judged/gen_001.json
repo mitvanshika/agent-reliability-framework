@@ -1,0 +1,117 @@
+{
+  "scenario_id": "gen_001",
+  "question": "What is the current status of order A1003?",
+  "category": "normal",
+  "answer": "Your order **A1003** has been **shipped**. It was placed three days ago and the total amount was $210. If you need any further details (tracking number, estimated delivery date, etc.), just let me know!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 1.158,
+  "usage": {
+    "input_tokens": 572,
+    "output_tokens": 158,
+    "total_tokens": 730
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "What is the current status of order A1003?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_780d60f6-4e90-4c4e-b23b-d4deb74f8d68",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1003\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_780d60f6-4e90-4c4e-b23b-d4deb74f8d68",
+      "content": "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+    },
+    {
+      "role": "assistant",
+      "content": "Your order **A1003** has been **shipped**. It was placed three days ago and the total amount was $210. If you need any further details (tracking number, estimated delivery date, etc.), just let me know!"
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly states that order A1003 has been shipped, was placed three days ago, and the total is $210, matching all required facts without any contradictions. The extra offer of more details does not conflict with the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The only question part is the order status. The agent correctly states that order A1003 is shipped, matching the tool output and reference answer. The extra details (days since purchase and total) are also accurate and not invented, so the answer fully satisfies the request.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer exactly matches the information returned by the tools (status shipped, total $210, three days since purchase) and does not add any unsupported claims.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the order_lookup tool was required to retrieve the status of order A1003, called it once, and provided the accurate result without any extraneous or incorrect tool usage.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval includes the exact order A1003 with its status (shipped), total amount, and days since purchase, which fully answers the question as per the reference answer.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "4c304353b548",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

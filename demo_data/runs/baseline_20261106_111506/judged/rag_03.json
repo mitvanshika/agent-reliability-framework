@@ -1,0 +1,115 @@
+{
+  "scenario_id": "rag_03",
+  "question": "Which credit cards or online wallets can I pay with?",
+  "category": "normal",
+  "answer": "We accept the major credit cards — Visa and Mastercard — as well as PayPal for online wallet payments. If you have any other payment‑method questions, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "We accept Visa, Mastercard, and PayPal."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.402,
+  "usage": {
+    "input_tokens": 668,
+    "output_tokens": 171,
+    "total_tokens": 839
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Which credit cards or online wallets can I pay with?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_9cff93ec-6eab-4337-a25a-b90b521a357e",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"payment methods credit cards online wallets\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_9cff93ec-6eab-4337-a25a-b90b521a357e",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    },
+    {
+      "role": "assistant",
+      "content": "We accept the major credit cards — Visa and Mastercard — as well as PayPal for online wallet payments. If you have any other payment‑method questions, just let me know!"
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly lists Visa, Mastercard, and PayPal as the accepted payment methods, matching the reference exactly, and adds no contradictory or extraneous claims.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The question has two parts – credit cards and online wallets. The agent correctly lists Visa and Mastercard for credit cards and PayPal for online wallets, exactly matching the tool output and reference answer. No information is missing or invented.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer exactly matches the information returned by the tools (Visa, Mastercard, and PayPal) and does not add or contradict any details. This demonstrates perfect grounding in the provided data.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the answer required retrieving specific payment method information and used the appropriate 'faq_search' tool. No unnecessary or irrelevant tools were called, and the single call was sufficient to produce an accurate answer, demonstrating sensible tool usage.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved statement lists Visa, Mastercard, and PayPal, which exactly matches the needed credit cards and online wallet options, providing a complete answer.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "2bf5dbb5a6d7",
+  "regraded_from": "experiment_v1",
+  "regraded_judges": "all"
+}

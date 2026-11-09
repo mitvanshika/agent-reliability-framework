@@ -1,0 +1,56 @@
+{
+  "scenario_id": "normal_02",
+  "question": "Can you check the status of order A1001?",
+  "category": "normal",
+  "answer": "Sure! Order **A1001** was placed 12 days ago, the total amount was **$89.99**, and it has already been **delivered**. Let me know if you need anything else—perhaps help with a return, refund, or anything else related to this order.",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.876,
+  "usage": {
+    "input_tokens": 676,
+    "output_tokens": 145,
+    "total_tokens": 821
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can you check the status of order A1001?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_556bedd9-8ef9-45e2-b172-a6c6c652c1bc",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1001\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_556bedd9-8ef9-45e2-b172-a6c6c652c1bc",
+      "content": "Order A1001: status=delivered, total=$89.99, days_since_purchase=12"
+    },
+    {
+      "role": "assistant",
+      "content": "Sure! Order **A1001** was placed 12 days ago, the total amount was **$89.99**, and it has already been **delivered**. Let me know if you need anything else—perhaps help with a return, refund, or anything else related to this order."
+    }
+  ]
+}

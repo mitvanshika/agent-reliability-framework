@@ -1,0 +1,117 @@
+{
+  "scenario_id": "normal_04",
+  "question": "What payment methods do you accept?",
+  "category": "normal",
+  "answer": "We accept the following payment methods:\n\n- **Visa**\n- **Mastercard**\n- **PayPal**\n\nIf you have any other questions or need further assistance, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "We accept Visa, Mastercard, and PayPal."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.479,
+  "usage": {
+    "input_tokens": 657,
+    "output_tokens": 140,
+    "total_tokens": 797
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "What payment methods do you accept?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_4ce765ac-8fcf-4069-a2b9-798a28c7fab6",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"payment methods accepted\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_4ce765ac-8fcf-4069-a2b9-798a28c7fab6",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    },
+    {
+      "role": "assistant",
+      "content": "We accept the following payment methods:\n\n- **Visa**\n- **Mastercard**\n- **PayPal**\n\nIf you have any other questions or need further assistance, just let me know!"
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent lists exactly Visa, Mastercard, and PayPal as payment methods, matching the reference answer with no contradictions or missing facts. The additional courteous sentence does not conflict with the required information.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single part of the question asks which payment methods are accepted. The agent listed Visa, Mastercard, and PayPal, exactly matching the tool output and reference answer, so the answer is complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer exactly matches the information returned by the tools, listing Visa, Mastercard, and PayPal as the accepted payment methods without adding or omitting any details.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the answer is likely in the FAQ and used the appropriate 'faq_search' tool to retrieve the payment methods. No unnecessary or irrelevant tools were called, and the single call was sufficient and in the proper order.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved statement lists Visa, Mastercard, and PayPal, which fully answers the question about accepted payment methods, matching the reference answer exactly.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "62b00c2f1b5b",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

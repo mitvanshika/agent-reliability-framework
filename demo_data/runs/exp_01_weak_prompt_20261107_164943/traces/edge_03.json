@@ -1,0 +1,33 @@
+{
+  "scenario_id": "edge_03",
+  "question": "I'm really upset, my order never arrived and it's been a month, I want a full refund immediately.",
+  "category": "edge",
+  "answer": "I’m really sorry to hear that your order still hasn’t arrived—that must be frustrating, especially after a month. Let’s get this sorted out for you right away.\n\nCould you please share your order number (or the email address you used when placing the order)? Once I have that, I can check the order status and start the refund process for you.",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 0.74,
+  "usage": {
+    "input_tokens": 271,
+    "output_tokens": 137,
+    "total_tokens": 408
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "I'm really upset, my order never arrived and it's been a month, I want a full refund immediately."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m really sorry to hear that your order still hasn’t arrived—that must be frustrating, especially after a month. Let’s get this sorted out for you right away.\n\nCould you please share your order number (or the email address you used when placing the order)? Once I have that, I can check the order status and start the refund process for you."
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "scenario_id": "rag_03",
+  "question": "Which credit cards or online wallets can I pay with?",
+  "category": "normal",
+  "answer": "We accept the following payment methods:\n\n- **Credit cards:** Visa and Mastercard  \n- **Online wallets:** PayPal  \n\nIf you have any other questions about payments, just let me know!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "We accept Visa, Mastercard, and PayPal."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 7.34,
+  "usage": {
+    "input_tokens": 564,
+    "output_tokens": 172,
+    "total_tokens": 736
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Which credit cards or online wallets can I pay with?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_48c1dd9b-9de4-4272-8609-22a848cb4eaf",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"payment methods credit cards online wallets\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_48c1dd9b-9de4-4272-8609-22a848cb4eaf",
+      "content": "We accept Visa, Mastercard, and PayPal."
+    },
+    {
+      "role": "assistant",
+      "content": "We accept the following payment methods:\n\n- **Credit cards:** Visa and Mastercard  \n- **Online wallets:** PayPal  \n\nIf you have any other questions about payments, just let me know!"
+    }
+  ]
+}

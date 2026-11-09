@@ -1,0 +1,140 @@
+{
+  "scenario_id": "rag_02",
+  "question": "Can you send my order to my mailbox at the post office?",
+  "category": "normal",
+  "answer": "Yes, we can ship to a PO Box, but only using the standard postal service. Our expedited carriers (FedEx, UPS, etc.) don’t deliver to PO Boxes. If you choose standard shipping, delivery to a PO Box typically takes about 7–10 business days. Let me know if you’d like to update your shipping method or need any other assistance!",
+  "tools_used": [
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.",
+    "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 8.279,
+  "usage": {
+    "input_tokens": 1111,
+    "output_tokens": 318,
+    "total_tokens": 1429
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can you send my order to my mailbox at the post office?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_85fbc17c-5de4-4190-918d-e09758833ef3",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"PO box shipping\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_85fbc17c-5de4-4190-918d-e09758833ef3",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_d83d6c1f-4070-4e84-9108-8a528790a382",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"PO box\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_d83d6c1f-4070-4e84-9108-8a528790a382",
+      "content": "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "Yes, we can ship to a PO Box, but only using the standard postal service. Our expedited carriers (FedEx, UPS, etc.) don’t deliver to PO Boxes. If you choose standard shipping, delivery to a PO Box typically takes about 7–10 business days. Let me know if you’d like to update your shipping method or need any other assistance!"
+    }
+  ],
+  "final_score": 9.24948024948025,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent's answer includes all required facts: confirms shipping to PO Box is possible only via standard postal service, notes that FedEx/UPS cannot deliver, and gives the typical 7‑10 business day delivery window. No contradictory or prohibited statements are present, and the extra courteous offer does not conflict with the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "All parts of the question are addressed correctly: the agent confirms shipping to a PO box is possible only via standard postal service, notes that expedited carriers cannot deliver to PO boxes, and provides the typical delivery timeframe of 7–10 business days, matching the tool outputs and reference answer.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's answer accurately reflects the tool-provided information about shipping to PO boxes: it correctly states that only standard postal service can deliver to PO boxes and that delivery typically takes 7–10 business days. No contradictory or fabricated details are present. The omission of unrelated shipping time details does not affect correctness for the asked question.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "score": 7,
+    "reason": "The agent used the appropriate tool (faq_search) to retrieve shipping policy information, which is relevant to the user's question about delivering to a PO Box. However, it called the same tool twice unnecessarily, indicating a lack of efficiency. No other tools were required, and the answer itself was accurate, but the redundant calls prevent a perfect score.",
+    "confidence": 0.88
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved records explicitly state that orders can be sent to PO boxes using the standard postal service, note that expedited couriers cannot deliver to PO boxes, and give the typical delivery timeframe (7-10 business days), which fully answers the user's question.",
+    "confidence": 0.98
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called; repeated (not penalised): faq_search",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": [
+      "faq_search"
+    ]
+  },
+  "answer_key_hash": "6173bd4b51e0",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

@@ -1,0 +1,599 @@
+{
+  "run_dir": "runs/baseline_20261106_101856",
+  "experiment": "baseline",
+  "max_steps": 8,
+  "slow_step_s": 10.0,
+  "scenarios": 31,
+  "sources": {
+    "messages": 31
+  },
+  "counts": {
+    "same_result_repeat": 6
+  },
+  "scenarios_with_findings": 6,
+  "mean_steps": 4.35,
+  "max_steps_seen": 11,
+  "rephrased_after_empty": 6,
+  "rows": [
+    {
+      "scenario_id": "edge_01",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "order_lookup",
+        "refund_calculator",
+        "escalate_to_human"
+      ],
+      "latency_s": 3.249,
+      "est_s_per_llm_turn": 0.81,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "edge_02",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "order_lookup"
+      ],
+      "latency_s": 0.858,
+      "est_s_per_llm_turn": 0.43,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "edge_03",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 0.671,
+      "est_s_per_llm_turn": 0.67,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "edge_04",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 1.329,
+      "est_s_per_llm_turn": 0.66,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "edge_05",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "order_lookup",
+        "faq_search"
+      ],
+      "latency_s": 2.004,
+      "est_s_per_llm_turn": 0.67,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_001",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "order_lookup"
+      ],
+      "latency_s": 0.938,
+      "est_s_per_llm_turn": 0.47,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_002",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "order_lookup",
+        "refund_calculator"
+      ],
+      "latency_s": 1.885,
+      "est_s_per_llm_turn": 0.63,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_003",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 2.349,
+      "est_s_per_llm_turn": 1.17,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_004",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "faq_search",
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 2.523,
+      "est_s_per_llm_turn": 0.63,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": [
+        {
+          "check": "same_result_repeat",
+          "tool": "faq_search",
+          "count": 2,
+          "args": [
+            {
+              "query": "PO box shipping"
+            },
+            {
+              "query": "shipping to PO boxes"
+            }
+          ],
+          "detail": "faq_search returned the same output for 2 different arguments ({\"query\": \"PO box shipping\"}, {\"query\": \"shipping to PO boxes\"}): 1 call(s) added nothing"
+        }
+      ]
+    },
+    {
+      "scenario_id": "gen_005",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "faq_search",
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 5.016,
+      "est_s_per_llm_turn": 1.25,
+      "slowest_step": null,
+      "rephrased_after_empty": true,
+      "findings": [
+        {
+          "check": "same_result_repeat",
+          "tool": "faq_search",
+          "count": 2,
+          "args": [
+            {
+              "query": "defective product replacement policy"
+            },
+            {
+              "query": "return defective product replacement"
+            }
+          ],
+          "detail": "faq_search returned the same output for 2 different arguments ({\"query\": \"defective product replacement policy\"}, {\"query\": \"return defective product replacement\"}): 1 call(s) added nothing"
+        }
+      ]
+    },
+    {
+      "scenario_id": "gen_006",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "order_lookup"
+      ],
+      "latency_s": 3.29,
+      "est_s_per_llm_turn": 1.65,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_007",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "escalate_to_human"
+      ],
+      "latency_s": 5.31,
+      "est_s_per_llm_turn": 2.65,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_008",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 2.554,
+      "est_s_per_llm_turn": 0.85,
+      "slowest_step": null,
+      "rephrased_after_empty": true,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_009",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "order_lookup",
+        "refund_calculator",
+        "escalate_to_human"
+      ],
+      "latency_s": 11.467,
+      "est_s_per_llm_turn": 2.87,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_010",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "faq_search",
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 11.455,
+      "est_s_per_llm_turn": 2.86,
+      "slowest_step": null,
+      "rephrased_after_empty": true,
+      "findings": [
+        {
+          "check": "same_result_repeat",
+          "tool": "faq_search",
+          "count": 2,
+          "args": [
+            {
+              "query": "warranty electronics"
+            },
+            {
+              "query": "warranty"
+            }
+          ],
+          "detail": "faq_search returned the same output for 2 different arguments ({\"query\": \"warranty electronics\"}, {\"query\": \"warranty\"}): 1 call(s) added nothing"
+        }
+      ]
+    },
+    {
+      "scenario_id": "gen_011",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 5.355,
+      "est_s_per_llm_turn": 2.68,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_012",
+      "source": "messages",
+      "steps": 11,
+      "llm_turns": 6,
+      "tool_calls": 5,
+      "tools": [
+        "order_lookup",
+        "refund_calculator",
+        "faq_search",
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 17.287,
+      "est_s_per_llm_turn": 2.88,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": [
+        {
+          "check": "same_result_repeat",
+          "tool": "faq_search",
+          "count": 3,
+          "args": [
+            {
+              "query": "shipping cost"
+            },
+            {
+              "query": "shipping cost amount"
+            },
+            {
+              "query": "standard shipping cost amount"
+            }
+          ],
+          "detail": "faq_search returned the same output for 3 different arguments ({\"query\": \"shipping cost\"}, {\"query\": \"shipping cost amount\"}, {\"query\": \"standard shipping cost amount\"}): 2 call(s) added nothing"
+        }
+      ]
+    },
+    {
+      "scenario_id": "gen_013",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 8.193,
+      "est_s_per_llm_turn": 2.73,
+      "slowest_step": null,
+      "rephrased_after_empty": true,
+      "findings": [
+        {
+          "check": "same_result_repeat",
+          "tool": "faq_search",
+          "count": 2,
+          "args": [
+            {
+              "query": "bulk purchase discounts"
+            },
+            {
+              "query": "discount"
+            }
+          ],
+          "detail": "faq_search returned the same output for 2 different arguments ({\"query\": \"bulk purchase discounts\"}, {\"query\": \"discount\"}): 1 call(s) added nothing"
+        }
+      ]
+    },
+    {
+      "scenario_id": "gen_014",
+      "source": "messages",
+      "steps": 1,
+      "llm_turns": 1,
+      "tool_calls": 0,
+      "tools": [],
+      "latency_s": 2.858,
+      "est_s_per_llm_turn": 2.86,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "gen_015",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "escalate_to_human"
+      ],
+      "latency_s": 5.724,
+      "est_s_per_llm_turn": 2.86,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_01",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 5.435,
+      "est_s_per_llm_turn": 2.72,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_02",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "order_lookup"
+      ],
+      "latency_s": 5.63,
+      "est_s_per_llm_turn": 2.81,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_03",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 5.527,
+      "est_s_per_llm_turn": 2.76,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_04",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 5.479,
+      "est_s_per_llm_turn": 2.74,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "normal_05",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "order_lookup",
+        "refund_calculator"
+      ],
+      "latency_s": 8.442,
+      "est_s_per_llm_turn": 2.81,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_01",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 8.825,
+      "est_s_per_llm_turn": 2.94,
+      "slowest_step": null,
+      "rephrased_after_empty": true,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_02",
+      "source": "messages",
+      "steps": 5,
+      "llm_turns": 3,
+      "tool_calls": 2,
+      "tools": [
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 8.279,
+      "est_s_per_llm_turn": 2.76,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_03",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 5.631,
+      "est_s_per_llm_turn": 2.82,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_04",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 5.716,
+      "est_s_per_llm_turn": 2.86,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_05",
+      "source": "messages",
+      "steps": 3,
+      "llm_turns": 2,
+      "tool_calls": 1,
+      "tools": [
+        "faq_search"
+      ],
+      "latency_s": 5.588,
+      "est_s_per_llm_turn": 2.79,
+      "slowest_step": null,
+      "rephrased_after_empty": false,
+      "findings": []
+    },
+    {
+      "scenario_id": "rag_06",
+      "source": "messages",
+      "steps": 7,
+      "llm_turns": 4,
+      "tool_calls": 3,
+      "tools": [
+        "faq_search",
+        "faq_search",
+        "faq_search"
+      ],
+      "latency_s": 11.709,
+      "est_s_per_llm_turn": 2.93,
+      "slowest_step": null,
+      "rephrased_after_empty": true,
+      "findings": [
+        {
+          "check": "same_result_repeat",
+          "tool": "faq_search",
+          "count": 3,
+          "args": [
+            {
+              "query": "gift cards"
+            },
+            {
+              "query": "gift card"
+            },
+            {
+              "query": "gift"
+            }
+          ],
+          "detail": "faq_search returned the same output for 3 different arguments ({\"query\": \"gift cards\"}, {\"query\": \"gift card\"}, {\"query\": \"gift\"}): 2 call(s) added nothing"
+        }
+      ]
+    }
+  ]
+}

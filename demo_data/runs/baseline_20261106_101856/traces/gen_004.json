@@ -1,0 +1,98 @@
+{
+  "scenario_id": "gen_004",
+  "question": "Do you ship to PO boxes and how long does it take?",
+  "category": "normal",
+  "answer": "Yes—we can ship to PO boxes, but only using the standard postal service. Our expedited carriers (FedEx, UPS, etc.) don’t deliver to PO boxes.\n\n**Delivery time to a PO box:**  \n* **Standard shipping:** approximately **7–10 business days** (the usual 5–7‑day estimate can be a bit longer for PO boxes).  \n\nIf you need faster delivery, you’d need to provide a street address so we can use our express options. Let me know if you’d like to place an order or have any other questions!",
+  "tools_used": [
+    "faq_search",
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.",
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.",
+    "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 2.523,
+  "usage": {
+    "input_tokens": 1579,
+    "output_tokens": 411,
+    "total_tokens": 1990
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Do you ship to PO boxes and how long does it take?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_fb55d766-8a8b-4e17-af1f-2f30885814eb",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"PO box shipping\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_fb55d766-8a8b-4e17-af1f-2f30885814eb",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_44df8624-2b82-4c4d-abf0-5556f13abfee",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"shipping to PO boxes\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_44df8624-2b82-4c4d-abf0-5556f13abfee",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_654fac5c-3df6-47d4-ae54-8223604561ec",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"Do you ship to PO boxes\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_654fac5c-3df6-47d4-ae54-8223604561ec",
+      "content": "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "Yes—we can ship to PO boxes, but only using the standard postal service. Our expedited carriers (FedEx, UPS, etc.) don’t deliver to PO boxes.\n\n**Delivery time to a PO box:**  \n* **Standard shipping:** approximately **7–10 business days** (the usual 5–7‑day estimate can be a bit longer for PO boxes).  \n\nIf you need faster delivery, you’d need to provide a street address so we can use our express options. Let me know if you’d like to place an order or have any other questions!"
+    }
+  ]
+}

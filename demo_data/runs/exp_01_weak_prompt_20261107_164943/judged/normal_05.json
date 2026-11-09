@@ -1,0 +1,138 @@
+{
+  "scenario_id": "normal_05",
+  "question": "Is order A1003 eligible for a refund?",
+  "category": "normal",
+  "answer": "Yes, order **A1003** is eligible for a full refund. The refund amount would be **$210.00**. If you’d like to proceed with the refund or have any other questions, just let me know!",
+  "tools_used": [
+    "order_lookup",
+    "refund_calculator"
+  ],
+  "tool_outputs": [
+    "Order A1003: status=shipped, total=$210.0, days_since_purchase=3",
+    "Eligible for full refund of $210.0"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 9.251,
+  "usage": {
+    "input_tokens": 927,
+    "output_tokens": 211,
+    "total_tokens": 1138
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Is order A1003 eligible for a refund?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_93e41069-ec9a-4824-b760-a8f0f40102eb",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1003\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_93e41069-ec9a-4824-b760-a8f0f40102eb",
+      "content": "Order A1003: status=shipped, total=$210.0, days_since_purchase=3"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_1db3e71b-5e15-426a-93a9-4e0625bbb57f",
+          "type": "function",
+          "function": {
+            "name": "refund_calculator",
+            "arguments": "{\"days_since_purchase\": 3, \"order_total\": 210}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_1db3e71b-5e15-426a-93a9-4e0625bbb57f",
+      "content": "Eligible for full refund of $210.0"
+    },
+    {
+      "role": "assistant",
+      "content": "Yes, order **A1003** is eligible for a full refund. The refund amount would be **$210.00**. If you’d like to proceed with the refund or have any other questions, just let me know!"
+    }
+  ],
+  "final_score": 8.902083333333335,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 5,
+    "reason": "The agent correctly states that order A1003 is eligible for a full refund of $210.00, matching the reference. However, it omits several required facts from the reference answer: the purchase was 3 days ago, it falls within the 30‑day window, and the order has shipped but not yet been delivered. Missing these mandatory details lowers the score, though there are no contradictory or false statements.",
+    "confidence": 0.86,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single question part asks whether order A1003 is eligible for a refund. The agent correctly states that it is eligible for a full refund of $210.00, matching both the tool output and the reference answer. No information is missing or invented.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The agent's answer exactly matches the useful information returned by the tools, confirming eligibility for a full refund of $210.00 for order A1003. No contradictions or hallucinations are present.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "score": 9,
+    "reason": "The agent called the appropriate tools: it first needed to retrieve the order details with order_lookup and then compute the refund amount with refund_calculator. Both calls are necessary for determining eligibility and the refund value, and they were used in a logical sequence. No extraneous or irrelevant tools were invoked, so the usage is sensible. One point is deducted only because we cannot verify the exact internal logic or whether the agent verified policy constraints beyond the basic lookup, but overall the tool usage is correct.",
+    "confidence": 0.97
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieval includes the order ID, purchase age (3 days), total amount, and explicitly states eligibility for a full refund, which fully answers the question.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "2/2 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "4f87e397ba3a",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

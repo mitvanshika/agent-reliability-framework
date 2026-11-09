@@ -1,0 +1,56 @@
+{
+  "scenario_id": "gen_006",
+  "question": "Is there a way to track my package for order A1002?",
+  "category": "normal",
+  "answer": "Your order **A1002** has already been **delivered** (45 days ago). Since it’s been delivered, there isn’t a live tracking link available. If you haven’t received it or have any other concerns, please let me know and I’ll be happy to help!",
+  "tools_used": [
+    "order_lookup"
+  ],
+  "tool_outputs": [
+    "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_101856",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 3.29,
+  "usage": {
+    "input_tokens": 682,
+    "output_tokens": 186,
+    "total_tokens": 868
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Is there a way to track my package for order A1002?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_17f4585a-f94e-4aa9-83ae-ed927d4e41a9",
+          "type": "function",
+          "function": {
+            "name": "order_lookup",
+            "arguments": "{\"order_id\": \"A1002\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_17f4585a-f94e-4aa9-83ae-ed927d4e41a9",
+      "content": "Order A1002: status=delivered, total=$45.5, days_since_purchase=45"
+    },
+    {
+      "role": "assistant",
+      "content": "Your order **A1002** has already been **delivered** (45 days ago). Since it’s been delivered, there isn’t a live tracking link available. If you haven’t received it or have any other concerns, please let me know and I’ll be happy to help!"
+    }
+  ]
+}

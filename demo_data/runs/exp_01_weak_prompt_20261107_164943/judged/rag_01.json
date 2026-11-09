@@ -1,0 +1,117 @@
+{
+  "scenario_id": "rag_01",
+  "question": "Will I have to pay import fees when my order is sent abroad?",
+  "category": "normal",
+  "answer": "Yes—when we ship an order to an address outside of the country, the destination’s customs authorities may assess duties, taxes, or other import fees. Those charges are set by the local government and are the buyer’s responsibility; they aren’t included in the price you paid to us. If you have any specific concerns about a particular country’s regulations, feel free to let us know and we’ll try to provide more details.",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261107_164943",
+  "error": null,
+  "error_type": null,
+  "experiment": "exp_01_weak_prompt",
+  "latency_s": 3.815,
+  "usage": {
+    "input_tokens": 594,
+    "output_tokens": 219,
+    "total_tokens": 813
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support agent. Help the customer."
+    },
+    {
+      "role": "user",
+      "content": "Will I have to pay import fees when my order is sent abroad?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_83112233-8eed-4978-a805-da8667a68511",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"import fees abroad customs\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_83112233-8eed-4978-a805-da8667a68511",
+      "content": "International shipments may be subject to customs duties, taxes, and fees imposed by the destination country's government. These charges are the buyer's responsibility and are not included in the order total."
+    },
+    {
+      "role": "assistant",
+      "content": "Yes—when we ship an order to an address outside of the country, the destination’s customs authorities may assess duties, taxes, or other import fees. Those charges are set by the local government and are the buyer’s responsibility; they aren’t included in the price you paid to us. If you have any specific concerns about a particular country’s regulations, feel free to let us know and we’ll try to provide more details."
+    }
+  ],
+  "final_score": 9.803245436105477,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent correctly states that international shipments may incur customs duties, taxes, and fees, that these are the buyer's responsibility, and that they are not included in the order total, matching the reference. No contradictory or prohibited claims are made, and the extra offer of assistance does not conflict with the required facts.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single part of the question asks whether import fees apply to overseas orders. The agent correctly states that customs duties, taxes, or import fees may be assessed by the destination country, that these are the buyer's responsibility, and that they are not included in the order total, matching the reference answer. No information is missing or invented.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's answer directly mirrors the tool's information, correctly stating that import fees may apply, are the buyer's responsibility, and are not included in the order total. No contradictions or hallucinations are present.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "score": 10,
+    "reason": "The agent correctly identified that the FAQ database is the appropriate source for the import‑fees policy, called only the needed 'faq_search' tool, and used the retrieved information to give a complete, accurate answer without any superfluous or incorrect tool calls.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved passage directly states that international shipments can incur customs duties, taxes, and fees, which are the buyer's responsibility and not included in the order total, fully answering the question.",
+    "confidence": 0.99
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": []
+  },
+  "answer_key_hash": "40993e3f2de3",
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "experiment_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

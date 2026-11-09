@@ -1,0 +1,138 @@
+{
+  "scenario_id": "rag_02",
+  "question": "Can you send my order to my mailbox at the post office?",
+  "category": "normal",
+  "answer": "Yes—we can ship to a PO box, but only using the standard postal service. Our express options (FedEx, UPS, etc.) can’t deliver to a PO box. If you choose standard shipping, delivery to a PO box usually takes about **7–10 business days** (our regular 5‑7‑day estimate can be a little longer because the mail is routed through the postal system).\n\nIf you’d like to change the shipping method for an existing order, just let me know your order number and we can update it for you. Otherwise, feel free to place a new order and select “Standard Shipping” with your PO box address at checkout.",
+  "tools_used": [
+    "faq_search",
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.",
+    "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 8.382,
+  "usage": {
+    "input_tokens": 1111,
+    "output_tokens": 414,
+    "total_tokens": 1525
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "Can you send my order to my mailbox at the post office?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_83b8e326-1990-4849-b511-fce0a3c4de7e",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"PO box shipping\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_83b8e326-1990-4849-b511-fce0a3c4de7e",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_08d13433-e7b8-44bd-a219-6091e6aae94e",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"PO box\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_08d13433-e7b8-44bd-a219-6091e6aae94e",
+      "content": "We can ship to PO boxes via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to PO boxes typically takes 7-10 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "Yes—we can ship to a PO box, but only using the standard postal service. Our express options (FedEx, UPS, etc.) can’t deliver to a PO box. If you choose standard shipping, delivery to a PO box usually takes about **7–10 business days** (our regular 5‑7‑day estimate can be a little longer because the mail is routed through the postal system).\n\nIf you’d like to change the shipping method for an existing order, just let me know your order number and we can update it for you. Otherwise, feel free to place a new order and select “Standard Shipping” with your PO box address at checkout."
+    }
+  ],
+  "final_score": 9.258333333333333,
+  "disagreement": false,
+  "judge_error": null,
+  "judge_set": {
+    "name": "experiment_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "tool_efficiency",
+      "context_relevance"
+    ],
+    "checks": [
+      "tool_match"
+    ],
+    "versions": {
+      "completeness": "v2"
+    },
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The agent’s answer includes every fact from the reference: it confirms shipping to a PO box is possible only via standard postal service, states that FedEx/UPS cannot deliver, and gives the 7‑10 business day delivery window. No contradictory or prohibited claims are made; the additional instructions about changing shipping method are permissible. Hence it fully satisfies the reference requirements.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The agent correctly confirms that orders can be sent to a PO box using only the standard postal service, notes that expedited couriers cannot deliver to PO boxes, and provides the expected delivery window of 7–10 business days, matching both the tool outputs and reference answer. No information is missing or invented.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The agent's answer correctly incorporates all the relevant information from the tools: it confirms shipping to PO boxes is possible only via standard postal service, notes that express couriers cannot deliver to PO boxes, and provides the appropriate delivery timeframe (7‑10 business days) while referencing the standard 5‑7 day estimate. No contradictions or hallucinations are present.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "score": 7,
+    "reason": "The agent correctly used the FAQ search tool to retrieve shipping policy information, which is appropriate for the question. However, it called the same tool twice, likely retrieving the same data redundantly, which is unnecessary. A single call would have sufficed, so the tool usage was not fully optimal.",
+    "confidence": 0.86
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved records include the key details: shipping to PO boxes is possible via standard postal service only, expedited couriers cannot deliver, and the typical delivery time (7-10 business days) is provided, which fully answers the user's query.",
+    "confidence": 0.98
+  },
+  "tool_match_result": {
+    "score": 10.0,
+    "reason": "1/1 expected tools called; repeated (not penalised): faq_search",
+    "missing": [],
+    "extras": [],
+    "order_ok": true,
+    "repeated": [
+      "faq_search"
+    ]
+  },
+  "answer_key_hash": "6173bd4b51e0",
+  "regraded_from": "experiment_v1",
+  "regraded_judges": "all"
+}

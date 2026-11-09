@@ -1,0 +1,56 @@
+{
+  "scenario_id": "normal_03",
+  "question": "How long does standard shipping take?",
+  "category": "normal",
+  "answer": "Standard shipping typically takes **5–7 business days** to arrive after your order is processed. If you need your items faster, we also offer an express option that arrives in 2–3 business days. Let me know if you’d like help selecting a shipping method or have any other questions!",
+  "tools_used": [
+    "faq_search"
+  ],
+  "tool_outputs": [
+    "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261106_111506",
+  "error": null,
+  "error_type": null,
+  "experiment": "baseline",
+  "latency_s": 5.453,
+  "usage": {
+    "input_tokens": 667,
+    "output_tokens": 155,
+    "total_tokens": 822
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a customer support agent for an online store.\nUse order_lookup to check order details, refund_calculator to determine refund eligibility,\nfaq_search for general policy questions, and escalate_to_human for anything you cannot resolve\nyourself or that requires human judgment. Always use the actual tools rather than guessing."
+    },
+    {
+      "role": "user",
+      "content": "How long does standard shipping take?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "fc_1a06f9a4-d154-4e92-b7f7-1760190e5378",
+          "type": "function",
+          "function": {
+            "name": "faq_search",
+            "arguments": "{\"query\": \"standard shipping time\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "fc_1a06f9a4-d154-4e92-b7f7-1760190e5378",
+      "content": "Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days."
+    },
+    {
+      "role": "assistant",
+      "content": "Standard shipping typically takes **5–7 business days** to arrive after your order is processed. If you need your items faster, we also offer an express option that arrives in 2–3 business days. Let me know if you’d like help selecting a shipping method or have any other questions!"
+    }
+  ]
+}
