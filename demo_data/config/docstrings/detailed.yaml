@@ -1,0 +1,7 @@
+# Tool descriptions for agent_configurable.py, keyed by tool name.
+# The model reads these to decide which tool to call and how.
+# Exact copy of the strong agent's docstrings (test_agent.py).
+order_lookup: "Looks up an order by its ID and returns its status, total, and purchase date info."
+refund_calculator: "Determines refund eligibility and amount based on order total and days since purchase."
+faq_search: "Searches FAQ topics: shipping, return policy, payment methods, PO box, or customs."
+escalate_to_human: "Flags that this case should be handed off to a human agent, with a reason."

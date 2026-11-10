@@ -1,0 +1,5 @@
+id: "rag_04"
+question: "How long does it take to arrive if I choose the quicker option?"
+category: "normal"
+expected_answer: "Express shipping takes 2-3 business days (standard shipping takes 5-7 business days)."
+expected_tools: [faq_search]

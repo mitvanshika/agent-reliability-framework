@@ -1,0 +1,6 @@
+id: "gen_013"
+question: "Are there any discounts for bulk purchases of the same product?"
+category: "edge"
+expected_answer: "No information about bulk-purchase discounts is available. Must not invent a discount. Escalate to a human for a quote."
+expected_tools: [escalate_to_human]
+split: train

@@ -1,0 +1,5 @@
+{# Plain-English hover/focus tooltips: {% from "_tips.html" import tip with context %} then {{ tip("baseline") }}.
+   The text comes from story.GLOSSARY. #}
+{% macro tip(term, label=None) -%}
+<span class="term" tabindex="0" data-tip="{{ story.glossary[term] }}">{{ label or term }}</span>
+{%- endmacro %}

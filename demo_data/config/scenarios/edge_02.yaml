@@ -1,0 +1,7 @@
+id: edge_02
+question: "Can you check order Z9999 for me?"
+category: edge
+expected_tool: order_lookup
+expected_answer: "No order with ID Z9999 exists. The customer should be asked to double-check the order ID. Must not invent any order details."
+expected_tools: [order_lookup]
+split: train

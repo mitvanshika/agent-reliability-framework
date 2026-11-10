@@ -12,6 +12,8 @@ What is copied:
                 comparison, diagnosis, step_checks, pipeline + traces/, judged/, judged_steps/
                 (judged_experiment_v1/ and other old judge folders are left out).
   baselines/*.json, noise/*.json, evidence/*.md, judged_traces(_weak)/ (Track 1) if present.
+  config/       the prompt, tool-description and scenario files those runs point at
+                (story.config_files), for the Overview story: what the runs actually used.
 demo_data/ask_cache.json is kept as it is unless --ask is given. Its answers are computed
 from the context built from demo_data/ itself, so they match what the demo shows.
 """
@@ -27,6 +29,7 @@ import sys
 from datetime import datetime
 
 import overview
+import story
 
 OUT = "demo_data"
 RUN_FILES = ("run_meta.json", "summary.json", "comparison.json", "diagnosis.json", "step_checks.json", "pipeline.json")
@@ -59,7 +62,7 @@ def snapshot(runs_dir="runs", out=OUT):
     if os.path.isfile(cache_path):
         with open(cache_path, encoding="utf-8") as f:
             keep_cache = f.read()
-    for sub in ("runs", "baselines", "noise", "evidence", "judged_traces", "judged_traces_weak"):
+    for sub in ("runs", "baselines", "noise", "evidence", "judged_traces", "judged_traces_weak", "config"):
         shutil.rmtree(os.path.join(out, sub), ignore_errors=True)
     runs = demo_runs(runs_dir)
     for run in runs:
@@ -74,6 +77,10 @@ def snapshot(runs_dir="runs", out=OUT):
         os.makedirs(os.path.join(out, sub), exist_ok=True)
         for f in sorted(glob.glob(pattern)):
             shutil.copy2(f, os.path.join(out, sub))
+    for rel in story.config_files(runs_dir, runs):
+        if os.path.isfile(rel):
+            os.makedirs(os.path.join(out, "config", os.path.dirname(rel)), exist_ok=True)
+            shutil.copy2(rel, os.path.join(out, "config", rel))
     for d in ("judged_traces", "judged_traces_weak"):
         if glob.glob(os.path.join(d, "*.json")):
             _copytree(d, os.path.join(out, d))

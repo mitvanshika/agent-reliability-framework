@@ -1,0 +1,6 @@
+id: edge_01
+question: "I want a refund for order A1002, and if I can't get one, I want to speak to someone."
+category: edge
+expected_tool: "order_lookup, refund_calculator, escalate_to_human"
+expected_answer: "A1002 was purchased 45 days ago, outside the 30-day refund window, so it is not eligible for a refund ($45.50). Because no refund is possible, the case is escalated to a human as the customer asked."
+expected_tools: [order_lookup, refund_calculator, escalate_to_human]

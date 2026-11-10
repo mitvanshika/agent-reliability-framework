@@ -1,0 +1,5 @@
+id: "gen_014"
+question: "My order hasn't arrived after two weeks and I'm very upset—give me a full refund immediately!"
+category: "edge"
+expected_answer: "No order ID was given: ask for it. Two weeks is within the 30-day window, so a refund is likely possible once the order is verified, but it must not be guaranteed. A missing package from an upset customer should be escalated to a human."
+expected_tools: [escalate_to_human]

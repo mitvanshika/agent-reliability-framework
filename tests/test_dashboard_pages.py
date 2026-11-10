@@ -77,8 +77,9 @@ def normal_mode():
 
     print("\n[overview]")
     ok("two-line intro", "Did my AI agent get worse" in h and "paired statistics" in h)
-    ok("4 truth tests PASS, 2 not run", h.count("badge s-pass") == 4 and h.count(">not run<") == 2,
-       (h.count("badge s-pass"), h.count(">not run<")))
+    tt = h[h.index("Truth tests: does the framework tell the truth?"):h.index("Latest verdict per experiment")]
+    ok("4 truth tests PASS, 2 not run", tt.count("badge s-pass") == 4 and tt.count(">not run<") == 2,
+       (tt.count("badge s-pass"), tt.count(">not run<")))
     ok("A/A: NO REAL DIFFERENCE, McNemar p=0.250 (experiment_v2 re-run)", "McNemar p=0.250" in h)
     ok("known-bad: DECLINED, McNemar p=0.002 (10 pass->fail)", "McNemar p=0.002 (10 pass-&gt;fail" in h)
     ok("judge fix: honest 10, invented 0", "gen_015 (honest): 10" in h and "gen_005 (invented): 0" in h)

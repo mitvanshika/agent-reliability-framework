@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent Reliability Overview</title>
 {% include "_style.html" %}
+{% from "_tips.html" import tip with context %}
 </head>
 <body>
 {% include "_nav.html" %}
@@ -14,9 +15,281 @@
     <p>The framework runs a fixed set of test questions through the old and the new version of a system, scores every
       answer with a panel of LLM judges, and uses <strong>paired statistics</strong> (McNemar, Wilcoxon) to say whether
       the change made it <strong>worse, better, or no real difference</strong>, and which questions moved and why.</p>
+    <p class="hint">Scroll for the story, told with one real experiment. Dotted words have a plain-English explanation: hover or tap them.</p>
+    <nav class="toc" aria-label="Sections">
+      <a href="#agent">1 · The agent</a> <a href="#tests">2 · The tests</a> <a href="#evaluation">3 · How it's scored</a>
+      <a href="#change">4 · The change</a> <a href="#result">5 · The result</a> <a href="#up-close">6 · One question up close</a>
+      <a href="#diagnosis">7 · Diagnosis</a> <a href="#trust">8 · Why trust it</a> <a href="#explore">9 · Explore</a>
+    </nav>
   </section>
 
-  <section class="panel">
+  {% set a = story.agent %}
+  {% if a %}
+  <section class="panel story" id="agent">
+    <div class="step-no">1</div>
+    <h2>The agent being tested</h2>
+    <p class="lead">A customer-support bot for an online store ({{ a.model }}, temperature {{ a.temperature }}).
+      It answers by calling {{ a.tools|length }} tools:</p>
+    <ul class="tools">
+      {% for t in a.tools %}<li><span class="mono tool">{{ t.name }}</span> <span class="dim">{{ t.description }}</span></li>{% endfor %}
+    </ul>
+    <p class="lead">Its instructions (<span class="mono">{{ a.prompt_file }}</span>), word for word as the agent received them:</p>
+    <blockquote class="prompt">{{ a.prompt }}</blockquote>
+    {% set ex = a.example %}
+    {% if ex %}
+    <h3>A real conversation, step by step</h3>
+    <ol class="convo">
+      {% for s in ex.steps %}
+        {% if s.kind == "question" %}
+          <li class="c-q"><div class="who">Customer</div><div>{{ s.text }}</div></li>
+        {% elif s.kind == "tool" %}
+          <li class="c-tool"><div class="who">Tool call</div>
+            <div class="mono"><span class="tool">{{ s.name }}</span>({% for k, v in s.args.items() %}{{ k }}={{ v|tojson }}{% if not loop.last %}, {% endif %}{% endfor %})</div>
+            <div class="mono result">&rarr; {{ s.result }}</div></li>
+        {% else %}
+          <li class="c-a"><div class="who">Agent's answer</div><div class="answer md-answer">{{ s.html }}</div></li>
+        {% endif %}
+      {% endfor %}
+    </ol>
+    <p class="q">Recorded in the {{ tip("baseline") }} run <span class="mono">{{ a.run_id }}</span>, question
+      <span class="mono">{{ ex.scenario_id }}</span>: final score {{ "%.2f"|format(ex.final_score) }}/10
+      ({{ tip("pass", "a pass") }}), {{ "{:,}".format(ex.tokens) }} tokens, {{ ex.latency_s }} s.
+      <a href="/runs/{{ a.run_id }}/{{ ex.scenario_id }}">Open its step timeline &rarr;</a></p>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% set t = story.tests %}
+  {% if t %}
+  <section class="panel story" id="tests">
+    <div class="step-no">2</div>
+    <h2>The tests: {{ t.total }} questions with answer keys</h2>
+    <p class="lead">Every version of the agent answers the same {{ t.total }} test questions ("scenarios"). {{ t.with_key }} of them
+      come with an answer key: the facts a right answer must contain.</p>
+    <div class="stat-row">
+      {% for c, n in t.categories %}<div class="stat"><div class="stat-n">{{ n }}</div><div class="q">{{ c }} questions</div></div>{% endfor %}
+    </div>
+    <table class="compact">
+      <thead><tr><th>Group</th><th class="num">Questions</th><th>What they are</th></tr></thead>
+      <tbody>
+      {% for g in t.groups %}<tr><td class="mono">{{ g.prefix }}_*</td><td class="num">{{ g.count }}</td><td class="dim">{{ g.label }}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+    <h3>Three of them, with their answer keys</h3>
+    <div class="cards">
+      {% for s in t.samples %}
+      <div class="card">
+        <div class="mono dim">{{ s.id }}</div>
+        <div class="card-q">{{ s.question }}</div>
+        <div class="who">Answer key</div>
+        <div class="dim">{{ s.expected }}</div>
+        <div class="q">Expected tools: {% for x in s.tools %}<span class="mono tool">{{ x }}</span>{% if not loop.last %}, {% endif %}{% endfor %}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% set e = story.evaluation %}
+  {% if e %}
+  <section class="panel story" id="evaluation">
+    <div class="step-no">3</div>
+    <h2>How an answer is scored, and how two versions are compared</h2>
+    <div class="flow-label">Scoring one answer</div>
+    <div class="flow" role="img" aria-label="Scoring one answer: the agent's answer goes to 5 judges in parallel, whose average is the final score">
+      <div class="fbox">Agent's answer<div class="q">+ its tool calls</div></div>
+      <div class="farrow" aria-hidden="true">&rarr;</div>
+      <div class="fbox judges">{% for j in e.judges %}<div class="mono">{{ j.name }}</div>{% endfor %}<div class="q">{{ e.judges|length }} LLM judges in parallel, 0-10 each</div></div>
+      <div class="farrow" aria-hidden="true">&rarr;</div>
+      <div class="fbox">Final score<div class="q">their average; {{ tip("pass") }} at &ge; {{ "%g"|format(e.threshold) }}</div></div>
+    </div>
+    <div class="flow-label">Comparing two versions (every question, scored in both)</div>
+    <div class="flow" role="img" aria-label="Comparing two versions: compare with the baseline, McNemar and Wilcoxon tests, a verdict, then a diagnosis">
+      <div class="fbox">Compare with the {{ tip("baseline") }}<div class="q">same question, both versions</div></div>
+      <div class="farrow" aria-hidden="true">&rarr;</div>
+      <div class="fbox">{{ tip("McNemar") }} + {{ tip("Wilcoxon") }}<div class="q">is the difference real?</div></div>
+      <div class="farrow" aria-hidden="true">&rarr;</div>
+      <div class="fbox accent">Verdict<div class="q">DECLINED / NO REAL DIFFERENCE / IMPROVED</div></div>
+      <div class="farrow" aria-hidden="true">&rarr;</div>
+      <div class="fbox">Diagnosis<div class="q">why each ▼ question dropped</div></div>
+    </div>
+    <h3>What each judge asks</h3>
+    <table class="compact">
+      <tbody>
+      {% for j in e.judges + e.checks %}<tr><td class="mono tool">{{ j.name }}</td><td>{{ j.plain }}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+    <p class="q">Judge model: {{ e.judge_model }} (judge set <span class="mono">{{ e.judge_set }}</span>). Each judge writes a reason next to its score; section 6 shows them.</p>
+    <div class="defs">
+      <div><b>{{ tip("pass", "Pass") }}</b>: the final score is {{ "%g"|format(e.threshold) }} or more out of 10.</div>
+      <div><b>{{ tip("noise band", "Noise band") }}</b>: the baseline was run twice with nothing changed
+        {%- if e.noise_runs|length >= 2 %} (pass rate {{ "%.0f"|format(e.noise_runs[0].pass_rate * 100) }}% and then {{ "%.0f"|format(e.noise_runs[1].pass_rate * 100) }}%){% endif %}.
+        How far each question's score moved between those two runs is its noise band (here {{ "%.1f"|format(e.band_min) }} to {{ "%.1f"|format(e.band_max) }} points;
+        {{ e.calm }} of {{ e.n_noise }} questions moved {{ "%g"|format(e.jumpy_range) }} points or less). Only a move bigger than its band counts as {{ tip("▲/▼") }}.</div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% set ch = story.change %}
+  {% if ch %}
+  <section class="panel story" id="change">
+    <div class="step-no">4</div>
+    <h2>The change tested: a weaker prompt</h2>
+    <p class="lead">Experiment <span class="mono">{{ ch.experiment }}</span>: "{{ ch.description }}". Exactly one setting changed
+      ({% for c in ch.changes %}<span class="mono">{{ c }}</span>{% endfor %}). Everything else, including the model, tools and questions, stayed the same.
+      This is a known-bad change, made on purpose to check that the framework catches it.</p>
+    <div class="sidebyside">
+      <div><div class="who">Before: <span class="mono">{{ ch.before.file }}</span> ({{ ch.before.n_words }} words)</div>
+        <blockquote class="prompt diff">{% for w, d in ch.before.words %}{% if d %}<del>{{ w }}</del>{% else %}{{ w }}{% endif %} {% endfor %}</blockquote></div>
+      <div><div class="who">After: <span class="mono">{{ ch.after.file }}</span> ({{ ch.after.n_words }} words)</div>
+        <blockquote class="prompt diff">{% for w, d in ch.after.words %}{% if d %}<ins>{{ w }}</ins>{% else %}{{ w }}{% endif %} {% endfor %}</blockquote></div>
+    </div>
+    <p class="q">Highlighted: words removed (left) and added (right). The weak prompt no longer names the tools or says "use the actual tools rather than guessing".</p>
+  </section>
+  {% endif %}
+
+  {% set r = story.result %}
+  {% if r %}
+  <section class="panel story" id="result">
+    <div class="step-no">5</div>
+    <h2>The result: <span class="badge big v-{{ r.verdict|replace(' ', '-') }}">{{ r.verdict }}</span></h2>
+    <p class="lead">The framework rejected the change. All {{ r.pairs }} questions were paired, each compared with itself across the two versions.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-n">{{ "%.0f"|format(r.before.rate * 100) }}% &rarr; <span class="bad">{{ "%.0f"|format(r.after.rate * 100) }}%</span></div>
+        <div class="q">{{ tip("pass", "pass rate") }}: {{ r.before.passed }}/{{ r.before.total }} &rarr; {{ r.after.passed }}/{{ r.after.total }}</div></div>
+      <div class="stat"><div class="stat-n"><span class="bad">{{ r.worse }}</span> worse, {{ r.better }} better</div>
+        <div class="q">questions that flipped pass&rarr;fail / fail&rarr;pass</div></div>
+      <div class="stat"><div class="stat-n">▲{{ r.counts.up }} ▼{{ r.counts.down }} ═{{ r.counts.same }}</div>
+        <div class="q">scores beyond their {{ tip("noise band") }} ({{ tip("▲/▼") }})</div></div>
+      {% if r.tokens.pct is not none %}
+      <div class="stat"><div class="stat-n">{{ "%.0f"|format(-r.tokens.pct) }}% fewer tokens</div>
+        <div class="q">{{ "{:,}".format(r.tokens.baseline) }} &rarr; {{ "{:,}".format(r.tokens.run) }}: cheaper, but worse</div></div>
+      {% endif %}
+    </div>
+    <ul class="plain">
+      <li><b>{{ tip("McNemar") }} p={{ "%.3f"|format(r.mcnemar_p) }}</b>: {{ r.worse }} questions went from pass to fail and {{ r.better }} the other way; if the
+        change did nothing, a split this lopsided would happen {{ r.mcnemar_odds }} times.</li>
+      <li><b>{{ tip("Wilcoxon") }} p={{ "%.3f"|format(r.wilcoxon_p) }}</b>: across the {{ r.wilcoxon_n }} questions whose score changed at all, scores fell
+        more consistently than chance: {{ r.wilcoxon_odds }} if the change did nothing.</li>
+      <li>Both {{ tip("p-value", "p-values") }} are below {{ "%g"|format(r.alpha) }}, so the drop is called real: <b>{{ r.verdict }}</b>.</li>
+    </ul>
+    <table class="compact">
+      <thead><tr><th>Judge (average over all questions)</th><th class="num">Before</th><th class="num">After</th><th class="num">Change</th></tr></thead>
+      <tbody>
+      {% for j in r.per_judge %}<tr><td class="mono">{{ j.name }}</td><td class="num">{{ "%.2f"|format(j.baseline_mean) }}</td><td class="num">{{ "%.2f"|format(j.run_mean) }}</td>
+        <td class="num {{ 'bad' if j.delta < 0 else 'good' }}">{{ "%+.2f"|format(j.delta) }}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% set u = story.up_close %}
+  {% if u %}
+  <section class="panel story" id="up-close">
+    <div class="step-no">6</div>
+    <h2>One question up close: <span class="mono">{{ u.scenario_id }}</span></h2>
+    <p class="lead"><b>"{{ u.question }}"</b><br>Answer key: {{ u.expected }}</p>
+    <div class="sidebyside">
+      {% for s in u.sides %}
+      <div>
+        <div class="who">{{ s.label }} &middot; final score <b class="{{ 'good' if s.final >= 7 else 'bad' }}">{{ "%.2f"|format(s.final) }}</b>
+          &middot; <a href="/runs/{{ s.run_id }}/{{ u.scenario_id }}">step timeline &rarr;</a></div>
+        <ol class="convo">
+          {% for st in s.steps %}
+            {% if st.kind == "tool" %}
+            <li class="c-tool"><div class="mono"><span class="tool">{{ st.name }}</span>({% for k, v in st.args.items() %}{{ k }}={{ v|tojson }}{% if not loop.last %}, {% endif %}{% endfor %})</div>
+              <div class="mono result">&rarr; {{ st.result }}</div></li>
+            {% else %}
+            <li class="c-a"><div class="who">Answer</div><div class="answer md-answer">{{ st.html }}</div></li>
+            {% endif %}
+          {% endfor %}
+        </ol>
+      </div>
+      {% endfor %}
+    </div>
+    <h3>What each judge said</h3>
+    <table class="judges">
+      <thead><tr><th>Judge</th>{% for s in u.sides %}<th>{{ s.label }}</th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for n in u.judges %}
+        <tr><td class="mono tool">{{ n }}</td>
+        {% for s in u.sides %}{% set jr = s.judges.get(n) %}
+          <td>{% if jr %}<b class="score">{{ "%g"|format(jr.score|float) }}</b> <span class="dim">{{ jr.reason }}</span>{% else %}<span class="faint">-</span>{% endif %}</td>
+        {% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <p class="q">Score {{ "%.2f"|format(u.sides[0].final) }} &rarr; {{ "%.2f"|format(u.sides[1].final) }} ({{ "%+.2f"|format(u.delta) }}), far outside its
+      {{ tip("noise band") }} of {{ "%g"|format(u.band) }}{% if u.flip %}: a {{ u.flip|replace("->", "→") }} flip{% endif %}.</p>
+  </section>
+  {% endif %}
+
+  {% set d = story.diagnosis %}
+  {% if d %}
+  <section class="panel story" id="diagnosis">
+    <div class="step-no">7</div>
+    <h2>Diagnosis: why each ▼ question dropped</h2>
+    <p class="lead">For every question that dropped beyond its noise band, the framework reads which judges moved and names a likely cause and the
+      next setting to try.</p>
+    <div class="stat-row">
+      {% for c, ids in d.causes %}<div class="stat"><div class="stat-n">{{ ids|length }}</div><div class="q">{{ c }}</div></div>{% endfor %}
+    </div>
+    <table class="compact">
+      <thead><tr><th>Question</th><th class="num">Score</th><th>Cause</th><th>Suggested next change</th></tr></thead>
+      <tbody>
+      {% for x in d.rows %}
+        <tr><td class="mono">{{ x.scenario_id }}{% if x.flip %}<div class="q nowrap">{{ x.flip|replace("->", "→") }}</div>{% endif %}</td>
+          <td class="num">{{ "%.1f"|format(x.before) }} &rarr; <span class="bad">{{ "%.1f"|format(x.after) }}</span></td>
+          <td><span class="badge cause">{{ x.cause }}</span></td><td class="dim">{{ x.suggestion }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% if d.notes %}
+    <div class="note">
+      <b>An honest caveat: the diagnosis shows symptoms, not always root causes.</b>
+      {% for n in d.notes %}
+      <p><span class="mono">{{ n.scenario_id }}</span> is labelled RAG (the search failed), but the search worked. Both versions ran the same
+        {% if n.n_run == 1 %}first search{% else %}first {{ n.n_run }} searches{% endif %}
+        ({% for q in n.shared %}"{{ q }}"{% if not loop.last %}, {% endif %}{% endfor %}) and got generic shipping text back. The baseline then searched
+        again ({% for q in n.extra %}"{{ q }}"{% if not loop.last %}, {% endif %}{% endfor %}) and found the right entry: <i>"{{ n.found }}"</i>
+        The weak agent stopped after {{ n.n_run }} search{{ "es" if n.n_run != 1 }} and answered from the generic text. The root cause is the prompt: the agent stopped searching.</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% set tr = story.trust %}
+  {% if tr %}
+  <section class="panel story" id="trust">
+    <div class="step-no">8</div>
+    <h2>Why trust the verdict?</h2>
+    <p class="lead">A test is only useful if it stays quiet when nothing changed, and if its judges are fair. Both were checked on real runs.</p>
+    <div class="findings">
+      {% if tr.aa %}
+      <div class="finding"><h3>Same setup twice: <span class="badge v-{{ tr.aa.got|replace(' ', '-') }}">{{ tr.aa.got }}</span></h3>
+        <p>The {{ tip("baseline") }} configuration was run a second time with nothing changed. The framework correctly found no real difference:
+          {{ tr.aa.detail }}. <a href="/evidence/aa_test">A/A write-up &rarr;</a></p></div>
+      {% endif %}
+      {% if tr.noise %}
+      <div class="finding"><h3>Judges are noisy: same answer, {{ "%g"|format(tr.noise.a|float) }} vs {{ "%g"|format(tr.noise.b|float) }}</h3>
+        <p>In those two identical runs, <span class="mono">{{ tr.noise.scenario_id }}</span>'s answer was word for word the same, yet the
+          {{ tr.noise.judge }} judge scored it {{ "%g"|format(tr.noise.a|float) }} and then {{ "%g"|format(tr.noise.b|float) }}. That's why single scores
+          aren't trusted: the framework uses {{ tip("noise band", "noise bands") }} and paired tests instead.</p></div>
+      {% endif %}
+      {% if tr.judge_fix %}
+      <div class="finding"><h3>A judge was fixed: <span class="badge s-{{ tr.judge_fix.status }}">{{ tr.judge_fix.status|upper }}</span></h3>
+        <p>The completeness judge used to reward confident made-up answers over honest "I don't have that" ones. Version 2 also sees the tool
+          outputs and the answer key: {{ tr.judge_fix.got|replace("completeness ", "") }}. <a href="/evidence/judge_fix_completeness">Judge-fix write-up &rarr;</a></p></div>
+      {% endif %}
+      {% for f in tr.findings %}
+      <div class="finding"><h3>{{ f.title }}</h3><p>{{ f.text }}</p></div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="panel compact-panel">
     <h2>Truth tests: does the framework tell the truth?</h2>
     <p class="lead">Each test has a known right answer. Numbers are read from the run files; each row links to its write-up.</p>
     <table>
@@ -36,7 +309,7 @@
     </table>
   </section>
 
-  <section class="panel">
+  <section class="panel compact-panel">
     <h2>Latest verdict per experiment</h2>
     <p class="lead">Each experiment changes one setting from its parent. Its latest compared run against the baseline;
       details on <a href="/experiments">Experiments</a>.</p>
@@ -72,13 +345,16 @@
     {% endif %}
   </section>
 
-  <section class="panel">
-    <h2>Key findings</h2>
-    <p class="lead">What building and testing the framework turned up.</p>
-    <div class="findings">
-    {% for f in data.findings %}
-      <div class="finding"><h3>{{ f.title }}</h3><p>{{ f.text }}</p></div>
-    {% endfor %}
+  <section class="panel story" id="explore">
+    <div class="step-no">9</div>
+    <h2>Explore further</h2>
+    <div class="cards links">
+      <a class="card" href="/experiments"><div class="card-q">Experiments &rarr;</div><div class="dim">Every run with its pass rate, tokens and verdict. Click one for its
+        question-by-question {{ tip("▲/▼") }} comparison and diagnosis. Has an Ask box for questions in plain English.</div></a>
+      <a class="card" href="/evidence"><div class="card-q">Evidence &rarr;</div><div class="dim">The write-ups behind each truth test: what was run, what came out,
+        and the problems found along the way.</div></a>
+      <a class="card" href="/systems"><div class="card-q">Systems &rarr;</div><div class="dim">Every system the framework is set up for, with its judges and baseline:
+        the same method works for any agent, not only this support bot.</div></a>
     </div>
   </section>
 </main>

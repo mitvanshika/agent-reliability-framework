@@ -1,0 +1,6 @@
+id: edge_04
+question: "What's your policy on international customs fees?"
+category: edge
+expected_tool: "faq_search, escalate_to_human"
+expected_answer: "International shipments may be subject to customs duties, taxes and fees imposed by the destination country. These are the buyer's responsibility and are not included in the order total."
+expected_tools: [faq_search]

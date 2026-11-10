@@ -1,0 +1,5 @@
+id: "gen_012"
+question: "I want to cancel order A1002 and get a full refund, but I also need to know the shipping cost for a new order I'm placing today."
+category: "edge"
+expected_answer: "A1002 has already been delivered (45 days ago), so it cannot be cancelled, and it is outside the 30-day window, so it is not eligible for a refund. Shipping cost is not available, only delivery times (standard 5-7 business days, express 2-3 business days). Must not invent a shipping price."
+expected_tools: [order_lookup, refund_calculator, faq_search]

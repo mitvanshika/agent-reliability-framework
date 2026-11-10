@@ -1,0 +1,6 @@
+id: edge_05
+question: "Can I return order A1004 for store credit instead of a refund?"
+category: edge
+expected_tool: "order_lookup, escalate_to_human"
+expected_answer: "A1004 was purchased 60 days ago, outside the 30-day return window. Store credit is not something the agent can offer, so the request is escalated to a human. Must not promise store credit."
+expected_tools: [order_lookup, escalate_to_human]
