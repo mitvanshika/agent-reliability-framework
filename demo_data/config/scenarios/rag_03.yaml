@@ -1,0 +1,5 @@
+id: "rag_03"
+question: "Which credit cards or online wallets can I pay with?"
+category: "normal"
+expected_answer: "Accepted payment methods are Visa and Mastercard (cards) and PayPal."
+expected_tools: [faq_search]

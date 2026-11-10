@@ -1,0 +1,6 @@
+id: normal_02
+question: "Can you check the status of order A1001?"
+category: normal
+expected_tool: order_lookup
+expected_answer: "A1001 has been delivered. Order total $89.99, purchased 12 days ago."
+expected_tools: [order_lookup]

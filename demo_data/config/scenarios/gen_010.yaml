@@ -1,0 +1,5 @@
+id: "gen_010"
+question: "Do you offer any warranty on electronics purchased from your store?"
+category: "edge"
+expected_answer: "No warranty information is available. Must not invent warranty terms. The question should be escalated to / answered by a human."
+expected_tools: [escalate_to_human]

@@ -1,0 +1,6 @@
+id: "gen_015"
+question: "Do you have the blue version of the XYZ smartwatch in stock?"
+category: "edge"
+expected_answer: "The agent has no access to inventory or product information, so it cannot check stock. Must not invent stock status. Escalate or direct the customer to a human."
+expected_tools: [escalate_to_human]
+split: train

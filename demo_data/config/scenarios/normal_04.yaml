@@ -1,0 +1,6 @@
+id: normal_04
+question: "What payment methods do you accept?"
+category: normal
+expected_tool: faq_search
+expected_answer: "We accept Visa, Mastercard and PayPal."
+expected_tools: [faq_search]

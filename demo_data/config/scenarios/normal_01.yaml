@@ -1,0 +1,6 @@
+id: normal_01
+question: "What is your return policy?"
+category: normal
+expected_tool: faq_search
+expected_answer: "Items can be returned within 30 days of purchase for a full refund."
+expected_tools: [faq_search]

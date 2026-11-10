@@ -139,7 +139,9 @@ def _nav_context():
 @app.route("/")
 def overview_page():
     import overview
-    return render_template("overview.html", data=overview.overview(RUNS_DIR, NOISE_DIR))
+    import story
+    return render_template("overview.html", data=overview.overview(RUNS_DIR, NOISE_DIR),
+                           story=story.story(RUNS_DIR, BASELINES_DIR, CONFIG_DIR, NOISE_DIR))
 
 
 @app.route("/evidence")
@@ -283,6 +285,7 @@ RUNS_DIR = os.path.join(DEMO_DIR, "runs") if DEMO_MODE else "runs"
 BASELINES_DIR = os.path.join(DEMO_DIR, "baselines") if DEMO_MODE else "baselines"
 NOISE_DIR = os.path.join(DEMO_DIR, "noise") if DEMO_MODE else "noise"
 EVIDENCE_DIR = os.path.join(DEMO_DIR, "evidence") if DEMO_MODE else "evidence"
+CONFIG_DIR = os.path.join(DEMO_DIR, "config") if DEMO_MODE else "."   # prompts/, docstrings/, scenarios/
 TARGETS_FILE = "targets.yaml"
 RUN_ID = re.compile(r"^[A-Za-z0-9_.-]+$")
 

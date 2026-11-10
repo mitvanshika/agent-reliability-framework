@@ -1,0 +1,5 @@
+id: "rag_02"
+question: "Can you send my order to my mailbox at the post office?"
+category: "normal"
+expected_answer: "Yes, PO boxes are served via standard postal service only; expedited couriers (FedEx, UPS) cannot deliver to PO boxes. Delivery to a PO box typically takes 7-10 business days."
+expected_tools: [faq_search]

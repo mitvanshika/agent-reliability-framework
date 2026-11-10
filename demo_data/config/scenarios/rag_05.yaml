@@ -1,0 +1,5 @@
+id: "rag_05"
+question: "Can I send back something I bought last week and get my money back?"
+category: "normal"
+expected_answer: "Yes. Items can be returned within 30 days of purchase for a full refund, and an item bought last week is within that window."
+expected_tools: [faq_search]
