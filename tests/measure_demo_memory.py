@@ -55,7 +55,7 @@ def main():
     import app as appmod
     c = appmod.app.test_client()
     runs = [r["run_id"] for r in c.get("/api/experiments/runs").get_json()]
-    paths = ["/", "/experiments", "/evidence", "/systems", "/approvals", "/track1", "/api/data",
+    paths = ["/", "/experiments", "/evidence", "/systems", "/approvals", "/api/data",
              "/api/experiments/baselines", "/api/approvals", "/api/experiments/ask/suggestions"]
     paths += [p for e in c.get("/evidence").get_data(as_text=True).split('href="/evidence/')[1:]
               for p in ["/evidence/" + e.split('"')[0]]]
@@ -63,6 +63,8 @@ def main():
         paths.append(f"/api/experiments/runs/{r}")
         for s in (c.get(f"/api/experiments/runs/{r}").get_json() or {}).get("scenarios", [])[:3]:
             paths += [f"/runs/{r}/{s['scenario_id']}", f"/api/experiments/runs/{r}/steps/{s['scenario_id']}"]
+    if not appmod.DEMO_MODE:   # demo mode hides Track 1 (/track1 redirects to /)
+        paths.append("/track1")
     bad = [(p, c.get(p).status_code) for p in paths if c.get(p).status_code != 200]
     for q in ("Why did exp_01 decline?", "anything else"):
         c.post("/api/experiments/ask", json={"question": q})

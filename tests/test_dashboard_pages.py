@@ -79,13 +79,25 @@ def normal_mode():
     ok("two-line intro", "Did my AI agent get worse" in h and "paired statistics" in h)
     ok("4 truth tests PASS, 2 not run", h.count("badge s-pass") == 4 and h.count(">not run<") == 2,
        (h.count("badge s-pass"), h.count(">not run<")))
-    ok("A/A: NO REAL DIFFERENCE, McNemar p=0.375", "McNemar p=0.375" in h)
+    ok("A/A: NO REAL DIFFERENCE, McNemar p=0.250 (experiment_v2 re-run)", "McNemar p=0.250" in h)
     ok("known-bad: DECLINED, McNemar p=0.002 (10 pass->fail)", "McNemar p=0.002 (10 pass-&gt;fail" in h)
     ok("judge fix: honest 10, invented 0", "gen_015 (honest): 10" in h and "gen_005 (invented): 0" in h)
     ok("latest baseline verdict = the full 31-question A/A run", "baseline_20261106_111506" in h)
-    ok("not-run experiments listed", "exp_07_hardened_prompt" in h and "not run yet" in h)
+    planned = h.split("Planned experiments (need API budget)", 1)
+    ok("not-run experiments only in the collapsed 'Planned' section", len(planned) == 2
+       and '<details class="planned">' in h and "exp_07_hardened_prompt" in planned[1]
+       and "exp_07_hardened_prompt" not in planned[0].split("Latest verdict per experiment", 1)[1])
+    ok("baseline row labelled as the A/A re-run", "A/A re-run vs approved baseline" in h)
     ok("key findings with data (edge_03 9 -> 2)", "scored it 9 and then 2" in h)
     ok("track1 is the old investigator", "Agent Reliability Investigator" in html(c, "/track1")[1])
+
+    print("\n[experiments: run roles]")
+    roles = {r["run_id"]: r["role"] for r in c.get("/api/experiments/runs").get_json()}
+    ok("role labels: approved baseline / A/A re-run / smoke test, others none", roles == {
+        "baseline_20261106_101856": "approved baseline", "baseline_20261106_111506": "A/A re-run",
+        "baseline_20261106_101645": "smoke test", "exp_01_weak_prompt_20261107_164943": None,
+        "summarizer_baseline_20261109_111741": None}, roles)
+    ok("experiments table renders the role badge", "badge role" in html(c, "/experiments")[1])
 
     print("\n[evidence]")
     code, h = html(c, "/evidence")
@@ -183,10 +195,18 @@ def demo_mode():
         appmod.requests.post = no_network
 
         print("\n[demo: pages]")
-        for p in PAGES:
+        for p in [p for p in PAGES if p != "/track1"]:
             code, h = html(c, p)
             ok(f"{p}: 200 with the demo banner", code == 200 and "Demo: recorded results, read-only" in h, code)
         ok("overview numbers come from the snapshot", "McNemar p=0.002" in html(c, "/")[1])
+
+        print("\n[demo: Track 1 hidden]")
+        h = html(c, "/")[1]
+        ok("no Track 1 tab in the nav", 'href="/track1"' not in h and [lbl for _, lbl in appmod.NAV_ITEMS] ==
+           ["Overview", "Experiments", "Evidence", "Systems", "Approvals"])
+        r = c.get("/track1")
+        ok("/track1 redirects to /", r.status_code == 302 and r.headers["Location"].endswith("/"), r.status_code)
+        ok("/api/data is empty", c.get("/api/data").get_json() == {"strong": [], "weak": []})
 
         print("\n[demo: ask]")
         s = c.get("/api/experiments/ask/suggestions").get_json()

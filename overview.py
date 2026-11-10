@@ -240,6 +240,18 @@ def evidence_html(name, evidence_dir=EVIDENCE_DIR):
 
 
 # ---------------------------------------------------------------- /systems
+# Readable role of a run on the Experiments table, beyond its experiment name.
+ROLE_LABELS = {"smoke_test": "smoke test", "aa_test": "A/A re-run"}
+
+
+def run_role(run_id, is_baseline=False):
+    """'approved baseline' / 'A/A re-run' / 'smoke test' / None."""
+    if is_baseline:
+        return "approved baseline"
+    return next((ROLE_LABELS[t["evidence"]] for t in TRUTH_TESTS
+                 if t.get("run") == run_id and t.get("evidence") in ROLE_LABELS), None)
+
+
 TRACK1_TARGETS = ("strong", "weak")   # run_suite.py / pipeline.py: compared with each other, no baseline file
 
 
