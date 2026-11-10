@@ -152,7 +152,7 @@ function renderRuns() {
   }
   body.innerHTML = RUNS.map(r => `
     <tr class="clickable" data-run="${esc(r.run_id)}">
-      <td>${r.is_baseline ? '<span class="star" title="current baseline">&#9733;</span> ' : ''}<b>${esc(r.experiment)}</b>
+      <td>${r.is_baseline ? '<span class="star" title="current baseline">&#9733;</span> ' : ''}<b>${esc(r.experiment)}</b>${r.role ? ` <span class="badge role">${esc(r.role)}</span>` : ''}
         <div class="mono dim">${esc(r.run_id)}</div></td>
       <td class="mono">${formatDate(r.timestamp)}</td>
       <td class="mono">${esc(r.what_changed)}</td>

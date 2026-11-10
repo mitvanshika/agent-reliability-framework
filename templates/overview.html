@@ -43,10 +43,11 @@
     <table>
       <thead><tr><th>Experiment</th><th>Verdict</th><th class="num">Pass rate</th><th class="num">McNemar p</th><th class="num">Paired</th><th>Latest run</th></tr></thead>
       <tbody>
-      {% for v in data.verdicts %}
+      {% for v in data.verdicts if v.status != "not run yet" %}
         <tr>
           <td><div class="mono">{{ v.experiment }}</div><div class="q">{{ v.description }}</div></td>
-          <td>{% if v.verdict %}<span class="badge v-{{ v.verdict|replace(' ', '-') }}">{{ v.verdict }}</span>{% else %}<span class="dim">{{ v.status }}</span>{% endif %}</td>
+          <td>{% if v.verdict %}<span class="badge v-{{ v.verdict|replace(' ', '-') }}">{{ v.verdict }}</span>{% else %}<span class="dim">{{ v.status }}</span>{% endif %}
+            {% if v.experiment == "baseline" and v.verdict %}<div class="q compared">A/A re-run vs approved baseline</div>{% endif %}</td>
           <td class="num">{% if v.pass_rate is not none %}{{ "%.0f"|format(v.pass_rate * 100) }}%{% else %}<span class="faint">-</span>{% endif %}</td>
           <td class="num">{% if v.p is not none %}{{ "%.3f"|format(v.p) }}{% else %}<span class="faint">-</span>{% endif %}</td>
           <td class="num">{% if v.pairs %}{{ v.pairs }}{% else %}<span class="faint">-</span>{% endif %}</td>
@@ -55,6 +56,20 @@
       {% endfor %}
       </tbody>
     </table>
+    {% set planned = data.verdicts|selectattr("status", "equalto", "not run yet")|list %}
+    {% if planned %}
+    <details class="planned">
+      <summary>Planned experiments (need API budget) <span class="faint">({{ planned|length }})</span></summary>
+      <table>
+        <thead><tr><th>Experiment</th><th>What it changes</th></tr></thead>
+        <tbody>
+        {% for v in planned %}
+          <tr><td class="mono">{{ v.experiment }}</td><td class="q">{{ v.description }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </details>
+    {% endif %}
   </section>
 
   <section class="panel">

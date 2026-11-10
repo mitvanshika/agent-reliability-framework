@@ -368,13 +368,13 @@ has its own rate limiter (it is a separate process), so its calls are not in the
 
 `python app.py`, then open localhost:5000. A top nav links every page:
 
-- **`/` Overview**: what the framework does, the truth-test table (smoke, A/A, known-bad, judge fix, tests 4-5), the latest verdict per experiment (its latest compared run that covers the most questions) and key findings. Every number is read from the run files (`overview.py`); nothing is typed into the page.
-- **`/experiments`**: every run with its pass rate, score, tokens, cost and verdict; a quality-vs-cost scatter (one dot per run); click a run for its ▲/▼/═ comparison, diagnosis and step timelines (`/runs/<run>/<scenario>`).
+- **`/` Overview**: what the framework does, the truth-test table (smoke, A/A, known-bad, judge fix, tests 4-5), the latest verdict per experiment (its latest compared run that covers the most questions; the baseline row is the A/A re-run vs the approved baseline), experiments not run yet in a collapsed "Planned experiments (need API budget)" section, and key findings. Every number is read from the run files (`overview.py`); nothing is typed into the page.
+- **`/experiments`**: every run with its pass rate, score, tokens, cost and verdict; a quality-vs-cost scatter (one dot per run); runs that play a special role are labelled (approved baseline / A/A re-run / smoke test); click a run for its ▲/▼/═ comparison, diagnosis and step timelines (`/runs/<run>/<scenario>`).
   - **Ask box**: plain-language answers (under 150 words, citing scenario ids and scores, ending with "Try this:") to questions like *"Why did exp_01 decline?"* or *"Which questions were invented answers?"*. The server builds the context from `comparison.json`, `diagnosis.json`, `summary.json`, `judged/`, the baselines and the noise file (`ask_context.py`); the browser sends only the question. Rate-limited per IP (10/minute). 4 suggestion cards for the common questions.
 - **`/evidence`**: the write-ups in `evidence/*.md`, one page each.
 - **`/systems`**: every target in `targets.yaml` with its description, judge set and judges (N/A ones crossed out), scenario count, pass threshold and baseline: the same framework, any system.
 - **`/approvals`**: actions waiting for a human (see "Making any agent's actions safe").
-- **`/track1`**: the original strong-vs-weak investigator, with its own Ask box.
+- **`/track1`**: the original strong-vs-weak investigator, with its own Ask box (not in the demo).
 
 ## Live demo
 
@@ -382,6 +382,7 @@ A read-only copy of the dashboard runs with `DEMO_MODE=1`: [live demo](https://Y
 
 - It reads only `demo_data/`, a committed snapshot of the runs behind the truth tests (smoke, baseline, A/A, exp_01), the summarizer run, baselines, noise bands and evidence. Rebuild it with `python make_demo_data.py` (0 API calls).
 - The Ask box serves only the recorded answers to the suggestion cards (`demo_data/ask_cache.json`, made with `python make_demo_data.py --ask`: one Groq call per card, asks first; `--redo invented` re-records one card). Every recorded answer was checked against the data before it was committed; one that was wrong is withheld (marked in the cache), so its card is not shown. Any other question gets a "read-only demo" message; no LLM is ever called and no key is configured.
+- The Track 1 tab is hidden (its judged traces aren't in the snapshot; `/track1` redirects to `/`); exp_01 tells the same strong-vs-weak story with paired stats.
 - Approval decisions are disabled; every page shows a "Demo: recorded results, read-only" banner.
 - No LLM client, LangChain or SciPy is imported in demo mode: about **45 MB per worker** after every page has been opened once (`python tests/measure_demo_memory.py`), well inside Render's free 512 MB.
 

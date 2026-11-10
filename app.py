@@ -9,7 +9,7 @@ from collections import defaultdict, deque
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, redirect, render_template, request
 
 from experiment_config import format_changes
 from trace_utils import load_latest_traces
@@ -124,6 +124,8 @@ def build_ask_context(strong: dict, weak: dict) -> str:
 # request path starts with its link; /runs/... (step timeline) counts as Experiments.
 NAV_ITEMS = [("/", "Overview"), ("/experiments", "Experiments"), ("/evidence", "Evidence"),
              ("/systems", "Systems"), ("/approvals", "Approvals"), ("/track1", "Track 1")]
+if DEMO_MODE:   # Track 1's judged traces aren't in demo_data/: hide the tab rather than show an empty page
+    NAV_ITEMS = [n for n in NAV_ITEMS if n[0] != "/track1"]
 
 
 @app.context_processor
@@ -164,12 +166,16 @@ def systems_page():
 
 @app.route("/track1")
 def index():
-    """The original strong-vs-weak investigator (Track 1), unchanged."""
+    """The original strong-vs-weak investigator (Track 1), unchanged. Not in the demo."""
+    if DEMO_MODE:
+        return redirect("/")
     return render_template("track1.html")
 
 
 @app.route("/api/data")
 def api_data():
+    if DEMO_MODE:
+        return jsonify({"strong": [], "weak": []})
     strong = load_judged_traces(STRONG_FOLDER)
     weak = load_judged_traces(WEAK_FOLDER)
     return jsonify({"strong": strong, "weak": weak})
@@ -315,6 +321,8 @@ def _run_row(run_id, baselines):
     totals = meta.get("totals") or {}
     target = (meta.get("resolved_config") or {}).get("target")
     base = baselines.get((target, meta.get("suite") or "main")) or {}
+    import overview
+    is_baseline = (base.get("run_dir") or "").replace("\\", "/").rstrip("/").split("/")[-1] == run_id
     return {
         "run_id": run_id, "experiment": meta.get("experiment"), "timestamp": meta.get("timestamp"),
         "target": target,
@@ -326,7 +334,8 @@ def _run_row(run_id, baselines):
         "total_tokens": totals.get("total_tokens"), "estimated_cost_usd": totals.get("estimated_cost_usd"),
         "verdict": comparison.get("verdict"),
         "suite": meta.get("suite") or "main",
-        "is_baseline": (base.get("run_dir") or "").replace("\\", "/").rstrip("/").split("/")[-1] == run_id,
+        "is_baseline": is_baseline,
+        "role": overview.run_role(run_id, is_baseline),
     }
 
 
