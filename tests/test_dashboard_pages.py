@@ -87,7 +87,10 @@ def normal_mode():
     ok("not-run experiments only in the collapsed 'Planned' section", len(planned) == 2
        and '<details class="planned">' in h and "exp_07_hardened_prompt" in planned[1]
        and "exp_07_hardened_prompt" not in planned[0].split("Latest verdict per experiment", 1)[1])
-    ok("baseline row labelled as the A/A re-run", "A/A re-run vs approved baseline" in h)
+    ok("baseline row: 'A/A re-run vs approved baseline' next to its verdict",
+       '>NO REAL DIFFERENCE</span> <div class="q compared">A/A re-run vs approved baseline</div>' in " ".join(h.split()))
+    ok("main table: only experiments that ran", "summarizer_baseline" in planned[0]
+       and "exp_02_vague_docstrings" not in planned[0].split("Latest verdict per experiment", 1)[1])
     ok("key findings with data (edge_03 9 -> 2)", "scored it 9 and then 2" in h)
     ok("track1 is the old investigator", "Agent Reliability Investigator" in html(c, "/track1")[1])
 
