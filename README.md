@@ -1,5 +1,7 @@
 # Agent Reliability & Regression Testing Framework
 
+**[Live demo](https://agent-reliability-framework.onrender.com)**: a read-only dashboard of real recorded runs (free hosting, so the first load can take about a minute).
+
 A framework that answers one question: **did my AI agent get worse after I changed something?** And, for any system you plug in, *what* a specific change did and *why*.
 
 When you tweak a prompt, swap a model, or change a tool, an LLM-powered feature can silently get worse in ways that are easy to miss just by eyeballing a few outputs. This framework automates the check run a fixed set of test questions through two versions of an agent, score every answer with an ensemble of LLM judges, and use real statistics (not vibes) to say whether one version is genuinely worse.
@@ -378,7 +380,7 @@ has its own rate limiter (it is a separate process), so its calls are not in the
 
 ## Live demo
 
-A read-only copy of the dashboard runs with `DEMO_MODE=1`: [live demo](https://YOUR-SERVICE.onrender.com) *(link added after the first deploy)*.
+A read-only copy of the dashboard runs with `DEMO_MODE=1`: [live demo](https://agent-reliability-framework.onrender.com) (free hosting: the first load after a quiet spell can take about a minute).
 
 - It reads only `demo_data/`, a committed snapshot of the runs behind the truth tests (smoke, baseline, A/A, exp_01), the summarizer run, baselines, noise bands, evidence, and (`demo_data/config/`) the prompt, tool-description and scenario files those runs used. Rebuild it with `python make_demo_data.py` (0 API calls).
 - The Ask box serves only the recorded answers to the suggestion cards (`demo_data/ask_cache.json`, made with `python make_demo_data.py --ask`: one Groq call per card, asks first; `--redo invented` re-records one card). Every recorded answer was checked against the data before it was committed; one that was wrong is withheld (marked in the cache), so its card is not shown. Any other question gets a "read-only demo" message; no LLM is ever called and no key is configured.
