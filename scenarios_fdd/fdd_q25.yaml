@@ -1,0 +1,7 @@
+id: fdd_q25
+question: What is Apple's projected revenue for FY2027?
+category: no_answer
+expected_answer: NOT ANSWERABLE -- 10-K filings report historical results and do not include forward-looking revenue projections for future fiscal years.
+difficulty: hard
+reference_source: N/A
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #25 (sha256 c3ba6eb2ac0a)'

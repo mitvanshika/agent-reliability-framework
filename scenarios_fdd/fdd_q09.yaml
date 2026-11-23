@@ -1,0 +1,7 @@
+id: fdd_q09
+question: What risks does Apple disclose related to tariffs and international trade restrictions?
+category: narrative_comprehension
+expected_answer: Apple discloses that new U.S. tariffs on imports (including from China, India, Japan, South Korea, Taiwan, Vietnam, and the EU) beginning in Q2 FY2025, along with retaliatory tariffs from other countries, could increase costs, limit availability of components, force supplier/business restructuring, and disrupt its heavily outsourced, geographically concentrated supply chain.
+difficulty: medium
+reference_source: apple_10k.txt, Item 1A Risk Factors, 'Macroeconomic and Industry Risks' section (~line 277)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #9 (sha256 c3ba6eb2ac0a)'

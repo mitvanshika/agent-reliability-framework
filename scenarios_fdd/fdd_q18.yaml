@@ -1,0 +1,7 @@
+id: fdd_q18
+question: Apple's diluted EPS grew faster (22.7%) than its net income (19.5%) from FY2024 to FY2025. What explains the gap?
+category: cross_referencing
+expected_answer: Diluted shares outstanding fell from ~15.41 billion (FY2024) to ~15.00 billion (FY2025), a ~2.6% reduction, driven by Apple's ongoing share repurchase program ($90,711,000,000 spent on stock buybacks in FY2025). Fewer shares outstanding means the same or higher net income is divided across a smaller share count, boosting EPS growth beyond net income growth alone.
+difficulty: hard
+reference_source: apple_income_statement.csv, diluted EPS and diluted shares rows (2024 vs 2025 columns); apple_cash_flow.csv, 'Repurchases of common stock' row
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #18 (sha256 c3ba6eb2ac0a)'

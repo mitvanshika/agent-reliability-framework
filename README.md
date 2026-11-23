@@ -233,6 +233,15 @@ The demo support agent is only an example. To measure changes to your own system
 
 If your system reports `tool_outputs`, the context_relevance judge scores your retrieval. If it reports `usage` and you add a `pricing.yaml`, you get cost per run.
 
+**No usage in your system's output? Meter it.** `adapters/token_meter.py` (standard library only, so it also works inside your system's own environment) counts the tokens of every `groq`, `openai` (chat + Responses, so also OpenAI-compatible servers such as vLLM, Ollama, Together) and `anthropic` call made inside a block:
+```python
+import token_meter
+with token_meter.measure() as meter:
+    text = my_rag(question)
+return {"answer": text, "usage": meter.usage()}
+```
+`meter.usage()` is `None` (not measured) when a call came back without usage (e.g. `stream=True`) or no call was seen, never a number that is too low. Other libraries and raw HTTP calls are not seen. `adapters/financial_dd_worker.py` uses it.
+
 **Per-target settings in `targets.yaml`** (all optional; left out = the behaviour of the support bot):
 
 | key | what it does | default |

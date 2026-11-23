@@ -1,0 +1,7 @@
+id: fdd_q17
+question: Do Apple's FY2025 cash flow activities (operating, investing, financing) reconcile with the reported net change in cash?
+category: cross_referencing
+expected_answer: Yes. $111,482,000,000 (operating) + $15,195,000,000 (investing) - $120,686,000,000 (financing) = $5,991,000,000, which exactly matches the reported 'Increase in cash' line.
+difficulty: hard
+reference_source: apple_cash_flow.csv, rows for operating/investing/financing activity totals and 'Increase/(Decrease) in cash' row, column 2025-09-27 (FY)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #17 (sha256 c3ba6eb2ac0a)'

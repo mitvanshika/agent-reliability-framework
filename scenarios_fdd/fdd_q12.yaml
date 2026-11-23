@@ -1,0 +1,7 @@
+id: fdd_q12
+question: Why did Wearables, Home and Accessories net sales decrease in FY2025?
+category: narrative_comprehension
+expected_answer: Primarily due to lower net sales of Accessories and Wearables.
+difficulty: medium
+reference_source: apple_10k.txt, MD&A section, 'Wearables, Home and Accessories' (~line 703)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #12 (sha256 c3ba6eb2ac0a)'

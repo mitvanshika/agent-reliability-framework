@@ -1,0 +1,7 @@
+id: fdd_q11
+question: What risk does Apple disclose regarding natural disasters and its facilities?
+category: narrative_comprehension
+expected_answer: Many of Apple's operations, retail stores, and supplier/contract manufacturer facilities are located in areas prone to earthquakes and other natural disasters, and climate change is increasing the frequency and intensity of extreme weather, which could disrupt operations.
+difficulty: medium
+reference_source: apple_10k.txt, Item 1A Risk Factors (~line 279)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #11 (sha256 c3ba6eb2ac0a)'

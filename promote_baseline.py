@@ -49,6 +49,7 @@ def build_baseline(run_dir, meta, records, summary, note):
         "parent": meta.get("parent"),
         "changes_vs_parent": meta.get("changes_vs_parent") or [],
         "git": meta.get("git"),
+        "system": meta.get("system"),   # the target's own version (describe() hook), if it has one
         "suite": meta.get("suite") or "main",
         "scenario_dir": meta.get("scenario_dir"),
         "judge_set": summary.get("judge_set"),

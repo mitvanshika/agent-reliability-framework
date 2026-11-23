@@ -1,0 +1,7 @@
+id: fdd_q24
+question: How did Apple's total liabilities change from FY2024 to FY2025?
+category: trend
+expected_answer: Decreased from $308,030M to $285,508M, a reduction of about $22,522M (~7.3%).
+difficulty: medium
+reference_source: apple_balance_sheet.csv, Total liabilities row, 2024-09-28 and 2025-09-27 columns
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #24 (sha256 c3ba6eb2ac0a)'

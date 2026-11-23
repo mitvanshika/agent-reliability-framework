@@ -39,10 +39,14 @@ for path in files:
     exp = load_experiment(path)
     fn, accepts, validate = resolve_target(exp["target"])
     print(f"{exp['name']}:")
-    ok("resolves; target accepts settings", accepts and fn.__module__ == "agent_configurable", exp["target"])
+    ok("resolves; target accepts settings", accepts and (exp["target"] != "configurable"
+                                                         or fn.__module__ == "agent_configurable"), exp["target"])
     import retrieval
+    available = getattr(sys.modules[fn.__module__], "available", None)   # targets that need an outside environment
     if exp["settings"].get("retrieval", {}).get("method") == "embeddings" and not retrieval.embeddings_available():
         print("  SKIP  settings validation: fastembed not installed (pip install -r requirements-rag.txt)")
+    elif callable(available) and not available():
+        print(f"  SKIP  settings validation: {exp['target']}'s own environment is not set up on this machine")
     else:
         try:
             validate(exp["settings"])
