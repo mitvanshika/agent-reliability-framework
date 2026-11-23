@@ -63,3 +63,16 @@ summarizer:
   judges: [correctness_gt, completeness, groundedness]   # no tools: tool judges are N/A
   pass_threshold: 7
   scenarios: examples/summarizer/scenarios
+
+
+# Financial Due Diligence RAG (github.com/samarth6/Financial-Due-Diligence), run in its own
+# Python environment through adapters/financial_dd.py. No tools, so the tool judges are N/A.
+financial_dd:
+  module: adapters.financial_dd
+  function: run
+  accepts_settings: true
+  description: "answers questions about Apple's FY2025 10-K filing with cited evidence, and refuses when the filing does not answer"
+  judge_set: generic_v1
+  judges: [correctness_gt, completeness, groundedness, context_relevance]
+  pass_threshold: 7
+  scenarios: scenarios_fdd

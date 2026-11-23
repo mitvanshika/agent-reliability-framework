@@ -135,6 +135,23 @@ def load_run_records(run_dir):
     return meta, records
 
 
+def system_differences(base_system, run_system):
+    """What changed in the system ITSELF between baseline and run (its git commit, its own
+    config file), as opposed to the experiment's settings. [] when either side has no record."""
+    if not isinstance(base_system, dict) or not isinstance(run_system, dict):
+        return []
+    changes = []
+    b_git, r_git = base_system.get("git") or {}, run_system.get("git") or {}
+    if b_git.get("commit") != r_git.get("commit"):
+        changes.append(f"commit {str(b_git.get('commit'))[:7]} -> {str(r_git.get('commit'))[:7]}")
+    if r_git.get("dirty") and not b_git.get("dirty"):
+        files = ", ".join(r_git.get("changed_files") or [])
+        changes.append("run had uncommitted edits in the system's repo" + (f": {files}" if files else ""))
+    if base_system.get("config_hash") != run_system.get("config_hash"):
+        changes.append(f"its config file {base_system.get('config_hash')} -> {run_system.get('config_hash')}")
+    return changes
+
+
 def run_judge_set(run_dir):
     judged_dir = os.path.join(run_dir, "judged")
     if not os.path.isdir(judged_dir):
@@ -502,6 +519,12 @@ def main(argv=None):
                                 subset_summary(run_records, shared), run_cfg.get("settings") or {}, pricing)
     resources["scenarios"] = len(shared)
 
+    system_changes = system_differences(base.get("system"), meta.get("system"))
+    if system_changes:
+        print("WARNING: the system itself differs from the baseline's, beyond the experiment's settings: "
+              + "; ".join(system_changes) + ". The comparison mixes that change with the experiment's.",
+              file=sys.stderr)
+
     print_comparison(result, header_lines=[
         f"Comparing   {meta.get('experiment')}  ({run_dir})",
         f"against     baseline '{base.get('experiment')}' for target '{target}' "
@@ -510,7 +533,8 @@ def main(argv=None):
         f"Config diff vs baseline: {'; '.join(config_diff) if config_diff else '(identical config)'}",
         f"Judge set: {judge_sets.describe(base.get('judge_set'))}",
         f"Noise bands: {band_note}",
-    ])
+    ] + ([f"System: {'; '.join(system_changes) or 'same version as the baseline'}"]
+         if base.get("system") and meta.get("system") else []))
     print_resources(resources)
     print(f"\nVERDICT: {result['verdict']}")
     print(f"  {result['verdict_reason']}")
@@ -523,7 +547,7 @@ def main(argv=None):
            "baseline_file": bpath, "baseline_experiment": base.get("experiment"),
            "baseline_run_dir": base.get("run_dir"), "config_diff": config_diff,
            "noise_bands": band_note, "judge_set": base.get("judge_set") or judge_sets.CLASSIC,
-           **result, "resources": resources}
+           "system_changes": system_changes, **result, "resources": resources}
 
     if result["down"]:
         import diagnose   # imported here: diagnose.py imports this module

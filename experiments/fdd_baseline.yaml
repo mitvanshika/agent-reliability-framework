@@ -1,0 +1,4 @@
+name: fdd_baseline
+description: "Financial DD exactly as its own config.yaml sets it: no overrides"
+target: financial_dd
+settings: {}

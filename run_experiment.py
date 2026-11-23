@@ -225,6 +225,20 @@ def suite_name(scenario_dir=None, target=None) -> str:
     return parts[-1]
 
 
+def describe_system(fn, settings):
+    """Optional target hook describe(settings) -> which version of the system runs (its own commit,
+    config hash, ...), saved in run_meta.json as "system". None when the target has no hook;
+    a failing hook is recorded, never fatal."""
+    hook = getattr(sys.modules.get(fn.__module__), "describe", None)
+    if not callable(hook):
+        return None
+    try:
+        info = hook(settings) if settings is not None else hook()
+        return info if isinstance(info, dict) else {"error": f"describe() returned {type(info).__name__}"}
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"{type(e).__name__}: {e}"}
+
+
 def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=None, scenario_dir=None):
     """Run every scenario into run_dir (traces/ + run_meta.json). Used by main()
     and by calibrate_noise.py --experiment, so there is one experiment runner."""
@@ -249,6 +263,9 @@ def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=Non
         "suite": suite_name(scenario_dir, exp["target"]),
         "status": "running",
     }
+    system = describe_system(fn, exp["settings"] if accepts else None)
+    if system is not None:
+        meta["system"] = system
     _write_json(os.path.join(run_dir, "run_meta.json"), meta)
 
     traces = []

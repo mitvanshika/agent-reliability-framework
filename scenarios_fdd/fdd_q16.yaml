@@ -1,0 +1,7 @@
+id: fdd_q16
+question: Does Apple's FY2025 balance sheet satisfy Assets = Liabilities + Equity?
+category: cross_referencing
+expected_answer: Yes. $285,508,000,000 (liabilities) + $73,733,000,000 (equity) = $359,241,000,000, which exactly matches total assets.
+difficulty: hard
+reference_source: apple_balance_sheet.csv, rows 51, 65, 74 (Total assets, Total liabilities, Total equity), column 2025-09-27
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #16 (sha256 c3ba6eb2ac0a)'
