@@ -14,7 +14,7 @@ code that calls them is counted, whatever the system is:
         answer = my_system(question)
     m.usage()     # {"input_tokens", "output_tokens", "total_tokens"} or None
     m.summary()   # usage + llm_calls, unmetered_calls, failed_calls, unmetered_reasons
-    m.calls()     # one entry per call: label, model, tokens, seconds (first 50)
+    m.calls()     # one entry per call: label, model, tokens, seconds, started_at (first 50)
 
 Honesty rule: usage() is None ("not measured") when a call returned no usage
 (e.g. stream=True) or no LLM call was seen at all - never a number that is too low.
@@ -51,6 +51,7 @@ class Meter:
         self.input_tokens = self.output_tokens = self.total_tokens = 0
         self.unmetered_reasons = []     # why each unmetered call could not be counted
         self._calls = []                # one entry per call, in order
+        self.t0 = time.perf_counter()   # started_at of each call is counted from here
 
     def usage(self):
         """Tokens of every call inside the block, or None when that can't be known."""
@@ -67,7 +68,8 @@ class Meter:
         return {"usage": self.usage(), **counts}
 
     def calls(self):
-        """Each call in order: {label, model, input_tokens, output_tokens, total_tokens, seconds}
+        """Each call in order: {label, model, input_tokens, output_tokens, total_tokens, seconds,
+        started_at (seconds after the block began)}
         (+ "error" for a call that raised, "reason" for one without usage; tokens None then)."""
         with _lock:
             return [dict(c) for c in self._calls]
@@ -118,10 +120,11 @@ def _record(response=None, failed=None, kwargs=None, seconds=None):
         entry["error"] = type(failed).__name__
     elif tokens is None:
         entry["reason"] = reason
+    began = time.perf_counter() - (seconds or 0)
     with _lock:
         for m in _open:
             if len(m._calls) < MAX_CALLS:
-                m._calls.append(dict(entry))
+                m._calls.append({**entry, "started_at": round(max(0.0, began - m.t0), 3)})
             if failed is not None:
                 m.failed_calls += 1
                 continue

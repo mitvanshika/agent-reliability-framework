@@ -93,13 +93,15 @@ async function load() {
     const ss = (d.step_scores || {})[String(s.index)];
     const what = isTool
       ? `<span class="mono">${esc(s.name)}(${esc(JSON.stringify(s.args))})</span>`
-      : (s.tool_calls || []).length ? `asks for <span class="mono">${s.tool_calls.map(c => esc(c.name) + "(" + esc(JSON.stringify(c.args)) + ")").join(", ")}</span>` : "answers";
+      : (s.tool_calls || []).length ? `asks for <span class="mono">${s.tool_calls.map(c => esc(c.name) + "(" + esc(JSON.stringify(c.args)) + ")").join(", ")}</span>`
+      : s.label ? `<span class="mono">${esc(s.label)}</span>` : "answers";
     const meta = [s.latency_s !== null && s.latency_s !== undefined ? `${s.latency_s.toFixed(2)}s` : null,
                   s.tokens ? `${esc(s.tokens.total)} tokens` : null].filter(Boolean).join(" &middot; ");
     return `<div class="step ${isTool ? "tool" : "llm"} ${s.error ? "err" : ""}">
       <div class="head"><span class="kind">${isTool ? "tool" : "model"}</span><span class="dim mono">#${esc(s.index)}</span>
         ${what} <span class="dim mono">${meta}</span>
         ${ss ? `step judge ${scoreBadge(ss.score)}` : ""}${flagged.has(s.index) ? ' <span class="badge warnb">flagged</span>' : ""}</div>
+      ${s.note ? `<div class="dim">${esc(s.note)}</div>` : ""}
       ${s.output ? `<pre>${esc(s.output)}</pre>` : ""}
       ${s.error ? `<pre style="color:var(--fail)">${esc(s.error)}</pre>` : ""}
       ${ss ? `<div class="dim" style="margin-top:4px">${esc(ss.reason)}</div>` : ""}

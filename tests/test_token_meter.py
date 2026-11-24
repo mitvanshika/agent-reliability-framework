@@ -189,6 +189,11 @@ ok(f"list capped at {token_meter.MAX_CALLS}; counts and tokens still include eve
    len(m.calls()) == token_meter.MAX_CALLS and m.summary()["llm_calls"] == token_meter.MAX_CALLS + 5
    and m.usage()["total_tokens"] == 2 * (token_meter.MAX_CALLS + 5), m.summary())
 
+with token_meter.measure() as m:
+    groq.create(1, 1)
+ok("each call has started_at (seconds after the block began)",
+   isinstance(m.calls()[0]["started_at"], float) and 0 <= m.calls()[0]["started_at"] < 1, m.calls()[0])
+
 print("nesting and threads:")
 with token_meter.measure() as outer:
     groq.create(1, 1)
@@ -210,7 +215,8 @@ print("Financial DD worker uses it:")
 with open(os.path.join(REPO, "adapters", "financial_dd_worker.py"), encoding="utf-8") as f:
     src = f.read()
 ok("imports token_meter", "import token_meter" in src)
-ok("answer() runs inside a meter", re.search(r"with token_meter\.measure\(\) as meter:[^\n]*\n\s+a = answer\(", src) is not None)
+ok("answer() runs inside a meter (indented inside the with block)",
+   re.search(r"with token_meter\.measure\(\) as meter:[^\n]*\n(?: {8}[^\n]*\n)*? {8}a = answer\(", src) is not None)
 ok("usage returned on success and on failure", src.count('"usage": meter.usage()') == 2)
 ok("the call list returned on success and on failure", src.count('"llm_calls": meter.calls()') == 2)
 

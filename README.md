@@ -208,6 +208,8 @@ The demo support agent is only an example. To measure changes to your own system
                "error": None, "error_type": None,             # optional: "rate_limit", "timeout", ...
                "usage": {"input_tokens": n, "output_tokens": m, "total_tokens": n + m},  # optional
                "llm_calls": [{"label": ..., "model": ..., "total_tokens": ..., "seconds": ...}],  # optional
+               "trajectory": [{"type": "tool", "name": ..., "args": {...}, "output": ...}, ...],  # optional: steps for
+                                                    # the step timeline + step_checks.py (see trajectory.py)
                "messages": [...]}                             # optional: full chat, for fine-tune export
    ```
    A plain string return also works (answer only).
@@ -243,7 +245,7 @@ with token_meter.measure() as meter:
     text = my_rag(question)
 return {"answer": text, "usage": meter.usage()}
 ```
-`meter.usage()` is `None` (not measured) when a call came back without usage (e.g. `stream=True`) or no call was seen, never a number that is too low. Other libraries and raw HTTP calls are not seen. `adapters/financial_dd_worker.py` uses it.
+`meter.usage()` is `None` (not measured) when a call came back without usage (e.g. `stream=True`) or no call was seen, never a number that is too low. Other libraries and raw HTTP calls are not seen. `adapters/financial_dd_worker.py` uses it, and also turns Financial DD's self-healing attempts (search, grade, rewrite) into `trajectory` steps (`adapters/financial_dd_steps.py`), so its answers get a step timeline and `step_checks.py` flags a rewritten search that brought back the same chunks.
 
 You only need this when your system runs in its own process (like `adapters/financial_dd_worker.py`). `run_experiment.py` already runs every target call inside a meter: if your system reports no `usage`, the meter's count is used (`usage_source: meter` in the trace), and every trace gets `llm_calls`, one entry per LLM call with its label (the name of the JSON format it asked for, e.g. `chunk_grades`), model, tokens and seconds.
 
