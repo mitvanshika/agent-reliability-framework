@@ -14,6 +14,7 @@ code that calls them is counted, whatever the system is:
         answer = my_system(question)
     m.usage()     # {"input_tokens", "output_tokens", "total_tokens"} or None
     m.summary()   # usage + llm_calls, unmetered_calls, failed_calls, unmetered_reasons
+    m.calls()     # one entry per call: label, model, tokens, seconds (first 50)
 
 Honesty rule: usage() is None ("not measured") when a call returned no usage
 (e.g. stream=True) or no LLM call was seen at all - never a number that is too low.
@@ -29,6 +30,7 @@ import functools
 import importlib
 import inspect
 import threading
+import time
 
 # (module, classes whose .create is wrapped)
 TARGETS = (
@@ -40,6 +42,7 @@ TARGETS = (
 
 _lock = threading.Lock()     # several threads may finish calls at the same moment
 _open = []                   # meters inside a `with measure()` block right now (nesting allowed)
+MAX_CALLS = 50               # per-call entries kept per meter (the counts above always include every call)
 
 
 class Meter:
@@ -47,6 +50,7 @@ class Meter:
         self.llm_calls = self.unmetered_calls = self.failed_calls = 0
         self.input_tokens = self.output_tokens = self.total_tokens = 0
         self.unmetered_reasons = []     # why each unmetered call could not be counted
+        self._calls = []                # one entry per call, in order
 
     def usage(self):
         """Tokens of every call inside the block, or None when that can't be known."""
@@ -61,6 +65,12 @@ class Meter:
             counts = {"llm_calls": self.llm_calls, "unmetered_calls": self.unmetered_calls,
                       "failed_calls": self.failed_calls, "unmetered_reasons": list(self.unmetered_reasons)}
         return {"usage": self.usage(), **counts}
+
+    def calls(self):
+        """Each call in order: {label, model, input_tokens, output_tokens, total_tokens, seconds}
+        (+ "error" for a call that raised, "reason" for one without usage; tokens None then)."""
+        with _lock:
+            return [dict(c) for c in self._calls]
 
 
 def _read(usage, *names):
@@ -85,12 +95,34 @@ def _tokens(response):
     return tin, tout, total if total is not None else tin + tout
 
 
-def _record(response=None, failed=False, kwargs=None):
-    tokens = None if failed else _tokens(response)
-    reason = "stream=True" if (kwargs or {}).get("stream") else "reply had no usage"
+def _label(kwargs):
+    """A name for the call without touching the system's code: the name of the JSON format it
+    asked for (response_format.json_schema.name), e.g. "chunk_grades". None when it has none."""
+    fmt = kwargs.get("response_format")
+    schema = fmt.get("json_schema") if isinstance(fmt, dict) else None
+    name = schema.get("name") if isinstance(schema, dict) else None
+    return name if isinstance(name, str) else None
+
+
+def _record(response=None, failed=None, kwargs=None, seconds=None):
+    """failed: None, or the exception a call raised."""
+    kwargs = kwargs or {}
+    tokens = None if failed is not None else _tokens(response)
+    reason = "stream=True" if kwargs.get("stream") else "reply had no usage"
+    model = kwargs.get("model")
+    entry = {"label": _label(kwargs), "model": model if isinstance(model, str) else None,
+             "input_tokens": tokens[0] if tokens else None, "output_tokens": tokens[1] if tokens else None,
+             "total_tokens": tokens[2] if tokens else None,
+             "seconds": round(seconds, 3) if seconds is not None else None}
+    if failed is not None:
+        entry["error"] = type(failed).__name__
+    elif tokens is None:
+        entry["reason"] = reason
     with _lock:
         for m in _open:
-            if failed:
+            if len(m._calls) < MAX_CALLS:
+                m._calls.append(dict(entry))
+            if failed is not None:
                 m.failed_calls += 1
                 continue
             m.llm_calls += 1
@@ -107,25 +139,26 @@ def _record(response=None, failed=False, kwargs=None):
 def _wrap(create):
     """Same signature as create. A sync create returns the response; an async one returns
     something to await, so the counting then waits for the real response."""
-    async def finish(pending, kwargs):
+    async def finish(pending, kwargs, start):
         try:
             response = await pending
-        except BaseException:
-            _record(failed=True)
+        except BaseException as e:
+            _record(failed=e, kwargs=kwargs, seconds=time.perf_counter() - start)
             raise
-        _record(response, kwargs=kwargs)
+        _record(response, kwargs=kwargs, seconds=time.perf_counter() - start)
         return response
 
     @functools.wraps(create)
     def metered(*args, **kwargs):
+        start = time.perf_counter()
         try:
             result = create(*args, **kwargs)
-        except BaseException:
-            _record(failed=True)
+        except BaseException as e:
+            _record(failed=e, kwargs=kwargs, seconds=time.perf_counter() - start)
             raise
         if inspect.isawaitable(result):
-            return finish(result, kwargs)
-        _record(result, kwargs=kwargs)
+            return finish(result, kwargs, start)
+        _record(result, kwargs=kwargs, seconds=time.perf_counter() - start)
         return result
 
     metered._token_meter = True

@@ -13,6 +13,10 @@ Per scenario it records the answer, tools, error/error_type, wall-clock
 latency (works for any target, includes retry waits) and token usage if
 the target returns one ("usage": {input_tokens, output_tokens,
 total_tokens}); otherwise usage is null.
+Every target call also runs inside adapters/token_meter.py: when the target
+reports no usage itself, the meter's count is used (usage_source "meter"), and
+llm_calls lists each LLM call (label, model, tokens, seconds), taken from the
+target's own "llm_calls" if it returns one (e.g. a system in its own process).
 
 Output (judge it afterwards with judge_run.py):
     runs/<experiment>_<timestamp>/
@@ -38,6 +42,7 @@ from datetime import datetime
 import yaml
 
 import run_suite
+from adapters import token_meter
 import judge_sets
 import prompt_addons
 import rate_limit
@@ -75,21 +80,30 @@ def _clean_usage(usage):
 
 def run_scenario(fn, accepts_settings, settings, scenario, timestamp, experiment):
     start = time.perf_counter()
-    usage = messages = trajectory = None
+    usage = messages = trajectory = llm_calls = None
+    usage_source = None
     import idempotent
-    try:
-        # one request id per scenario of this run: an action tool acts at most once for it
-        with idempotent.request_context(f"{experiment}_{timestamp}/{scenario['id']}"):
-            raw = fn(scenario["question"], settings=settings) if accepts_settings else fn(scenario["question"])
-        normalized = run_suite.normalize_result(raw)
-        if isinstance(raw, dict):
-            usage = _clean_usage(raw.get("usage"))
-            messages = raw.get("messages") if isinstance(raw.get("messages"), list) else None
-            trajectory = raw.get("trajectory") if isinstance(raw.get("trajectory"), list) else None
-    except Exception as e:
-        normalized = {"answer": None, "tools_used": [], "tool_outputs": [], "retries_needed": 0,
-                      "error": str(e), "error_type": "crash"}
+    with token_meter.measure() as meter:   # sees LLM calls made in this process, for any target
+        try:
+            # one request id per scenario of this run: an action tool acts at most once for it
+            with idempotent.request_context(f"{experiment}_{timestamp}/{scenario['id']}"):
+                raw = fn(scenario["question"], settings=settings) if accepts_settings else fn(scenario["question"])
+            normalized = run_suite.normalize_result(raw)
+            if isinstance(raw, dict):
+                usage = _clean_usage(raw.get("usage"))
+                messages = raw.get("messages") if isinstance(raw.get("messages"), list) else None
+                trajectory = raw.get("trajectory") if isinstance(raw.get("trajectory"), list) else None
+                llm_calls = raw.get("llm_calls") if isinstance(raw.get("llm_calls"), list) else None
+        except Exception as e:
+            normalized = {"answer": None, "tools_used": [], "tool_outputs": [], "retries_needed": 0,
+                          "error": str(e), "error_type": "crash"}
     latency = round(time.perf_counter() - start, 3)
+    if usage is not None:
+        usage_source = "target"
+    elif meter.usage() is not None:          # the target reported nothing, but its calls were metered
+        usage, usage_source = meter.usage(), "meter"
+    if llm_calls is None and meter.calls():
+        llm_calls = meter.calls()
     return {
         "scenario_id": scenario["id"],
         "question": scenario["question"],
@@ -104,6 +118,8 @@ def run_scenario(fn, accepts_settings, settings, scenario, timestamp, experiment
         "experiment": experiment,
         "latency_s": latency,
         "usage": usage,
+        "usage_source": usage_source,   # "target" (it reported usage), "meter" (counted here) or None
+        "llm_calls": llm_calls,         # one entry per LLM call (label, model, tokens, seconds), or None
         "messages": messages,   # optional full conversation (None if the target doesn't return one)
         "trajectory": trajectory,   # optional step list (trajectory.py); None if the target doesn't record one
     }
@@ -283,6 +299,8 @@ def execute(exp, fn, accepts, scenarios, run_dir, experiment_file, timestamp=Non
         traces.append(trace)
         status = f"ERROR {trace['error_type']}" if trace["error"] is not None else "ok"
         tokens = f", {trace['usage']['total_tokens']} tokens" if trace["usage"] else ""
+        if trace["llm_calls"]:
+            tokens += f" in {len(trace['llm_calls'])} call{'s' if len(trace['llm_calls']) != 1 else ''}"
         print(f"[{i}/{n}] {scenario['id']:15} {trace['latency_s']:6.2f}s{tokens}  {status}")
 
     totals = compute_totals(traces)

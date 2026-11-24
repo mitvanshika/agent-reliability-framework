@@ -47,6 +47,35 @@ open(os.path.join(tmp, "fake_targets.py"), "w", encoding="utf-8").write(textwrap
     def validate_settings(settings):
         if "bad_key" in settings:
             raise ValueError("settings.bad_key: unknown key")
+
+    # A fake LLM library at groq's real import path: the token meter wraps it like the real one
+    import sys, types
+    class _Usage:
+        def __init__(self, i, o):
+            self.prompt_tokens, self.completion_tokens, self.total_tokens = i, o, i + o
+    class _Reply:
+        def __init__(self, i, o):
+            self.usage = _Usage(i, o)
+    class Completions:
+        def create(self, model=None, response_format=None, tin=0, tout=0):
+            return _Reply(tin, tout)
+    for name in ("groq", "groq.resources", "groq.resources.chat"):
+        sys.modules.setdefault(name, types.ModuleType(name))
+    _llm = types.ModuleType("groq.resources.chat.completions")
+    _llm.Completions = Completions
+    sys.modules["groq.resources.chat.completions"] = _llm
+
+    def metered(question):
+        """Reports no usage: its LLM calls are counted by the harness."""
+        fmt = {"type": "json_schema", "json_schema": {"name": "grade"}}
+        Completions().create(model="m1", response_format=fmt, tin=300, tout=20)
+        Completions().create(model="m1", tin=500, tout=80)
+        return "metered answer"
+    def remote(question):
+        """Like the Financial DD worker: its own process counted the calls and sends the list."""
+        return {"answer": "remote answer", "usage": {"input_tokens": 7, "output_tokens": 3, "total_tokens": 10},
+                "llm_calls": [{"label": "x", "model": "m2", "input_tokens": 7, "output_tokens": 3,
+                               "total_tokens": 10, "seconds": 0.5}]}
 '''))
 sys.path.insert(0, tmp)
 import fake_targets  # noqa: E402
@@ -55,7 +84,9 @@ import fake_targets  # noqa: E402
 open(os.path.join(tmp, "targets.yaml"), "w").write(
     "plain_t:\n  module: fake_targets\n  function: plain\n"
     "settings_t:\n  module: fake_targets\n  function: with_settings\n  accepts_settings: true\n"
-    "settings_off:\n  module: fake_targets\n  function: plain\n  accepts_settings: false\n")
+    "settings_off:\n  module: fake_targets\n  function: plain\n  accepts_settings: false\n"
+    "metered_t:\n  module: fake_targets\n  function: metered\n"
+    "remote_t:\n  module: fake_targets\n  function: remote\n")
 os.makedirs(os.path.join(tmp, "scenarios"))
 for sid, q in [("s1", "first q"), ("s2", "second q BOOM"), ("s3", "third q")]:
     open(os.path.join(tmp, "scenarios", f"{sid}.yaml"), "w").write(f'id: "{sid}"\nquestion: "{q}"\ncategory: "normal"\n')
@@ -66,6 +97,8 @@ open(os.path.join(exp_dir, "base_e.yaml"), "w").write(
 open(os.path.join(exp_dir, "child_e.yaml"), "w").write("name: child_e\nextends: base_e\nsettings:\n  k: 2\n")
 open(os.path.join(exp_dir, "plain_e.yaml"), "w").write("name: plain_e\ntarget: plain_t\nsettings:\n  model: fake-model\n")
 open(os.path.join(exp_dir, "off_e.yaml"), "w").write("name: off_e\ntarget: settings_off\nsettings:\n  x: 1\n")
+open(os.path.join(exp_dir, "metered_e.yaml"), "w").write("name: metered_e\ntarget: metered_t\nsettings: {}\n")
+open(os.path.join(exp_dir, "remote_e.yaml"), "w").write("name: remote_e\ntarget: remote_t\nsettings: {}\n")
 open(os.path.join(exp_dir, "bad_e.yaml"), "w").write("name: bad_e\ntarget: settings_t\nsettings:\n  bad_key: 1\n")
 open(os.path.join(tmp, "pricing.yaml"), "w").write("fake-model: {input: 2.0, output: 10.0}\n")
 
@@ -137,6 +170,29 @@ print("accepts_settings: false:")
 fake_targets.CALLS.clear()
 run_dir, out = run([os.path.join(exp_dir, "off_e.yaml"), "--yes", "--scenarios", "s1"])
 ok("settings NOT passed + warning shown", fake_targets.CALLS == [("plain", "first q")] and "settings are IGNORED" in out)
+
+print("per-call breakdown (token meter):")
+run_dir, out = run([os.path.join(exp_dir, "metered_e.yaml"), "--yes", "--scenarios", "s1"])
+m1 = load(os.path.join(run_dir, "traces", "s1.json"))
+ok("target reports no usage: the meter's count is used", m1["usage"] == {
+    "input_tokens": 800, "output_tokens": 100, "total_tokens": 900} and m1["usage_source"] == "meter", m1["usage"])
+ok("llm_calls: one entry per call, in order, with label/model/tokens/seconds",
+   [(c["label"], c["model"], c["total_tokens"]) for c in m1["llm_calls"]] == [("grade", "m1", 320), (None, "m1", 580)]
+   and all(c["seconds"] >= 0 for c in m1["llm_calls"]), m1["llm_calls"])
+ok("printed: tokens in 2 calls", "900 tokens in 2 calls" in out, out.strip().splitlines()[-6:])
+run_dir, out = run([os.path.join(exp_dir, "remote_e.yaml"), "--yes", "--scenarios", "s1"])
+r1 = load(os.path.join(run_dir, "traces", "s1.json"))
+ok("a target that sends its own llm_calls (own process): kept as sent", r1["llm_calls"] == [
+    {"label": "x", "model": "m2", "input_tokens": 7, "output_tokens": 3, "total_tokens": 10, "seconds": 0.5}]
+   and r1["usage_source"] == "target" and "10 tokens in 1 call " in out, (r1["llm_calls"], out))
+s1 = load(os.path.join(rx.RUNS_DIR, sorted(d for d in os.listdir(rx.RUNS_DIR) if d.startswith("child_e"))[0],
+                       "traces", "s1.json"))
+ok("its own usage wins over the meter; no LLM calls seen -> llm_calls None",
+   s1["usage_source"] == "target" and s1["llm_calls"] is None, (s1["usage_source"], s1["llm_calls"]))
+p1 = load(os.path.join(rx.RUNS_DIR, sorted(d for d in os.listdir(rx.RUNS_DIR) if d.startswith("plain_e"))[0],
+                       "traces", "s1.json"))
+ok("no usage anywhere: usage None, usage_source None", p1["usage"] is None and p1["usage_source"] is None
+   and p1["llm_calls"] is None)
 
 print("no pricing.yaml:")
 rx.PRICING_FILE = os.path.join(tmp, "empty_dir", "pricing.yaml")   # does not exist

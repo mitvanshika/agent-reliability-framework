@@ -206,5 +206,37 @@ ok("subset of 8 vs full 25-scenario baseline: baseline tokens counted over the s
 ok("latency compared on the same 8", res["latency_mean_s"]["baseline"] == 1.0 and res["latency_mean_s"]["run"] == 3.0)
 ok("printed with 'same 8 scenarios'", "run vs baseline, same 8 scenarios" in out)
 
+print("tokens per question, next to the score (6b):")
+def _rec(total, calls=None):
+    return {"usage": None if total is None else {"input_tokens": total - 10, "output_tokens": 10,
+                                                  "total_tokens": total}, "llm_call_count": calls}
+qb = {"a": _rec(1000, 3), "b": _rec(500, 2), "c": _rec(None), "d": _rec(800)}
+qr = {"a": _rec(300, 1), "b": _rec(520, 2), "c": _rec(400), "d": _rec(800)}
+qrows = [{"scenario_id": s, "baseline_score": 9.0, "run_score": rs, "direction": d, "flip": f}
+         for s, rs, d, f in [("a", 3.0, "down", "pass->fail"), ("b", 9.0, "same", None),
+                             ("c", 9.0, "same", None), ("d", 9.0, "same", None)]]
+qc = compare.question_costs(qb, qr, qrows)
+qa = {x["scenario_id"]: x for x in qc["per_question"]}["a"]
+ok("delta + pct per question, with the same question's score and flip",
+   (qa["baseline_tokens"], qa["run_tokens"], qa["delta"], qa["pct"], qa["run_score"], qa["flip"])
+   == (1000, 300, -700, -70.0, 3.0, "pass->fail"), qa)
+ok("call counts carried (3 -> 1)", (qa["baseline_calls"], qa["run_calls"]) == (3, 1))
+ok("costliest = by the run's tokens (800, 520, 400, 300)", qc["costliest"] == ["d", "b", "c", "a"], qc["costliest"])
+ok("biggest changes: largest |delta| first, unchanged ones left out", qc["biggest_changes"] == ["a", "b"],
+   qc["biggest_changes"])
+ok("unknown on one side -> listed as unknown, never counted as 0", qc["unknown"] == ["c"]
+   and {x["scenario_id"]: x for x in qc["per_question"]}["c"]["delta"] is None, qc["unknown"])
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    compare.print_question_costs(qc)
+txt = buf.getvalue()
+ok("printed: the cheaper-but-failed question shows its score and P->F", "-70%" in txt and "9.0 -> 3.0" in txt
+   and "P->F" in txt and "calls 3->1" in txt and "unknown for 1 question(s)" in txt, txt)
+qold = compare.question_costs({"a": _rec(1000)}, {"a": _rec(300)}, qrows[:1])
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    compare.print_question_costs(qold)
+ok("old baselines without call counts: no 'calls' text", "calls" not in buf.getvalue(), buf.getvalue())
+
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)

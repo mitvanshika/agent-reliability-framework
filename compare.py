@@ -128,6 +128,7 @@ def load_run_records(run_dir):
             "judge_error": j.get("judge_error") if j else None,
             "latency_s": src.get("latency_s"),
             "usage": src.get("usage"),
+            "llm_call_count": len(src["llm_calls"]) if isinstance(src.get("llm_calls"), list) else None,
             "answer_key_hash": j.get("answer_key_hash") if j else None,
             "disagreement": j.get("disagreement") if j else None,
             "low_confidence_judges": (j.get("low_confidence_judges") or []) if j else [],
@@ -423,6 +424,63 @@ def subset_summary(records, ids):
     }
 
 
+def question_costs(base, run, rows, top=5):
+    """Tokens per question, run vs baseline, next to the score change of the SAME question
+    (rows from compare_records), so cost and quality are read together. No API calls: both
+    sides come from saved traces / the baseline file. Unknown usage stays None, never 0."""
+    def total(rec):
+        u = (rec or {}).get("usage")
+        return u.get("total_tokens") if isinstance(u, dict) else None
+
+    per = []
+    for row in rows:
+        sid = row["scenario_id"]
+        b, r = total(base.get(sid)), total(run.get(sid))
+        per.append({"scenario_id": sid, "baseline_tokens": b, "run_tokens": r,
+                    "delta": r - b if b is not None and r is not None else None,
+                    "pct": _pct(r, b),
+                    "baseline_calls": (base.get(sid) or {}).get("llm_call_count"),
+                    "run_calls": (run.get(sid) or {}).get("llm_call_count"),
+                    "baseline_score": row["baseline_score"], "run_score": row["run_score"],
+                    "score_direction": row["direction"], "flip": row["flip"]})
+    known = [x for x in per if x["delta"] is not None]
+    return {
+        "per_question": per,
+        "costliest": [x["scenario_id"] for x in sorted((x for x in per if x["run_tokens"] is not None),
+                                                         key=lambda x: -x["run_tokens"])[:top]],
+        "biggest_changes": [x["scenario_id"] for x in sorted(known, key=lambda x: -abs(x["delta"]))[:top]
+                            if x["delta"] != 0],
+        "unknown": [x["scenario_id"] for x in per if x["delta"] is None],
+    }
+
+
+def print_question_costs(qc):
+    by_id = {x["scenario_id"]: x for x in qc["per_question"]}
+    if not qc["costliest"] and not qc["unknown"]:
+        return
+
+    def calls(x):
+        b, r = x["baseline_calls"], x["run_calls"]
+        return f"  calls {b if b is not None else '?'}->{r if r is not None else '?'}" if (b, r) != (None, None) else ""
+
+    if qc["costliest"]:
+        print("\nCostliest questions in this run:")
+        for sid in qc["costliest"]:
+            x = by_id[sid]
+            print(f"  {sid:15} {x['run_tokens']:>8,} tokens{calls(x)}")
+    if qc["biggest_changes"]:
+        print("Biggest token changes per question (run vs baseline), with the same question's score:")
+        for sid in qc["biggest_changes"]:
+            x = by_id[sid]
+            pct = f" ({x['pct']:+.0f}%)" if x["pct"] is not None else ""
+            flip = {"pass->fail": "  P->F", "fail->pass": "  F->P"}.get(x["flip"], "")
+            print(f"  {sid:15} {x['baseline_tokens']:>8,} -> {x['run_tokens']:>8,}{pct:8}"
+                  f"  score {x['baseline_score']:.1f} -> {x['run_score']:.1f}{flip}{calls(x)}")
+    if qc["unknown"]:
+        print(f"  token usage unknown for {len(qc['unknown'])} question(s) (not reported on one side): "
+              + " ".join(qc["unknown"][:10]) + (" ..." if len(qc["unknown"]) > 10 else ""))
+
+
 def print_resources(res):
     n = res.get("scenarios")
     print(f"\nCost / latency / errors (run vs baseline{f', same {n} scenarios' if n else ''}):")
@@ -536,6 +594,8 @@ def main(argv=None):
     ] + ([f"System: {'; '.join(system_changes) or 'same version as the baseline'}"]
          if base.get("system") and meta.get("system") else []))
     print_resources(resources)
+    costs = question_costs(base["scenarios"], run_records, result["rows"])
+    print_question_costs(costs)
     print(f"\nVERDICT: {result['verdict']}")
     print(f"  {result['verdict_reason']}")
     if result["verdict"] == "NO REAL DIFFERENCE" and result["down"]:
@@ -547,7 +607,8 @@ def main(argv=None):
            "baseline_file": bpath, "baseline_experiment": base.get("experiment"),
            "baseline_run_dir": base.get("run_dir"), "config_diff": config_diff,
            "noise_bands": band_note, "judge_set": base.get("judge_set") or judge_sets.CLASSIC,
-           "system_changes": system_changes, **result, "resources": resources}
+           "system_changes": system_changes, **result, "resources": resources,
+           "question_costs": costs}
 
     if result["down"]:
         import diagnose   # imported here: diagnose.py imports this module

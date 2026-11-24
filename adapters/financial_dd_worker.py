@@ -5,7 +5,7 @@ starts it and talks to it over stdin/stdout, one JSON object per line:
 
     {"op": "validate", "settings": {...}}               -> {"ok": true} or {"error": "..."}
     {"op": "answer", "question": "...", "settings": {...}}
-        -> {"answer", "tools_used", "tool_outputs", "error", "error_type", "usage"}
+        -> {"answer", "tools_used", "tool_outputs", "error", "error_type", "usage", "llm_calls"}
     {"op": "describe", "settings": {...}}
         -> {"system", "git", "config_hash", "effective_config"}   (which version ran)
 
@@ -98,13 +98,14 @@ def handle(req):
     failed = not a.answered and a.text.startswith(MODEL_FAILED)
     if failed:
         return {"answer": None, "tools_used": [], "tool_outputs": evidence,
-                "error": a.text, "error_type": error_type(a.text), "usage": meter.usage()}
+                "error": a.text, "error_type": error_type(a.text), "usage": meter.usage(),
+                "llm_calls": meter.calls()}
     # dd marks a refusal with answered=False and puts only the REASON in text; its own CLI
     # shows it as "no answer: <reason>". Keep that label, or a judge reads a bare reason
     # ("only 0 relevant chunk(s) found...") with no sign that the system declined to answer.
     text = a.text if a.answered else f"No answer: {a.text}"
     return {"answer": text, "tools_used": [], "tool_outputs": evidence, "error": None, "error_type": None,
-            "usage": meter.usage()}
+            "usage": meter.usage(), "llm_calls": meter.calls()}
 
 
 for line in sys.stdin:
