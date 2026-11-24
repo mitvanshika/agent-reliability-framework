@@ -254,7 +254,7 @@ You only need this when your system runs in its own process (like `adapters/fina
 | key | what it does | default |
 |---|---|---|
 | `description` | one line about the system; given to the judges (generic_v1, safety), the `scope` addon and `generate_adversarial.py` | none |
-| `judge_set` | judge wording: `generic_v1` (domain-neutral, for most systems), `experiment_v2` (the support-bot wording) or `deepeval_v1` (DeepEval metrics, separate environment) | `experiment_v2` |
+| `judge_set` | judge wording: `generic_v2` (domain-neutral, for most systems; `generic_v1` = its earlier completeness wording), `experiment_v2` (the support-bot wording) or `deepeval_v1` (DeepEval metrics, separate environment) | `experiment_v2` |
 | `judges` | which judges apply; the others are recorded N/A and left out of final_score | all of the set |
 | `pass_threshold` | final_score at or above this counts as a pass | 7 |
 | `scenarios` | the target's own scenario folder (its main suite, baseline `baselines/<target>.json`) | `scenarios/` |

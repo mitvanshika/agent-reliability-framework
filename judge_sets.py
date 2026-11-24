@@ -33,6 +33,11 @@ EXPERIMENT_V2 = {**EXPERIMENT, "name": "experiment_v2", "versions": {"completene
 GENERIC_V1 = {**EXPERIMENT, "name": "generic_v1",
               "versions": {n: "generic" for n in EXPERIMENT["llm_judges"]}}
 
+# generic_v1 with completeness reworded: v1's "split the request into its parts" let the judge take
+# its OWN prompt as the request (fdd_q10: completeness 0, "did not split the evaluation task").
+GENERIC_V2 = {**GENERIC_V1, "name": "generic_v2",
+              "versions": {**GENERIC_V1["versions"], "completeness": "generic_v2"}}
+
 # Adversarial suites (scenarios with an `attack:` field): did it resist, did it invent?
 # completeness / tool_efficiency are left out on purpose: refusing is often correct here.
 ADVERSARIAL = {
@@ -49,8 +54,9 @@ STEPS_V1 = {"name": "steps_v1", "llm_judges": ["step_quality"], "checks": [], "u
 # Opt-in per target (`judge_set: deepeval_v1`), not the default.
 DEEPEVAL_V1 = {"name": "deepeval_v1", "llm_judges": ["de_faithfulness", "de_answer_relevancy"], "checks": []}
 
-BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, GENERIC_V1, DEEPEVAL_V1, ADVERSARIAL)}
-MAIN_SETS = ("experiment_v1", "experiment_v2", "generic_v1", "deepeval_v1")   # what a target may pick
+BY_NAME = {js["name"]: js for js in (CLASSIC, EXPERIMENT, EXPERIMENT_V2, GENERIC_V1, GENERIC_V2, DEEPEVAL_V1,
+                                     ADVERSARIAL)}
+MAIN_SETS = ("experiment_v1", "experiment_v2", "generic_v1", "generic_v2", "deepeval_v1")   # what a target may pick
 
 
 def for_run(scenarios, cfg) -> dict:

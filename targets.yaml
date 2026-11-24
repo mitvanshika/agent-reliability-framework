@@ -72,7 +72,7 @@ financial_dd:
   function: run
   accepts_settings: true
   description: "answers questions about Apple's FY2025 10-K filing with cited evidence, and refuses when the filing does not answer"
-  judge_set: generic_v1
+  judge_set: generic_v2                                  # generic_v1 + the completeness wording fix (fdd_q10)
   judges: [correctness_gt, completeness, groundedness, context_relevance]
   pass_threshold: 7
   scenarios: scenarios_fdd
