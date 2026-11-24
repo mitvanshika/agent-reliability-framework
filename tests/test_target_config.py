@@ -48,7 +48,7 @@ for name in ("strong", "weak", "not-a-target", None):
     d = target_config.get(name)
     ok(f"{name}: all defaults", d == {"description": None, "judge_set": None, "judges": None, "pass_threshold": 7.0,
                                       "scenarios": run_suite.SCENARIOS_DIR, "non_retrieval_tools": [],
-                                      "action_tools": []}, d)
+                                      "action_tools": [], "max_seconds": None}, d)
 ok("every real targets.yaml entry validates", all(
    not target_config.validate(n, e, judge_sets.ALL_NAMES) for n, e in REAL.items()),
    [target_config.validate(n, e, judge_sets.ALL_NAMES) for n, e in REAL.items()])
@@ -147,5 +147,12 @@ ok("configurable judged with the full experiment_v2 (no not_applicable)",
    judge_sets.for_target(judge_sets.for_scenarios(run_suite.load_scenarios()), c["judges"]) is V2)
 
 shutil.rmtree(root)
+print("max_seconds (6c):")
+ok("max_seconds: a positive number is fine", target_config.validate("t", {"module": "m", "function": "f", "max_seconds": 300}, []) == [])
+for bad in (0, -5, "300", True):
+    ok(f"max_seconds {bad!r} refused", any("max_seconds" in p for p in
+       target_config.validate("t", {"module": "m", "function": "f", "max_seconds": bad}, [])))
+ok("left out -> None (no limit)", target_config.get("t", {"t": {"module": "m", "function": "f"}})["max_seconds"] is None)
+
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)

@@ -64,6 +64,20 @@ def _ask(request):
     return json.loads(line)
 
 
+def cancel():
+    """Called by run_experiment.py when a question passes max_seconds (targets.yaml): kill the
+    worker so its work really stops (the waiting call then returns an error). The next question
+    starts a fresh worker, which reloads the models (about a minute)."""
+    global _proc
+    p, _proc = _proc, None
+    if p is not None and p.poll() is None:
+        p.kill()
+        try:
+            p.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            pass
+
+
 def validate_settings(settings):
     """Called by run_experiment.py before any API call."""
     if not isinstance(settings, dict):

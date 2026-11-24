@@ -10,6 +10,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import textwrap
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -71,6 +72,14 @@ open(os.path.join(tmp, "fake_targets.py"), "w", encoding="utf-8").write(textwrap
         Completions().create(model="m1", response_format=fmt, tin=300, tout=20)
         Completions().create(model="m1", tin=500, tout=80)
         return "metered answer"
+    CANCELLED = []
+    def slow(question):
+        """Gets stuck: never answers in time."""
+        if "first" in question:
+            time.sleep(3)
+        return "late answer"
+    def cancel():
+        CANCELLED.append(True)
     def remote(question):
         """Like the Financial DD worker: its own process counted the calls and sends the list."""
         return {"answer": "remote answer", "usage": {"input_tokens": 7, "output_tokens": 3, "total_tokens": 10},
@@ -86,7 +95,9 @@ open(os.path.join(tmp, "targets.yaml"), "w").write(
     "settings_t:\n  module: fake_targets\n  function: with_settings\n  accepts_settings: true\n"
     "settings_off:\n  module: fake_targets\n  function: plain\n  accepts_settings: false\n"
     "metered_t:\n  module: fake_targets\n  function: metered\n"
-    "remote_t:\n  module: fake_targets\n  function: remote\n")
+    "remote_t:\n  module: fake_targets\n  function: remote\n"
+    "slow_t:\n  module: fake_targets\n  function: slow\n  max_seconds: 0.3\n"
+    "limited_t:\n  module: fake_targets\n  function: with_settings\n  accepts_settings: true\n  max_seconds: 5\n")
 os.makedirs(os.path.join(tmp, "scenarios"))
 for sid, q in [("s1", "first q"), ("s2", "second q BOOM"), ("s3", "third q")]:
     open(os.path.join(tmp, "scenarios", f"{sid}.yaml"), "w").write(f'id: "{sid}"\nquestion: "{q}"\ncategory: "normal"\n')
@@ -99,6 +110,8 @@ open(os.path.join(exp_dir, "plain_e.yaml"), "w").write("name: plain_e\ntarget: p
 open(os.path.join(exp_dir, "off_e.yaml"), "w").write("name: off_e\ntarget: settings_off\nsettings:\n  x: 1\n")
 open(os.path.join(exp_dir, "metered_e.yaml"), "w").write("name: metered_e\ntarget: metered_t\nsettings: {}\n")
 open(os.path.join(exp_dir, "remote_e.yaml"), "w").write("name: remote_e\ntarget: remote_t\nsettings: {}\n")
+open(os.path.join(exp_dir, "slow_e.yaml"), "w").write("name: slow_e\ntarget: slow_t\nsettings: {}\n")
+open(os.path.join(exp_dir, "limited_e.yaml"), "w").write("name: limited_e\ntarget: limited_t\nsettings: {k: 1}\n")
 open(os.path.join(exp_dir, "bad_e.yaml"), "w").write("name: bad_e\ntarget: settings_t\nsettings:\n  bad_key: 1\n")
 open(os.path.join(tmp, "pricing.yaml"), "w").write("fake-model: {input: 2.0, output: 10.0}\n")
 
@@ -193,6 +206,47 @@ p1 = load(os.path.join(rx.RUNS_DIR, sorted(d for d in os.listdir(rx.RUNS_DIR) if
                        "traces", "s1.json"))
 ok("no usage anywhere: usage None, usage_source None", p1["usage"] is None and p1["usage_source"] is None
    and p1["llm_calls"] is None)
+
+print("time limit (max_seconds, 6c):")
+t0 = time.perf_counter()
+run_dir, out = run([os.path.join(exp_dir, "slow_e.yaml"), "--yes", "--scenarios", "s1", "s3"])
+waited = time.perf_counter() - t0
+st1 = load(os.path.join(run_dir, "traces", "s1.json"))
+st3 = load(os.path.join(run_dir, "traces", "s3.json"))
+ok("a stuck question stops at max_seconds, recorded as error_type timeout",
+   st1["error_type"] == "timeout" and st1["answer"] is None and "max_seconds=0.3" in st1["error"]
+   and 0.3 <= st1["latency_s"] < 1.5, (st1["error_type"], st1["latency_s"]))
+ok("the run moved on: the next question answered normally", st3["error"] is None and st3["answer"] == "late answer")
+ok("did not wait for the stuck call (3 s)", waited < 2.5, round(waited, 2))
+ok("the target's cancel() was called once to stop the work", fake_targets.CANCELLED == [True], fake_targets.CANCELLED)
+ok("timed out: no token count (it would be too low)", st1["usage"] is None and st1["usage_source"] is None)
+ok("run_meta records the limit", load(os.path.join(run_dir, "run_meta.json")).get("max_seconds") == 0.3)
+ok("printed as an error, counted by type", "ERROR timeout" in out and "'timeout': 1" in out, out[-400:])
+run_dir, out = run([os.path.join(exp_dir, "limited_e.yaml"), "--yes", "--scenarios", "s1"])
+lt = load(os.path.join(run_dir, "traces", "s1.json"))
+ok("a limit that is not reached changes nothing (settings, usage, answer)", lt["error"] is None
+   and lt["answer"] == "dict answer" and lt["usage"]["total_tokens"] == 1200, lt)
+try:
+    rx._call_with_limit(lambda: 1 / 0, 5)
+    ok("an error inside a time-limited call is raised as itself", False)
+except ZeroDivisionError:
+    ok("an error inside a time-limited call is raised as itself", True)
+plain_meta = load(os.path.join(rx.RUNS_DIR, sorted(d for d in os.listdir(rx.RUNS_DIR) if d.startswith("child_e"))[0],
+                               "run_meta.json"))
+ok("no max_seconds in targets.yaml: no limit recorded (as before)", "max_seconds" not in plain_meta)
+
+print("Financial DD adapter: cancel() kills a stuck worker:")
+from adapters import financial_dd as fdd  # noqa: E402
+stuck = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"], stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, text=True, encoding="utf-8")
+fdd._proc = stuck
+t0 = time.perf_counter()
+reply, timed_out = rx._call_with_limit(lambda: fdd._ask({"op": "answer", "question": "q", "settings": {}}),
+                                       0.5, fdd.cancel)
+time.sleep(0.5)
+ok("timed out, worker process killed, next question gets a fresh worker",
+   timed_out and stuck.poll() is not None and fdd._proc is None, (timed_out, stuck.poll()))
+ok("...within seconds, not the worker's 60", time.perf_counter() - t0 < 10)
 
 print("no pricing.yaml:")
 rx.PRICING_FILE = os.path.join(tmp, "empty_dir", "pricing.yaml")   # does not exist

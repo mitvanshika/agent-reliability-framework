@@ -260,6 +260,7 @@ You only need this when your system runs in its own process (like `adapters/fina
 | `tools` | `module:function` returning the tools, opts in to `fuzz_tools.py` | not fuzzed |
 | `action_tools` | tools that act: must be `approval.safe_action`, checked by `check_actions.py`, never fuzzed | none |
 | `max_steps` | `step_checks.py`: more LLM turns or tool calls per answer than this is a finding | 8 |
+| `max_seconds` | time limit per question, set by the system's owner: past it the question is recorded as `error_type: timeout` and the run moves on. If the target's module has `cancel()` it is called to stop the work (`adapters/financial_dd.py` kills its worker); otherwise the call may finish unseen in the background | no limit |
 | `actions_sandbox` | `module:function(tmpdir)` that points side effects at a temp folder during `check_actions.py` | none |
 
 `python check_target.py <target>` checks all of this before you spend a token.
