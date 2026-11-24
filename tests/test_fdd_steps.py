@@ -94,5 +94,24 @@ ok("passes on_progress to answer() and builds the steps", "answer(req[\"question
    and "financial_dd_steps.build(" in src)
 ok("trajectory returned on success and on failure", src.count('"trajectory": steps') == 2)
 
+print("the worker uses Financial DD's own key, not the framework's:")
+import tempfile  # noqa: E402
+from adapters import financial_dd as fdd  # noqa: E402
+with tempfile.TemporaryDirectory() as tmp:
+    env_file = os.path.join(tmp, ".env")
+    with open(env_file, "w", encoding="utf-8") as f:
+        f.write("GROQ_API_KEY=framework-key\nFDD_PYTHON=C:/x/python.exe\nSLACK_WEBHOOK_URL=hook\n")
+    parent = {"GROQ_API_KEY": "framework-key", "FDD_PYTHON": "C:/x/python.exe", "SLACK_WEBHOOK_URL": "hook",
+              "PATH": "/bin", "SYSTEMROOT": "C:/Windows"}
+    child = fdd.worker_env(parent, env_file)
+    ok("the framework's .env variables are not passed on (GROQ_API_KEY, webhook, ...)",
+       not {"GROQ_API_KEY", "SLACK_WEBHOOK_URL", "FDD_PYTHON"} & set(child), sorted(child))
+    ok("everything else is (PATH, SYSTEMROOT: the worker needs them)", child == {"PATH": "/bin", "SYSTEMROOT": "C:/Windows"})
+    own = fdd.worker_env({**parent, "GROQ_API_KEY": "set-by-the-user-in-the-shell"}, env_file)
+    ok("a key set some other way (not this .env) is left alone", own.get("GROQ_API_KEY") == "set-by-the-user-in-the-shell")
+    ok("no framework .env: the environment unchanged", fdd.worker_env(parent, os.path.join(tmp, "none")) == parent)
+with open(os.path.join(REPO, "adapters", "financial_dd.py"), encoding="utf-8") as f:
+    ok("the worker is started with worker_env()", "env=worker_env()" in f.read())
+
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)
