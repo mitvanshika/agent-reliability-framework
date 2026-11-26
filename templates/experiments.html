@@ -159,7 +159,7 @@ function renderRuns() {
       <td class="num">${r.judged ? pct(r.pass_rate) : '<span class="dim">not judged</span>'}</td>
       <td class="num">${num(r.mean_final_score)}</td>
       <td class="num">${tokens(r.total_tokens)}</td>
-      <td class="num">${money(r.estimated_cost_usd)}</td>
+      <td class="num" title="${esc(r.cost_note || '')}">${r.estimated_cost_usd == null && r.total_tokens != null ? '<span class="dim">tokens only</span>' : money(r.estimated_cost_usd)}</td>
       <td><span class="badge ${verdictClass(r.verdict)}">${esc(r.verdict || 'not compared')}</span></td>
     </tr>`).join('');
   body.querySelectorAll('tr.clickable').forEach(tr => tr.addEventListener('click', () => openRun(tr.dataset.run)));
@@ -220,7 +220,8 @@ async function openRun(runId) {
       <div><span>pass rate</span><span class="mono">${pct(d.pass_rate)}</span></div>
       <div><span>mean final_score</span><span class="mono">${num(d.mean_final_score)}</span></div>
       <div><span>judge set</span><span class="mono">${esc(d.judge_set || '-')}</span></div>
-      <div><span>tokens / cost</span><span class="mono">${tokens(d.total_tokens)} / ${money(d.estimated_cost_usd)}</span></div>
+      <div><span>tokens</span><span class="mono">${tokens(d.total_tokens)}${d.input_tokens != null ? ` (${tokens(d.input_tokens)} in, ${tokens(d.output_tokens)} out)` : ''}</span></div>
+      <div><span>cost</span><span class="mono">${d.estimated_cost_usd != null ? money(d.estimated_cost_usd) : `<span class="dim">${esc(d.cost_note || 'not known')}</span>`}</span></div>
       <div><span>agent errors</span><span class="mono">${errors}</span></div></div>
     <div class="kv">${judges || '<div class="empty">not judged</div>'}
       ${d.tool_match_mean !== null && d.tool_match_mean !== undefined ? `<div><span>tool_match (code check)</span><span class="mono">${num(d.tool_match_mean, 1)}</span></div>` : ''}</div>
@@ -242,6 +243,21 @@ async function openRun(runId) {
       <p class="mono dim">${esc(c.noise_bands)}</p>
       <table><thead><tr><th></th><th>scenario</th><th>base</th><th>run</th><th>delta</th><th>band</th><th>pass/fail</th><th>judges moved</th></tr></thead>
       <tbody>${rows}</tbody></table>`;
+    const qc = c.question_costs;
+    if (qc && (qc.per_question || []).length) {
+      const byId = Object.fromEntries(qc.per_question.map(q => [q.scenario_id, q]));
+      const pick = [...new Set([...(qc.biggest_changes || []), ...(qc.costliest || [])])].map(id => byId[id]).filter(Boolean);
+      const sign = x => x == null ? '-' : (x >= 0 ? '+' : '') + Number(x).toLocaleString();
+      html += `<h2 style="margin-top:18px">Tokens per question</h2>
+        <p class="dim">The questions whose token use changed most, and the most expensive ones (from both runs' saved token counts; no extra calls).
+          ${(qc.unknown || []).length ? `Unknown for ${esc(qc.unknown.join(', '))}.` : ''}</p>
+        <table><thead><tr><th>scenario</th><th>base tokens</th><th>run tokens</th><th>change</th><th>LLM calls</th><th>score</th></tr></thead><tbody>
+        ${pick.map(q => `<tr><td class="mono"><a href="/runs/${encodeURIComponent(d.run_id)}/${encodeURIComponent(q.scenario_id)}">${esc(q.scenario_id)}</a></td>
+          <td class="num">${tokens(q.baseline_tokens)}</td><td class="num">${tokens(q.run_tokens)}</td>
+          <td class="num">${sign(q.delta)}${q.pct != null ? ` (${q.pct > 0 ? '+' : ''}${num(q.pct, 1)}%)` : ''}</td>
+          <td class="num">${esc(q.baseline_calls ?? '-')} &rarr; ${esc(q.run_calls ?? '-')}</td>
+          <td class="num">${num(q.baseline_score, 1)} &rarr; ${num(q.run_score, 1)}</td></tr>`).join('')}</tbody></table>`;
+    }
   }
   if ((d.diagnosis || []).length) {
     html += '<h2 style="margin-top:18px">Diagnosis</h2>' + d.diagnosis.map(x => `

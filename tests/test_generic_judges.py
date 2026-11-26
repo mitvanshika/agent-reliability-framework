@@ -122,5 +122,37 @@ ok("configurable: no judge_set -> experiment_v2, full", c["judge_set"] is None
 Pv2, _, called = prompts(TOOL_TRACE, {"expected_answer": "Paris"}, judge_sets.EXPERIMENT_V2)
 ok("experiment_v2 still uses the original judge files (no generic call)", "generic" not in called, called)
 
+print("generic_v2: the completeness wording fix (fdd_q10):")
+G2 = judge_sets.GENERIC_V2
+ok("generic_v2 differs from generic_v1 in completeness ONLY (regrade re-runs just that judge)",
+   judge_sets.changed_judges(G, G2) == ["completeness"], judge_sets.changed_judges(G, G2))
+ok("a target may pick it", "generic_v2" in judge_sets.MAIN_SETS and judge_sets.BY_NAME["generic_v2"] is G2)
+ok("its completeness node is the v2 one; the other judges stay generic v1",
+   judge_experiment._node(G2, "completeness") is judge_experiment._gen_completeness_v2
+   and judge_experiment._node(G2, "groundedness") is judge_experiment._node(G, "groundedness"))
+ok("v1 and v2 runs are never compared as if the same", not judge_sets.same({**G, "judge_model": "m"},
+                                                                         {**G2, "judge_model": "m"}))
+seen = {}
+real_call = generic.call_judge
+generic.call_judge = lambda prompt, max_retries=2: seen.setdefault("p", prompt) and None
+try:
+    generic.judge_completeness_v2("What cybersecurity risks does Apple describe?", "Viruses and ransomware [1].",
+                                  ["chunk: ransomware ..."], "Hacking, ransomware, high-profile target.", "a 10-K RAG")
+finally:
+    generic.call_judge = real_call
+p2 = seen["p"]
+ok("v2 prompt names the INPUT as the thing to split, not 'the request'",
+   "Split the INPUT the system received" in p2 and "Split the request" not in p2)
+ok("v2 prompt says: don't grade against these instructions, the system never saw them",
+   "do not grade the output against these" in p2 and "never shown them" in p2)
+ok("same rules as v1 (honest refusal complete, made-up core not, small extras a small deduction)",
+   all(x in p2 for x in ("COMPLETE if the information needed is in neither", "core of the answer is made up",
+                          "a small deduction, not a zero")))
+ok("the question, output, sources and reference all reach the judge",
+   all(x in p2 for x in ("cybersecurity risks", "Viruses and ransomware", "chunk: ransomware", "high-profile target")))
+ok("financial_dd uses generic_v2; the summarizer keeps generic_v1 (its baseline was judged with it)",
+   target_config.get("financial_dd")["judge_set"] == "generic_v2"
+   and target_config.get("summarizer")["judge_set"] == "generic_v1")
+
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)

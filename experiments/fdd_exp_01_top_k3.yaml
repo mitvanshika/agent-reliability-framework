@@ -1,0 +1,5 @@
+﻿name: fdd_exp_01_top_k3
+description: "Retrieve 3 chunks instead of 6: is it cheaper without getting worse?"
+extends: fdd_baseline
+settings:
+  retrieval: {final_top_k: 3}      # FDD's own config.yaml has 6

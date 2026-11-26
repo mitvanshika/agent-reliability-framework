@@ -5,7 +5,8 @@ starts it and talks to it over stdin/stdout, one JSON object per line:
 
     {"op": "validate", "settings": {...}}               -> {"ok": true} or {"error": "..."}
     {"op": "answer", "question": "...", "settings": {...}}
-        -> {"answer", "tools_used", "tool_outputs", "error", "error_type", "usage"}
+        -> {"answer", "tools_used", "tool_outputs", "error", "error_type", "usage", "llm_calls",
+            "trajectory"}   (its search -> grade -> rewrite steps, see financial_dd_steps.py)
     {"op": "describe", "settings": {...}}
         -> {"system", "git", "config_hash", "effective_config"}   (which version ran)
 
@@ -17,6 +18,7 @@ import hashlib
 import json
 import subprocess
 import sys
+import time
 
 PROTOCOL = sys.stdout
 sys.stdout = sys.stderr            # anything dd / torch prints must not break the protocol
@@ -27,6 +29,7 @@ from dd.config import PROJECT_ROOT, Config, get_config  # noqa: E402
 from dd.generation import answer  # noqa: E402
 from dd.structured import describe_fact  # noqa: E402
 
+import financial_dd_steps  # noqa: E402  (same folder, standard library only)
 import token_meter  # noqa: E402  (this file's folder is on sys.path: dd's Groq calls get counted)
 
 MODEL_FAILED = "Model call failed"   # how dd.generation reports a failed Groq call
@@ -87,9 +90,14 @@ def handle(req):
         return {"ok": True}
     if req.get("op") == "describe":
         return describe(req.get("settings") or {})
+    events = []
     with token_meter.measure() as meter:      # dd reports no tokens; count its Groq calls here
-        a = answer(req["question"], cfg)
+        def on_progress(stage, details):      # dd's own step announcements, timed like the calls
+            events.append((round(time.perf_counter() - meter.t0, 3), stage, dict(details or {})))
+        a = answer(req["question"], cfg, on_progress=on_progress)
     o = a.outcome
+    steps = financial_dd_steps.build([r.model_dump() for r in o.attempts] if o is not None else [],
+                                     events, meter.calls())
     evidence = []
     if o is not None:
         evidence = [g.retrieved.chunk.text for g in o.relevant_chunks]
@@ -98,13 +106,14 @@ def handle(req):
     failed = not a.answered and a.text.startswith(MODEL_FAILED)
     if failed:
         return {"answer": None, "tools_used": [], "tool_outputs": evidence,
-                "error": a.text, "error_type": error_type(a.text), "usage": meter.usage()}
+                "error": a.text, "error_type": error_type(a.text), "usage": meter.usage(),
+                "llm_calls": meter.calls(), "trajectory": steps}
     # dd marks a refusal with answered=False and puts only the REASON in text; its own CLI
     # shows it as "no answer: <reason>". Keep that label, or a judge reads a bare reason
     # ("only 0 relevant chunk(s) found...") with no sign that the system declined to answer.
     text = a.text if a.answered else f"No answer: {a.text}"
     return {"answer": text, "tools_used": [], "tool_outputs": evidence, "error": None, "error_type": None,
-            "usage": meter.usage()}
+            "usage": meter.usage(), "llm_calls": meter.calls(), "trajectory": steps}
 
 
 for line in sys.stdin:

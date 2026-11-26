@@ -14,6 +14,8 @@ behaviour. Any target may set:
       action_tools: [send_email]                        # tools that ACT: must be approval.safe_action (check_actions.py)
       actions_sandbox: my_module:sandbox                # fn(tmpdir) -> restore(): point side effects at tmpdir
       max_steps: 8                                      # step_checks.py: more LLM turns / tool calls = a finding
+      max_seconds: 300                                  # run_experiment.py: a question still running after this
+                                                        #   is stopped and recorded as error_type "timeout"
 
 Left out, each key means exactly what the framework did before: no
 description, every judge of the judge set, threshold 7, scenarios/, and
@@ -25,7 +27,8 @@ import os
 DEFAULT_THRESHOLD = 7
 DEFAULT_SCENARIOS = "scenarios"   # = run_suite.SCENARIOS_DIR
 KEYS = {"module", "function", "accepts_settings", "description", "tools", "judge_set", "judges",
-        "pass_threshold", "scenarios", "non_retrieval_tools", "action_tools", "actions_sandbox", "max_steps"}
+        "pass_threshold", "scenarios", "non_retrieval_tools", "action_tools", "actions_sandbox", "max_steps",
+        "max_seconds", "title", "about", "tour_question"}
 
 
 class TargetConfigError(ValueError):
@@ -48,6 +51,11 @@ def get(target, targets=None) -> dict:
         "scenarios": entry.get("scenarios") or _default_scenarios(),
         "non_retrieval_tools": list(entry.get("non_retrieval_tools") or []),
         "action_tools": action_tools(entry),
+        "max_seconds": entry.get("max_seconds"),                                        # None = no time limit
+        # For the guided tour page only (written by whoever plugs the system in; never shown to the judges):
+        "title": entry.get("title"),                  # None = the target's name
+        "about": entry.get("about"),                  # None = the description
+        "tour_question": entry.get("tour_question"),  # None = picked automatically
     }
 
 
@@ -123,8 +131,14 @@ def validate(target, entry, known_judges) -> list:
     if "max_steps" in entry and (isinstance(entry["max_steps"], bool) or not isinstance(entry["max_steps"], int)
                                  or entry["max_steps"] < 1):
         problems.append(f"{target}.max_steps: a whole number >= 1")
+    if "max_seconds" in entry and (isinstance(entry["max_seconds"], bool)
+                                   or not isinstance(entry["max_seconds"], (int, float)) or entry["max_seconds"] <= 0):
+        problems.append(f"{target}.max_seconds: a number of seconds > 0")
     if "actions_sandbox" in entry and not (isinstance(entry["actions_sandbox"], str) and ":" in entry["actions_sandbox"]):
         problems.append(f"{target}.actions_sandbox: module:function")
+    for key in ("title", "about", "tour_question"):
+        if key in entry and not (isinstance(entry[key], str) and entry[key].strip()):
+            problems.append(f"{target}.{key}: a non-empty string")
     if "description" in entry and not (isinstance(entry["description"], str) and entry["description"].strip()):
         problems.append(f"{target}.description: a non-empty string")
-    return problems
+    return problems

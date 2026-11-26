@@ -379,6 +379,7 @@ def config_files(runs_dir, run_ids):
         for k in ("prompt", "docstrings"):
             if s.get(k):
                 files.add(str(s[k]).replace("\\", "/"))
+        folder = str(meta.get("scenario_dir") or "scenarios").replace("\\", "/").rstrip("/")
         for sid in meta.get("scenario_ids") or []:
-            files.add(f"scenarios/{sid}.yaml")
+            files.add(f"{folder}/{sid}.yaml")
     return sorted(files)

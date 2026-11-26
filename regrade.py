@@ -73,10 +73,14 @@ def main(argv=None):
     run_dir = args.run_dir.rstrip("/\\")
     if args.to not in judge_sets.BY_NAME:
         sys.exit(f"Unknown judge set '{args.to}'. Known: {', '.join(judge_sets.BY_NAME)}")
-    new_base = judge_sets.BY_NAME[args.to]
     judged = os.path.join(run_dir, "judged")
     if not os.path.isdir(judged):
         sys.exit(f"{run_dir} has not been judged yet.")
+    import target_config
+    # The target's own judge list (targets.yaml `judges:`), as judge_run.py applies it: without it the
+    # re-graded traces would record the full set, and compare.py would refuse them next to new runs.
+    new_base = judge_sets.for_target(judge_sets.BY_NAME[args.to],
+                                     target_config.for_meta(_load_meta(run_dir)).get("judges"))
 
     first = latest_trace_files(judged)
     old_js_now = judge_sets.of_judged_traces(t for _, t in first.values())
@@ -114,7 +118,6 @@ def main(argv=None):
     import run_suite
     import compare
     meta = _load_meta(run_dir)
-    import target_config
     global THRESHOLD
     THRESHOLD = target_config.for_meta(meta)["pass_threshold"]
     scenarios = {s["id"]: s for s in run_experiment.load_scenarios(meta.get("scenario_dir"))}

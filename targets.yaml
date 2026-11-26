@@ -48,10 +48,17 @@ configurable:
     - name: issue_refund
       test_args: {order_id: A1001}
   actions_sandbox: support_actions:sandbox
+  # for the guided tour page (/tour) only; never shown to the judges
+  title: "Store support agent (demo)"
+  about: "A customer-support chatbot for a pretend online store. It looks up orders, calculates refunds and searches an FAQ with tools, in a loop: the LLM picks a tool, reads the result, and repeats until it can answer."
+  tour_question: gen_004
   # Per-target keys (all optional; see target_config.py). Defaults = the old behaviour:
   #   judges: [...]        which judges apply (others N/A, not in final_score); default all
   #   pass_threshold: 7    final_score >= this is a pass
   #   scenarios: scenarios its main scenario folder
+  #   title / about / tour_question   for the guided tour page: a short name, a plain description
+  #                        for visitors, and the question to show up close (default: the one that
+  #                        wobbled most between identical runs). Never shown to the judges.
 
 # Example of plugging in a system that is NOT the support bot: a plain function,
 # no tools, no settings. Nothing in the framework was changed for it.
@@ -72,7 +79,10 @@ financial_dd:
   function: run
   accepts_settings: true
   description: "answers questions about Apple's FY2025 10-K filing with cited evidence, and refuses when the filing does not answer"
-  judge_set: generic_v1
+  judge_set: generic_v2                                  # generic_v1 + the completeness wording fix (fdd_q10)
   judges: [correctness_gt, completeness, groundedness, context_relevance]
   pass_threshold: 7
   scenarios: scenarios_fdd
+  title: "Financial Due Diligence RAG"
+  about: "Answers questions about Apple's FY2025 annual report (10-K) with cited evidence. It searches the report, has an LLM grade which passages are relevant, and answers only from those; if the first search finds nothing useful it rewrites the search and tries again, and if the report doesn't answer the question it refuses."
+  # no tour_question: the tour shows the question that wobbled most between identical runs

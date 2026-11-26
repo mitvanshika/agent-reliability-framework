@@ -160,6 +160,40 @@ with token_meter.measure() as m:
 ok("an async call that raises counts as failed too", m.summary()["failed_calls"] == 1 and m.usage() is None,
    m.summary())
 
+print("per-call list (6a):")
+fmt = {"type": "json_schema", "json_schema": {"name": "chunk_grades", "schema": {}}}
+labelled = token_meter._wrap(lambda model=None, response_format=None: chat_reply(100, 20))
+with token_meter.measure() as m:
+    labelled(model="gpt-oss-120b", response_format=fmt)
+    groq.create(50, 10)
+    groq.create(stream=True)
+    try:
+        sys.modules["openai.resources.responses"].AsyncResponses().create()
+    except RuntimeError:
+        pass
+calls = m.calls()
+ok("one entry per call, in order (failed ones too)", len(calls) == 4, calls)
+ok("label = the JSON format's name; model kept", calls[0]["label"] == "chunk_grades"
+   and calls[0]["model"] == "gpt-oss-120b" and calls[0]["total_tokens"] == 120, calls[0])
+ok("no response_format -> label None", calls[1]["label"] is None and calls[1]["total_tokens"] == 60, calls[1])
+ok("no receipt: tokens None + the reason", calls[2]["total_tokens"] is None and calls[2]["reason"] == "stream=True",
+   calls[2])
+ok("a call that raised: tokens None + the error type", calls[3]["total_tokens"] is None
+   and calls[3]["error"] == "RuntimeError", calls[3])
+ok("every call has its seconds", all(isinstance(c["seconds"], float) and c["seconds"] >= 0 for c in calls))
+ok("calls() is a copy (editing it changes nothing)", (m.calls().clear() or len(m.calls())) == 4)
+with token_meter.measure() as m:
+    for _ in range(token_meter.MAX_CALLS + 5):
+        groq.create(1, 1)
+ok(f"list capped at {token_meter.MAX_CALLS}; counts and tokens still include every call",
+   len(m.calls()) == token_meter.MAX_CALLS and m.summary()["llm_calls"] == token_meter.MAX_CALLS + 5
+   and m.usage()["total_tokens"] == 2 * (token_meter.MAX_CALLS + 5), m.summary())
+
+with token_meter.measure() as m:
+    groq.create(1, 1)
+ok("each call has started_at (seconds after the block began)",
+   isinstance(m.calls()[0]["started_at"], float) and 0 <= m.calls()[0]["started_at"] < 1, m.calls()[0])
+
 print("nesting and threads:")
 with token_meter.measure() as outer:
     groq.create(1, 1)
@@ -181,8 +215,10 @@ print("Financial DD worker uses it:")
 with open(os.path.join(REPO, "adapters", "financial_dd_worker.py"), encoding="utf-8") as f:
     src = f.read()
 ok("imports token_meter", "import token_meter" in src)
-ok("answer() runs inside a meter", re.search(r"with token_meter\.measure\(\) as meter:[^\n]*\n\s+a = answer\(", src) is not None)
+ok("answer() runs inside a meter (indented inside the with block)",
+   re.search(r"with token_meter\.measure\(\) as meter:[^\n]*\n(?: {8}[^\n]*\n)*? {8}a = answer\(", src) is not None)
 ok("usage returned on success and on failure", src.count('"usage": meter.usage()') == 2)
+ok("the call list returned on success and on failure", src.count('"llm_calls": meter.calls()') == 2)
 
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)

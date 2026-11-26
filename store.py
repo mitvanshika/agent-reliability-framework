@@ -9,8 +9,10 @@ tools query a real (if tiny) database the way a production agent
 would query a real service, instead of reading a dict that happens to
 live in the same file as the tool.
 
-Run this once to create and seed the database:
+The database is created and seeded automatically the first time it is
+used (a fresh clone has no store.db, since it is gitignored). Running
     python store.py
+does the same by hand, and resets the rows to the seed values.
 """
 
 import sqlite3
@@ -19,14 +21,41 @@ from pathlib import Path
 DB_PATH = Path(__file__).parent / "store.db"
 
 
+_ready = set()   # database paths already checked in this process
+
+
+def _ensure_seeded():
+    """Create the tables and the seed rows if they're missing (once per process, per path)."""
+    key = str(DB_PATH)
+    if key in _ready:
+        return
+    _ready.add(key)
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        has = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+        empty = "faqs" not in has or "orders" not in has or not conn.execute("SELECT 1 FROM faqs LIMIT 1").fetchone()
+    finally:
+        conn.close()
+    if empty:
+        init_db()
+        seed_db()
+
+
 def get_connection():
+    _ensure_seeded()
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def _connect():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 
 def init_db():
-    conn = get_connection()
+    conn = _connect()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS orders (
             order_id TEXT PRIMARY KEY,
@@ -46,7 +75,7 @@ def init_db():
 
 
 def seed_db():
-    conn = get_connection()
+    conn = _connect()
     orders = [
         ("A1001", "delivered", 89.99, 12),
         ("A1002", "delivered", 45.50, 45),
@@ -82,7 +111,9 @@ def get_order(order_id: str):
 def search_faq(query: str):
     query_lower = query.lower()
     conn = get_connection()
-    rows = conn.execute("SELECT * FROM faqs").fetchall()
+    # ORDER BY rowid: the first matching topic wins, so the order must be fixed (insertion order), not
+    # whatever order SQLite happens to return. retrieval.load_faqs uses the same order.
+    rows = conn.execute("SELECT * FROM faqs ORDER BY rowid").fetchall()
     conn.close()
     for row in rows:
         if row["topic"] in query_lower:
@@ -93,4 +124,4 @@ def search_faq(query: str):
 if __name__ == "__main__":
     init_db()
     seed_db()
-    print(f"Database initialized and seeded at {DB_PATH}")
+    print(f"Database initialized and seeded at {DB_PATH}")

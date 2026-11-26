@@ -111,6 +111,8 @@ def diff_configs(parent: dict, child: dict) -> list[str]:
     changes = []
     for path in sorted(set(before) | set(after)):
         old, new = before.get(path, _UNSET), after.get(path, _UNSET)
+        if (old is _UNSET and new == {}) or (new is _UNSET and old == {}):
+            continue   # an empty mapping that got keys (settings: {} -> {retrieval: ...}) is not a change of its own
         if old != new or (old is _UNSET) != (new is _UNSET):
             changes.append(f"{path}: {_fmt(old)} -> {_fmt(new)}")
     return changes

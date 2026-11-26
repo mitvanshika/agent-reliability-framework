@@ -148,7 +148,7 @@ def _fmt(x, width=6):
 
 def print_report(report):
     mode = report.get("mode", "?")
-    what = "agent + judge noise" if mode == "full" else "judge noise only"
+    what = "agent + judge noise" if mode in ("full", "from_runs") else "judge noise only"
     print(f"\nNoise calibration: {report.get('variant', '?')} ({mode} mode: {what}), "
           f"{report.get('runs', '?')} runs, pass threshold {report['threshold']}")
     print("-" * 78)
@@ -426,8 +426,12 @@ def main_from_runs(run_dirs):
     import target_config
     report.update(noise_from_records([(d, recs) for d, _, recs, _ in loaded],
                                      target_config.threshold(target)))
+    import stability   # why each jumpy question moved: system, judge or wording (from the saved traces)
+    report["jumpy_explained"] = stability.explain([stability.load_run(d) for d, *_ in loaded], report["jumpy"],
+                                                  target_config.threshold(target))
     path = save_report(report, compare.suite_key(target, report["scenario_suite"]))
     print_report(report)
+    stability.print_explanations(report["jumpy_explained"])
     no_band = sorted(sid for sid, st in report["scenarios"].items() if st["range"] is None)
     if no_band:
         print(f"\nNo band (fewer than 2 scored runs; compare uses the default): {' '.join(no_band)}")

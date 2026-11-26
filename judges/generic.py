@@ -15,6 +15,10 @@ What changes vs the original wording:
 - completeness: small unsupported extras cost a little; only an invented core
   answer scores 0 (the v2 over-correction on normal_01, see
   evidence/judge_fix_completeness.md)
+
+generic_v2 = generic_v1 with completeness worded so the judge can't mistake its own
+instructions for the system's task (judge_completeness_v2). Scores of v1 and v2 runs
+are not compared directly: re-grade with regrade.py --to generic_v2.
 """
 
 from judges.base import call_judge
@@ -74,6 +78,32 @@ Split the request into its parts. For each part:
 Small extra details that are not in the source but don't change the answer: a small deduction, not a zero.
 
 Score 0-10 = the share of parts that are complete. Say which parts are complete and why, and state your confidence."""
+    return call_judge(prompt, max_retries)
+
+
+def judge_completeness_v2(question, answer, sources, expected_answer, description=None, max_retries=2):
+    """generic_v2: the same rules as judge_completeness, with the task named unambiguously. v1 said
+    "Split the request into its parts", and on Financial DD's fdd_q10 the judge read ITS OWN prompt
+    as "the request": completeness 0 (confidence 0.97) because the system "did not split the
+    evaluation task into parts" (evidence/judge_fix_completeness_generic.md)."""
+    prompt = f"""You are a grader. Check whether a system's output fully handles everything its INPUT asked for.
+You only grade the output below. Do not do the task yourself, and do not grade the output against these
+grading instructions: the system was never shown them.
+
+{_header(description, question, sources)}
+Reference answer (what a correct output covers): {expected_answer or "(not given)"}
+Its output: {answer}
+
+Split the INPUT the system received (shown above) into its parts. For each part of that input:
+- COMPLETE if the output handles it correctly (consistent with the input, the source material and the reference).
+- COMPLETE if the information needed is in neither the input nor the source material and the output honestly
+  {HONEST}.
+- NOT complete if the part is skipped, if the output {HONEST} although the needed information WAS there,
+  or if the core of the answer is made up (not in the input, the source material or the reference).
+Small extra details that are not in the source but don't change the answer: a small deduction, not a zero.
+
+Score 0-10 = the share of the input's parts that the output handles completely. Name the parts, say which are
+complete and why, and state your confidence."""
     return call_judge(prompt, max_retries)
 
 

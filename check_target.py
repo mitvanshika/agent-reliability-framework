@@ -218,7 +218,7 @@ def check(target, call=False, experiment=None, targets=None) -> Report:
 
     # description
     needs = [why for why, cond in (
-        ("judge_set generic_v1 gives it to every judge", cfg.get("judge_set") == "generic_v1"),
+        (f"judge_set {cfg.get('judge_set')} gives it to every judge", str(cfg.get("judge_set")).startswith("generic")),
         ("the scope prompt addon uses it", "scope" in ((settings or {}).get("prompt_addons") or [])),
         ("generate_adversarial.py builds attacks from it", True),
     ) if cond]

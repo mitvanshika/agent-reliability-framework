@@ -181,7 +181,9 @@ def judge_all_traces(variant: str, traces_dir: str | None = None, judged_dir: st
     # not re-judged, which would waste tokens and rate limit.
     latest = latest_trace_files(config["traces_dir"])
 
-    for filename, trace in latest.values():
+    # In scenario-id order, so a run is judged in the same order on every OS (os.listdir order
+    # differs between Windows and Linux) and a daily-limit stop always leaves the same tail unjudged.
+    for _sid, (filename, trace) in sorted(latest.items()):
         if trace["error"] is not None:
             # Agent crashed, so there is no answer to judge. Still write it
             # to the judged folder so it counts as a FAIL in the pass rate
@@ -238,4 +240,4 @@ def judge_all_traces(variant: str, traces_dir: str | None = None, judged_dir: st
 
 if __name__ == "__main__":
     variant = sys.argv[1] if len(sys.argv) > 1 else "strong"
-    judge_all_traces(variant)
+    judge_all_traces(variant)

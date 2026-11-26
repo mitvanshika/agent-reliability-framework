@@ -10,7 +10,7 @@ import tempfile
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
 
-from experiment_config import ExperimentConfigError, format_changes, load_experiment  # noqa: E402
+from experiment_config import ExperimentConfigError, diff_configs, format_changes, load_experiment  # noqa: E402
 
 failures = []
 
@@ -107,6 +107,12 @@ raises("file must be a mapping", d, "x", ["must be a mapping"])
 d = make({"x": "name: x\ntarget: t\nsettings: {a: 1\n"})
 raises("invalid YAML", d, "x", ["not valid YAML"])
 raises("missing file", d, "nope", ["not found"])
+
+print("empty settings in the parent:")
+d = diff_configs({"target": "t", "settings": {}}, {"target": "t", "settings": {"retrieval": {"final_top_k": 3}}})
+ok("settings: {} -> {retrieval: ...} lists only the real change", d == ["settings.retrieval.final_top_k: (unset) -> 3"], d)
+d2 = diff_configs({"target": "t", "settings": {"a": 1}}, {"target": "t", "settings": {}})
+ok("...and the reverse", d2 == ["settings.a: 1 -> (unset)"], d2)
 
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)

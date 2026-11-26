@@ -1,0 +1,40 @@
+﻿name: Tests
+
+# Runs every offline test (tests/run_all.py) on every push and pull request.
+# No API key and no tokens: the tests use fake judges and fake targets, so this
+# runs for forks too. The two other workflows (regression-check.yml, Track 1, and
+# experiment-check.yml, Track 2) make real API calls and only run when an agent's
+# files change; this one checks the framework's own code.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GROQ_API_KEY: offline-test        # some modules want it set; no test makes a real call
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run all offline tests
+        run: python tests/run_all.py -v

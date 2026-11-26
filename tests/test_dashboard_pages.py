@@ -40,9 +40,9 @@ def ok(label, cond, detail=""):
 
 
 D = "demo_data"
-PAGES = ["/", "/experiments", "/evidence", "/evidence/known_bad_test", "/systems", "/approvals", "/track1",
+PAGES = ["/", "/tour", "/experiments", "/evidence", "/evidence/known_bad_test", "/systems", "/approvals", "/track1",
          "/runs/exp_01_weak_prompt_20261107_164943/rag_06"]
-ACTIVE = {"/": "/", "/experiments": "/experiments", "/evidence": "/evidence", "/evidence/known_bad_test": "/evidence",
+ACTIVE = {"/": "/", "/tour": "/tour", "/experiments": "/experiments", "/evidence": "/evidence", "/evidence/known_bad_test": "/evidence",
           "/systems": "/systems", "/approvals": "/approvals", "/track1": "/track1",
           "/runs/exp_01_weak_prompt_20261107_164943/rag_06": "/experiments"}
 
@@ -72,8 +72,8 @@ def normal_mode():
            code == 200 and 'class="topnav"' in h and f'class="item active" href="{ACTIVE[p]}"' in h
            and "Demo: recorded results" not in h, code)
     code, h = html(c, "/")
-    ok("nav has all 6 items in order", [lbl for _, lbl in appmod.NAV_ITEMS] ==
-       ["Overview", "Experiments", "Evidence", "Systems", "Approvals", "Track 1"])
+    ok("nav has all 7 items in order", [lbl for _, lbl in appmod.NAV_ITEMS] ==
+       ["Overview", "Guided tour", "Experiments", "Evidence", "Systems", "Approvals", "Track 1"])
 
     print("\n[overview]")
     ok("two-line intro", "Did my AI agent get worse" in h and "paired statistics" in h)
@@ -207,7 +207,7 @@ def demo_mode():
         print("\n[demo: Track 1 hidden]")
         h = html(c, "/")[1]
         ok("no Track 1 tab in the nav", 'href="/track1"' not in h and [lbl for _, lbl in appmod.NAV_ITEMS] ==
-           ["Overview", "Experiments", "Evidence", "Systems", "Approvals"])
+           ["Overview", "Guided tour", "Experiments", "Evidence", "Systems", "Approvals"])
         r = c.get("/track1")
         ok("/track1 redirects to /", r.status_code == 302 and r.headers["Location"].endswith("/"), r.status_code)
         ok("/api/data is empty", c.get("/api/data").get_json() == {"strong": [], "weak": []})

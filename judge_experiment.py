@@ -166,6 +166,12 @@ def _gen_completeness(state):
         state.get("description")).model_dump()}
 
 
+def _gen_completeness_v2(state):
+    return {"completeness_result": generic.judge_completeness_v2(
+        state["question"], state["answer"], state.get("tool_outputs", []), state.get("expected_answer"),
+        state.get("description")).model_dump()}
+
+
 def _gen_groundedness(state):
     return {"groundedness_result": generic.judge_groundedness(
         state["question"], state["answer"], state.get("tool_outputs", []), state.get("description")).model_dump()}
@@ -189,7 +195,8 @@ def _gen_context_relevance(state):
 _VERSIONED = {("completeness", "v2"): run_completeness_v2,
               ("correctness_gt", "generic"): _gen_correctness_gt, ("completeness", "generic"): _gen_completeness,
               ("groundedness", "generic"): _gen_groundedness, ("tool_efficiency", "generic"): _gen_tool_efficiency,
-              ("context_relevance", "generic"): _gen_context_relevance}
+              ("context_relevance", "generic"): _gen_context_relevance,
+              ("completeness", "generic_v2"): _gen_completeness_v2}
 _APPS = {}
 
 

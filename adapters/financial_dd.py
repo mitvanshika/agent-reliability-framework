@@ -10,6 +10,9 @@ the whole run, so the indexes and reranker load once, not once per question.
 
     .env:  FDD_PYTHON=<path to the Financial DD venv's python>
 
+Financial DD uses ITS OWN API key (Financial-Due-Diligence/.env): the worker starts
+without the variables from this framework's .env (worker_env).
+
 settings = overrides of its config.yaml, by section:
     settings: {self_healing: {max_attempts: 1}}
 """
@@ -19,11 +22,12 @@ import json
 import os
 import subprocess
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values, load_dotenv
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORKER = os.path.join(REPO, "adapters", "financial_dd_worker.py")
-load_dotenv(os.path.join(REPO, ".env"))
+ENV_FILE = os.path.join(REPO, ".env")
+load_dotenv(ENV_FILE)
 
 # Read on every question. chunking / embedding / vector_store / company are only used
 # when the index is BUILT, so changing them here would silently do nothing: refused.
@@ -41,6 +45,19 @@ def available():
     return os.path.isfile(os.environ.get("FDD_PYTHON", ""))
 
 
+def worker_env(env=None, env_file=None):
+    """The environment the worker starts with: this one MINUS everything that came from this
+    framework's .env (its GROQ_API_KEY and other secrets). Financial DD then reads its own .env
+    and uses its own key, as when it runs on its own; python-dotenv never overrides a variable
+    that is already set, so without this it would silently use the framework's key."""
+    env = dict(os.environ if env is None else env)
+    ours = dotenv_values(env_file or ENV_FILE) if os.path.isfile(env_file or ENV_FILE) else {}
+    for name, value in ours.items():
+        if env.get(name) == value:
+            env.pop(name)
+    return env
+
+
 def _worker():
     global _proc
     if _proc is None or _proc.poll() is not None:
@@ -48,7 +65,7 @@ def _worker():
         if not os.path.isfile(py):
             raise SettingsError("FDD_PYTHON in .env must point to the Financial DD environment's python")
         _proc = subprocess.Popen([py, WORKER], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                 text=True, encoding="utf-8")
+                                 text=True, encoding="utf-8", env=worker_env())
         atexit.register(_proc.terminate)
     return _proc
 
@@ -62,6 +79,20 @@ def _ask(request):
         return {"answer": None, "error": "Financial DD worker exited (its error is printed above)",
                 "error_type": "crash"}
     return json.loads(line)
+
+
+def cancel():
+    """Called by run_experiment.py when a question passes max_seconds (targets.yaml): kill the
+    worker so its work really stops (the waiting call then returns an error). The next question
+    starts a fresh worker, which reloads the models (about a minute)."""
+    global _proc
+    p, _proc = _proc, None
+    if p is not None and p.poll() is None:
+        p.kill()
+        try:
+            p.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            pass
 
 
 def validate_settings(settings):
