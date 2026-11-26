@@ -263,6 +263,9 @@ You only need this when your system runs in its own process (like `adapters/fina
 | `action_tools` | tools that act: must be `approval.safe_action`, checked by `check_actions.py`, never fuzzed | none |
 | `max_steps` | `step_checks.py`: more LLM turns or tool calls per answer than this is a finding | 8 |
 | `max_seconds` | time limit per question, set by the system's owner: past it the question is recorded as `error_type: timeout` and the run moves on. If the target's module has `cancel()` it is called to stop the work (`adapters/financial_dd.py` kills its worker); otherwise the call may finish unseen in the background | no limit |
+| `title` | a short name for the guided tour page (`/tour`); never shown to the judges | the target's name |
+| `about` | a plain description of the system for visitors on the tour page; never shown to the judges | its `description` |
+| `tour_question` | the question the tour shows up close (steps, judges, reasons) | the one that wobbled most between identical runs |
 | `actions_sandbox` | `module:function(tmpdir)` that points side effects at a temp folder during `check_actions.py` | none |
 
 `python check_target.py <target>` checks all of this before you spend a token.
@@ -378,6 +381,7 @@ has its own rate limiter (it is a separate process), so its calls are not in the
 
 ## CI
 
+- **`tests.yml`**: every push and PR, any branch: installs `requirements.txt` and runs `python tests/run_all.py` (all offline tests: fake judges and fake targets, no API key, no tokens). Run the same thing locally before pushing.
 - **`regression-check.yml`** (Track 1): runs `pipeline.py` on pushes to master, PRs, nightly and on demand; fails on a significant strong-vs-weak regression.
 - **`experiment-check.yml`** (Track 2): on PRs that touch prompts, docstrings, experiments, scenarios, baselines, the agent, judges or retrieval, runs `experiment_pipeline.py` on `experiments/baseline.yaml` and compares it with the committed `baselines/<target>.json`. Fails if DECLINED; writes the report to the job summary and uploads `comparison.json` as an artifact. Without a `GROQ_API_KEY` secret (e.g. PRs from forks) it skips with a notice. The repo variable `EXPERIMENT_CI_SCENARIOS` sets the call budget (space-separated scenario ids, or `all`; the default is 10 scenarios).
 
@@ -386,6 +390,7 @@ has its own rate limiter (it is a separate process), so its calls are not in the
 `python app.py`, then open localhost:5000. A top nav links every page:
 
 - **`/` Overview**: a guided, scrollable story for a first-time visitor, told with the real recorded runs (`story.py`; nothing typed in): (1) the agent, its 4 tools, its prompt and one real conversation step by step; (2) the 31 test questions with answer keys; (3) how an answer is scored and two versions compared; (4) the change tested, prompt v1 vs weak side by side; (5) the result (DECLINED, pass rate, flips, p-values in plain words, tokens); (6) gen_004 up close, with every judge's score and written reason; (7) the diagnosis per ▼ question, with an honest note where the label is a symptom (gen_004 and rag_02 are labelled RAG, but the agent stopped searching); (8) why to trust it (A/A, judge noise, the judge fix); (9) links on. Dotted terms (baseline, pass, noise band, ▲/▼, McNemar, Wilcoxon, p-value) have plain-English tooltips. Below the story, compactly: the truth-test table (smoke, A/A, known-bad, judge fix, tests 4-5), the latest verdict per experiment (its latest compared run that covers the most questions; the baseline row is the A/A re-run vs the approved baseline), and experiments not run yet in a collapsed "Planned experiments (need API budget)" section (the key findings are folded into section 8). Every number is read from the run files (`overview.py`); nothing is typed into the page.
+- **`/tour` Guided tour**: a list of every plugged-in system; `/tour/<target>` tells one system's evaluation as 8 steps for a visitor. Nothing in it is written for a particular system: what it says about the system comes from the target's `title` / `about` / `tour_question` in `targets.yaml`, and everything else from its run files. The steps: the system, the test questions, one answer up close (every search and LLM call with tokens and seconds), the judges with their written reasons, the approved baseline, noise (the A/A verdict and why each jumpy question moved: SYSTEM / JUDGE / WORDING), each experiment (verdict, flips, p-values, tokens, which moved questions also moved in the A/A test), and what the results can't tell you. Every term has a free "Explain" panel, and a list of questions is answered in advance from the run files (`tour.py`; no API call, so it is safe on the public demo). The live Ask box appears only locally, when a Groq key is set.
 - **`/experiments`**: every run with its pass rate, score, tokens, cost and verdict; a quality-vs-cost scatter (one dot per run); runs that play a special role are labelled (approved baseline / A/A re-run / smoke test); click a run for its ▲/▼/═ comparison, diagnosis and step timelines (`/runs/<run>/<scenario>`).
   - **Ask box**: plain-language answers (under 150 words, citing scenario ids and scores, ending with "Try this:") to questions like *"Why did exp_01 decline?"* or *"Which questions were invented answers?"*. The server builds the context from `comparison.json`, `diagnosis.json`, `summary.json`, `judged/`, the baselines and the noise file (`ask_context.py`); the browser sends only the question. Rate-limited per IP (10/minute). 4 suggestion cards for the common questions.
 - **`/evidence`**: the write-ups in `evidence/*.md`, one page each.
@@ -422,6 +427,7 @@ A read-only copy of the dashboard runs with `DEMO_MODE=1`: [live demo](https://a
 - **Confidence-weighted scoring.** Judges report how confident they are in each verdict; a shaky "score: 2, confidence: 0.2" counts less than a firm "score: 9, confidence: 0.98"  instead of averaging every judge equally regardless of certainty.
 - **Answer key + retrieval judging.** Correctness is checked against the store's own answer key, and context relevance scores the retrieval step separately from the answer.
 - **Measured noise, not guessed.** `calibrate_noise.py` measures how much scores wobble when nothing changes, so a drop is only called real if it is bigger than that.
+- **It says why a question is unstable.** For each jumpy question of two runs where nothing changed, `stability.py` (also printed by `calibrate_noise.py --from-runs`) compares what the runs saved and says SYSTEM (the system found different evidence, with the search words that differed), JUDGE (the same answer scored differently) or WORDING (same evidence, reworded answer), plus borderline when a small move crossed the pass mark. Example: Financial DD's fdd_q20 dropped 9.1 → 4.0 between two identical runs because its rewritten search left out "tax charge" and found 1 relevant chunk instead of 5.
 - **Diagnosis.** Every regression gets a likely cause and a suggested next experiment.
 - **Auto-generated test scenarios.** `generate.py` uses an LLM to write new test questions from a description of the agent's tools, growing the test suite without every question being hand-authored by the same person who built the agent.
 - **CI-integrated with real alerts.** A GitHub Actions workflow runs the full pipeline on every push and posts to Slack if a regression is found not just a red X nobody checks.
@@ -451,6 +457,7 @@ generate.py                         LLM-generated test scenarios
 pipeline.py                         Track 1: runs the full flow end to end
 alerts.py                           Slack webhook integration
 calibrate_noise.py                  measures score noise (variants or --experiment)
+stability.py                        why a question is unstable across identical runs (system / judge / wording)
 
 experiments/*.yaml                  Track 2: versions of a system as settings (extends)
 prompts/, docstrings/               prompt and tool-description files used by experiments
@@ -465,11 +472,11 @@ compare.py                          paired comparison vs the baseline (McNemar +
 diagnose.py                         likely cause per regression, fine-tune signal, drafts
 experiment_pipeline.py              run -> judge -> compare -> diagnose in one command
 export_finetune.py                  train-split fine-tuning export with leakage guard
-app.py / templates/                 dashboards: / overview, /experiments, /evidence, /systems, /approvals, /track1
+app.py / templates/                 dashboards: / overview, /tour, /experiments, /evidence, /systems, /approvals, /track1
 overview.py / ask_context.py        overview + evidence + systems data; the Ask box context (no LLM imports)
 make_demo_data.py / demo_data/      the DEMO_MODE=1 snapshot (+ recorded Ask answers) for the live demo
-tests/                              offline tests (python tests/test_<name>.py)
-.github/workflows/                  CI: regression-check.yml (Track 1), experiment-check.yml (Track 2)
+tests/                              offline tests (python tests/test_<name>.py; all: python tests/run_all.py)
+.github/workflows/                  CI: tests.yml (all offline tests, every push), regression-check.yml (Track 1), experiment-check.yml (Track 2)
 ```
 
 ## Setup
@@ -477,15 +484,17 @@ tests/                              offline tests (python tests/test_<name>.py)
 ```bash
 pip install -r requirements.txt
 pip install -r requirements-rag.txt   # optional: only for retrieval.method: embeddings
-python store.py                       # seed the database
+python store.py                       # optional: store.db is created and seeded on first use anyway
+python tests/run_all.py               # all offline tests, one line per file (what CI runs)
 
 # Add to .env:
 # GROQ_API_KEY=your_key
 # SLACK_WEBHOOK_URL=your_webhook (optional)
+python list_models.py                 # free key check: lists the models your GROQ_API_KEY can use
 
 python pipeline.py                    # Track 1: run the full pipeline
 python experiment_pipeline.py experiments/baseline.yaml   # Track 2: one experiment end to end
-python app.py                         # dashboards at localhost:5000 (nav: Overview, Experiments, Evidence, ...)
+python app.py                         # dashboards at localhost:5000 (nav: Overview, Guided tour, Experiments, ...)
 DEMO_MODE=1 python app.py             # the read-only live-demo version, from demo_data/
 ```
 

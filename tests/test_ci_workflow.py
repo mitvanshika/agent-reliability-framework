@@ -66,8 +66,43 @@ ok("default subset: real, test-split scenarios", all(i in known and known[i].get
 old = open(os.path.join(REPO, ".github", "workflows", "regression-check.yml"), "rb").read()
 ok("old workflow untouched (still the Track 1 pipeline)", b"python pipeline.py" in old and b"experiment" not in old)
 
+print("tests.yml (all offline tests on every push):")
+tw = yaml.safe_load(open(os.path.join(REPO, ".github", "workflows", "tests.yml"), encoding="utf-8"))
+ton, tjob = tw[True], tw["jobs"]["tests"]
+ok("runs on every push and pull request, any branch, any file",
+   "push" in ton and "pull_request" in ton and not (ton["push"] or {}).get("paths") and not (ton["push"] or {}).get("branches"))
+tw_text = open(os.path.join(REPO, ".github", "workflows", "tests.yml"), encoding="utf-8").read()
+ok("uses no secrets (works for forks, can't spend tokens)", "secrets." not in tw_text)
+ok("read-only permissions", tw.get("permissions") == {"contents": "read"})
+ok("runs tests/run_all.py", any("python tests/run_all.py" in (st.get("run") or "") for st in tjob["steps"]))
+ok("installs requirements.txt", any("pip install -r requirements.txt" in (st.get("run") or "") for st in tjob["steps"]))
+ok("same Python as the project's venv (3.11)",
+   any((st.get("with") or {}).get("python-version") == "3.11" for st in tjob["steps"]))
+
 print("key missing -> skip with a notice (the step's real script, run in bash):")
-bash = shutil.which("bash")
+def find_bash():
+    """A bash that runs a script directly. On Windows, `bash` on PATH is often C:\\Windows\\System32\\bash.exe,
+    the WSL launcher: it fails (or runs inside Linux, without this environment) when WSL isn't set up.
+    So on Windows use Git Bash if it's installed, else skip these checks."""
+    if os.name != "nt":
+        return shutil.which("bash")
+    roots = [os.environ.get(v) for v in ("ProgramFiles", "ProgramW6432", "ProgramFiles(x86)", "LOCALAPPDATA")]
+    candidates = [os.path.join(r, *sub) for r in roots if r
+                  for sub in (("Git", "bin", "bash.exe"), ("Programs", "Git", "bin", "bash.exe"))]
+    found = shutil.which("bash")
+    if found and "system32" not in found.lower():
+        candidates.insert(0, found)
+    for c in candidates:
+        if os.path.isfile(c):
+            try:
+                if subprocess.run([c, "-c", "echo ok"], capture_output=True, text=True, timeout=20).stdout.strip() == "ok":
+                    return c
+            except (OSError, subprocess.SubprocessError):
+                pass
+    return None
+
+
+bash = find_bash()
 script = steps["Check for API key"]["run"]
 
 
@@ -90,7 +125,7 @@ if bash:
     r, out, summary = run_key_step("gsk_dummy")
     ok("with key: available=true, no notice", r.returncode == 0 and out.strip() == "available=true" and "::notice" not in r.stdout)
 else:
-    print("  SKIP  bash not found")
+    print("  SKIP  no usable bash (on Windows: install Git for Windows to run these; GitHub's CI runs them on Linux)")
 
 print("experiment_pipeline.py --summary-md:")
 import compare  # noqa: E402

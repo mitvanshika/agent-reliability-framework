@@ -48,7 +48,8 @@ for name in ("strong", "weak", "not-a-target", None):
     d = target_config.get(name)
     ok(f"{name}: all defaults", d == {"description": None, "judge_set": None, "judges": None, "pass_threshold": 7.0,
                                       "scenarios": run_suite.SCENARIOS_DIR, "non_retrieval_tools": [],
-                                      "action_tools": [], "max_seconds": None}, d)
+                                      "action_tools": [], "max_seconds": None,
+                                      "title": None, "about": None, "tour_question": None}, d)
 ok("every real targets.yaml entry validates", all(
    not target_config.validate(n, e, judge_sets.ALL_NAMES) for n, e in REAL.items()),
    [target_config.validate(n, e, judge_sets.ALL_NAMES) for n, e in REAL.items()])
@@ -154,5 +155,12 @@ for bad in (0, -5, "300", True):
        target_config.validate("t", {"module": "m", "function": "f", "max_seconds": bad}, [])))
 ok("left out -> None (no limit)", target_config.get("t", {"t": {"module": "m", "function": "f"}})["max_seconds"] is None)
 
+print("tour keys (title, about, tour_question):")
+ok("strings are fine", target_config.validate("t", {"module": "m", "function": "f", "title": "T", "about": "A",
+                                                    "tour_question": "q1"}, []) == [])
+for key in ("title", "about", "tour_question"):
+    ok(f"empty {key} refused", any(key in p for p in
+       target_config.validate("t", {"module": "m", "function": "f", key: " "}, [])))
+
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
-sys.exit(1 if failures else 0)
+sys.exit(1 if failures else 0)

@@ -79,7 +79,7 @@ async function load() {
       <span class="dim">answer</span><span>${esc(d.answer || "")}${d.error ? ` <span class="badge failb">${esc(d.error)}</span>` : ""}</span>
       <span class="dim">final_score</span><span>${scoreBadge(d.final_score === null ? null : Math.round(d.final_score * 10) / 10) || '<span class="dim">not judged</span>'}</span>
       <span class="dim">judges</span><span class="judges">${judges || '<span class="dim">-</span>'}</span>
-      <span class="dim">latency / tokens</span><span class="mono">${esc(d.latency_s)}s / ${esc((d.usage || {}).total_tokens ?? "-")}</span>
+      <span class="dim">latency / tokens</span><span class="mono">${esc(d.latency_s)}s / ${d.usage && d.usage.total_tokens != null ? Number(d.usage.total_tokens).toLocaleString() + (d.usage.input_tokens != null ? ` (${Number(d.usage.input_tokens).toLocaleString()} in, ${Number(d.usage.output_tokens).toLocaleString()} out)` : "") : "unknown"}${(d.llm_calls || []).length ? ` &middot; ${d.llm_calls.length} LLM calls` : ""}</span>
       <span class="dim">steps</span><span>${esc(d.steps.length)} &middot; ${esc(timing)}</span>
     </div>`;
   if (d.findings.length) {
@@ -96,7 +96,9 @@ async function load() {
       : (s.tool_calls || []).length ? `asks for <span class="mono">${s.tool_calls.map(c => esc(c.name) + "(" + esc(JSON.stringify(c.args)) + ")").join(", ")}</span>`
       : s.label ? `<span class="mono">${esc(s.label)}</span>` : "answers";
     const meta = [s.latency_s !== null && s.latency_s !== undefined ? `${s.latency_s.toFixed(2)}s` : null,
-                  s.tokens ? `${esc(s.tokens.total)} tokens` : null].filter(Boolean).join(" &middot; ");
+                  s.tokens ? `${esc(Number(s.tokens.total).toLocaleString())} tokens (${esc(s.tokens.input ?? "?")} in, ${esc(s.tokens.output ?? "?")} out)`
+                  : (!isTool && s.error) ? `failed (${esc(s.error)}): no tokens counted` : null,
+                  s.name && !isTool && s.name !== s.label ? esc(s.name) : null].filter(Boolean).join(" &middot; ");
     return `<div class="step ${isTool ? "tool" : "llm"} ${s.error ? "err" : ""}">
       <div class="head"><span class="kind">${isTool ? "tool" : "model"}</span><span class="dim mono">#${esc(s.index)}</span>
         ${what} <span class="dim mono">${meta}</span>

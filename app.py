@@ -9,7 +9,7 @@ from collections import defaultdict, deque
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, render_template, request
+from flask import Flask, abort, jsonify, redirect, render_template, request
 
 from experiment_config import format_changes
 from trace_utils import load_latest_traces
@@ -122,7 +122,7 @@ def build_ask_context(strong: dict, weak: dict) -> str:
 
 # Top nav on every page (templates/_nav.html). A page is "active" when the
 # request path starts with its link; /runs/... (step timeline) counts as Experiments.
-NAV_ITEMS = [("/", "Overview"), ("/experiments", "Experiments"), ("/evidence", "Evidence"),
+NAV_ITEMS = [("/", "Overview"), ("/tour", "Guided tour"), ("/experiments", "Experiments"), ("/evidence", "Evidence"),
              ("/systems", "Systems"), ("/approvals", "Approvals"), ("/track1", "Track 1")]
 if DEMO_MODE:   # Track 1's judged traces aren't in demo_data/: hide the tab rather than show an empty page
     NAV_ITEMS = [n for n in NAV_ITEMS if n[0] != "/track1"]
@@ -335,11 +335,32 @@ def _run_row(run_id, baselines):
         "pass_rate": summary.get("pass_rate"), "mean_final_score": summary.get("mean_final_score"),
         "scenarios": summary.get("scenarios") or len(meta.get("scenario_ids") or []),
         "total_tokens": totals.get("total_tokens"), "estimated_cost_usd": totals.get("estimated_cost_usd"),
+        "input_tokens": totals.get("input_tokens"), "output_tokens": totals.get("output_tokens"),
+        "cost_note": summary.get("cost_note") or totals.get("cost_note"),
         "verdict": comparison.get("verdict"),
         "suite": meta.get("suite") or "main",
         "is_baseline": is_baseline,
         "role": overview.run_role(run_id, is_baseline),
     }
+
+
+# The guided tour (tour.py): a step-by-step story of one system's evaluation for
+# visitors. Built only from saved files, so it costs no tokens; the live Ask box
+# shows only when this machine has a Groq key and it isn't the public demo.
+@app.route("/tour")
+def tour_index():
+    import tour
+    return render_template("tour_index.html", systems=tour.systems(RUNS_DIR, BASELINES_DIR))
+
+
+@app.route("/tour/<target>")
+def tour_page(target):
+    import target_config
+    import tour
+    if target not in target_config._targets():
+        abort(404)
+    t = tour.tour(target, RUNS_DIR, BASELINES_DIR, NOISE_DIR, CONFIG_DIR)
+    return render_template("tour.html", t=t, live=bool(GROQ_API_KEY) and not DEMO_MODE)
 
 
 @app.route("/experiments")
@@ -380,6 +401,8 @@ def _scenario_steps(path):
     import step_checks
     import trajectory_read as trajectory
     out = []
+    if not os.path.isdir(os.path.join(path, "traces")):   # e.g. a run copied without its traces
+        return out
     for sid, t in sorted(load_latest_traces(os.path.join(path, "traces")).items()):
         steps, source = trajectory.of_trace(t)
         out.append({"scenario_id": sid, "steps": len(steps), "source": source,
@@ -421,7 +444,7 @@ def api_steps(run_id, scenario_id):
     return jsonify({
         "run_id": run_id, "scenario_id": scenario_id, "question": trace.get("question"),
         "answer": trace.get("answer"), "error": trace.get("error"), "latency_s": trace.get("latency_s"),
-        "usage": trace.get("usage"), "steps": steps, "source": source,
+        "usage": trace.get("usage"), "llm_calls": trace.get("llm_calls") or [], "steps": steps, "source": source,
         "findings": step_checks.check_steps(steps) if steps else [],
         "final_score": (judged or {}).get("final_score"), "judges": judges, "step_scores": step_scores})
 
@@ -545,4 +568,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     # The Werkzeug debugger is an in-browser Python console: never on by
     # default on a public host. Opt in locally with FLASK_DEBUG=1.
-    app.run(host="0.0.0.0", port=port, debug=os.environ.get("FLASK_DEBUG") == "1")
+    app.run(host="0.0.0.0", port=port, debug=os.environ.get("FLASK_DEBUG") == "1")

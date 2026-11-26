@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guided tour: pick a system</title>
+{% include "_style.html" %}
+<style>
+  .systems { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+  .sys { display: block; background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+         padding: 14px 16px; color: var(--text); }
+  a.sys:hover { border-color: var(--border-hi); text-decoration: none; }
+  .sys h2 { margin: 0 0 6px; font-size: 16px; }
+  .sys .id { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+  .sys p { color: var(--text-dim); font-size: 13.5px; margin: 6px 0 10px; }
+  .sys .st { font-size: 12.5px; }
+  .sys.off { opacity: .6; }
+</style>
+</head>
+<body>
+{% include "_nav.html" %}
+<main>
+  <section class="hero">
+    <h1>Guided tour</h1>
+    <p>Pick a system to see, step by step, how it was tested: its questions, one answer up close, the judges, how much
+      results wobble by chance, and what each change did to quality and cost. Every system plugged into the framework
+      gets the same tour, built from its own runs.</p>
+  </section>
+  <div class="systems">
+    {% for s in systems %}
+      {% if s.has_baseline %}<a class="sys" href="/tour/{{ s.target }}">{% else %}<div class="sys off">{% endif %}
+        <h2>{{ s.title }}</h2><div class="id">{{ s.target }}</div>
+        <p>{{ s.about or "No description yet." }}</p>
+        <div class="st">{% if s.has_baseline %}<b>{{ s.passed }}/{{ s.total }}</b> passed in its approved baseline ·
+          {{ s.runs }} run{{ "" if s.runs == 1 else "s" }} · <span style="color:var(--accent)">Start the tour →</span>
+        {% else %}No approved baseline yet{% if s.runs %} ({{ s.runs }} run{{ "" if s.runs == 1 else "s" }}){% endif %}:
+          the tour appears once one is promoted.{% endif %}</div>
+      {% if s.has_baseline %}</a>{% else %}</div>{% endif %}
+    {% endfor %}
+  </div>
+</main>
+</body>
+</html>

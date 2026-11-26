@@ -36,7 +36,7 @@
     "runs/fdd_baseline_20261124_135240",
     "runs/fdd_baseline_20261124_154652"
   ],
-  "created": "2026-11-25T18:47:26",
+  "created": "2026-11-26T09:24:20",
   "note": "bands from 2 existing runs (agent + judge noise). With few runs the range underestimates the real spread; add runs with --from-runs a b c ... to improve it. Do not evaluate these same runs against these bands (circular).",
   "threshold": 7.0,
   "jumpy_range": 2.0,
@@ -561,5 +561,79 @@
     "fdd_q09",
     "fdd_q10",
     "fdd_q20"
-  ]
+  ],
+  "jumpy_explained": {
+    "fdd_q09": {
+      "kind": "WORDING",
+      "why": "same evidence (overlap 100%), answer reworded",
+      "borderline": true,
+      "scores": [
+        7.983739837398375,
+        6.975999999999999
+      ],
+      "judges_moved": {
+        "completeness": [
+          10,
+          8
+        ],
+        "correctness_gt": [
+          4,
+          2
+        ]
+      },
+      "evidence_overlap": 1.0,
+      "answer_similarity": 0.22,
+      "detail": []
+    },
+    "fdd_q10": {
+      "kind": "WORDING",
+      "why": "same evidence (overlap 83%), answer reworded",
+      "borderline": true,
+      "scores": [
+        6.827027027027027,
+        8.359580052493438
+      ],
+      "judges_moved": {
+        "completeness": [
+          6,
+          10
+        ]
+      },
+      "evidence_overlap": 0.8333333333333334,
+      "answer_similarity": 0.04,
+      "detail": []
+    },
+    "fdd_q20": {
+      "kind": "SYSTEM",
+      "why": "the runs found different evidence (overlap 8%)",
+      "borderline": false,
+      "scores": [
+        9.089005235602095,
+        4.043360433604336
+      ],
+      "judges_moved": {
+        "completeness": [
+          10,
+          0
+        ],
+        "context_relevance": [
+          10,
+          4
+        ],
+        "correctness_gt": [
+          6,
+          2
+        ]
+      },
+      "evidence_overlap": 0.08333333333333333,
+      "answer_similarity": 0.23,
+      "detail": [
+        "step 2 (retrieve) searched differently:",
+        "  only in run 1: or gains settlement tax charge",
+        "  only in run 2: form expenses costs settlements disclosed",
+        "  run 1 found: 5 of 10 relevant (mean relevance 0.42)",
+        "  run 2 found: 1 of 10 relevant (mean relevance 0.16)"
+      ]
+    }
+  }
 }
