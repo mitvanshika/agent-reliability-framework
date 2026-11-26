@@ -129,7 +129,11 @@ def git(*args):
 
 
 added_in = git("log", "--diff-filter=A", "--format=%H", "--", "examples/summarizer/summarizer.py").split()
-if added_in:
+if git("rev-parse", "--is-shallow-repository").strip() == "true":
+    # A shallow clone (GitHub's default checkout) has only the newest commit(s), so the commit that added
+    # the summarizer isn't there and the newest one would be blamed. tests.yml fetches the full history.
+    print("  SKIP  the commit that added the summarizer: shallow clone, history not available")
+elif added_in:
     files = git("show", "--name-only", "--format=", added_in[-1]).splitlines()
     ok(f"the commit that added the summarizer ({added_in[-1][:7]}) touches no framework file",
        framework(files) == [], framework(files))

@@ -74,6 +74,9 @@ ok("runs on every push and pull request, any branch, any file",
 tw_text = open(os.path.join(REPO, ".github", "workflows", "tests.yml"), encoding="utf-8").read()
 ok("uses no secrets (works for forks, can't spend tokens)", "secrets." not in tw_text)
 ok("read-only permissions", tw.get("permissions") == {"contents": "read"})
+ok("full git history (test_summarizer_example reads an old commit)",
+   any(st.get("uses", "").startswith("actions/checkout@") and (st.get("with") or {}).get("fetch-depth") == 0
+       for st in tjob["steps"]))
 ok("runs tests/run_all.py", any("python tests/run_all.py" in (st.get("run") or "") for st in tjob["steps"]))
 ok("installs requirements.txt", any("pip install -r requirements.txt" in (st.get("run") or "") for st in tjob["steps"]))
 ok("same Python as the project's venv (3.11)",

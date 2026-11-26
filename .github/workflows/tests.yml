@@ -27,6 +27,8 @@ jobs:
       PYTHONIOENCODING: utf-8
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0                # full history: test_summarizer_example checks an old commit
 
       - uses: actions/setup-python@v5
         with:
