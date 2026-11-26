@@ -1,0 +1,177 @@
+{
+  "scenario_id": "fdd_q28",
+  "question": "What is Apple's market share by country for smartphones?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 109.053,
+  "usage": {
+    "input_tokens": 2913,
+    "output_tokens": 753,
+    "total_tokens": 3666
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1189,
+      "output_tokens": 232,
+      "total_tokens": 1421,
+      "seconds": 0.832,
+      "started_at": 15.029
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 362,
+      "output_tokens": 257,
+      "total_tokens": 619,
+      "seconds": 0.82,
+      "started_at": 15.861
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1362,
+      "output_tokens": 264,
+      "total_tokens": 1626,
+      "seconds": 0.877,
+      "started_at": 108.172
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What is Apple's market share by country for smartphones?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0014, AAPL-10-K-FY2025-0049, AAPL-10-K-FY2025-0073, AAPL-10-K-FY2025-0113, AAPL-10-K-FY2025-0164, AAPL-10-K-FY2025-0182",
+      "note": "0 of 6 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.005,
+      "latency_s": 15.024,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1189,
+        "output": 232,
+        "total": 1421
+      },
+      "started_at": 15.029,
+      "latency_s": 0.832,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 362,
+        "output": 257,
+        "total": 619
+      },
+      "started_at": 15.861,
+      "latency_s": 0.82,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1362,
+        "output": 264,
+        "total": 1626
+      },
+      "started_at": 108.172,
+      "latency_s": 0.877,
+      "error": null,
+      "index": 3
+    }
+  ],
+  "final_score": 10.000000000000002,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The system correctly provided no answer, matching the reference's 'NOT ANSWERABLE' requirement and did not claim any market share data. The extra explanation about chunk search does not contradict the reference.",
+    "confidence": 0.98,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single request for Apple's smartphone market share by country. The reference states this is not answerable from the 10‑K, and the system correctly responded with no answer, indicating it could not find relevant information. This matches the expected handling, so the part is complete.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The system's output makes no factual claims and correctly indicates that it cannot answer because the required information is not present in the input or source material. This is fully consistent with the provided context.",
+    "confidence": 0.98
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "nothing was retrieved"
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "7f07cf793d2d",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "generic_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

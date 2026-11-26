@@ -1,0 +1,333 @@
+{
+  "scenario_id": "fdd_q27",
+  "question": "How much money does Apple receive annually from its search licensing arrangement with Google?",
+  "category": "no_answer",
+  "answer": "No answer: The evidence does not provide the amount of money Apple receives annually from its search licensing arrangement with Google.",
+  "tools_used": [],
+  "tool_outputs": [
+    "Further, the Company has commercial relationships with other companies in the technology industry that are or may become subject to investigations and litigation that, if resolved against those other companies, could materially adversely affect the Company’s commercial relationships with those business partners and materially adversely affect the Company’s business, results of operations, financial condition and stock price. For example, the Company earns revenue from licensing arrangements with Google LLC (“Google”) and other companies to offer their search services on the Company’s platforms and applications, and certain of these arrangements are currently subject to government investigations and legal proceedings. On August 5, 2024, Google was found to have violated U.S. antitrust laws."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 109.466,
+  "usage": {
+    "input_tokens": 8285,
+    "output_tokens": 1525,
+    "total_tokens": 9810
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1614,
+      "output_tokens": 196,
+      "total_tokens": 1810,
+      "seconds": 0.66,
+      "started_at": 17.458
+    },
+    {
+      "label": null,
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 233,
+      "output_tokens": 66,
+      "total_tokens": 299,
+      "seconds": 0.306,
+      "started_at": 18.118
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1823,
+      "output_tokens": 223,
+      "total_tokens": 2046,
+      "seconds": 0.78,
+      "started_at": 42.212
+    },
+    {
+      "label": null,
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 219,
+      "output_tokens": 69,
+      "total_tokens": 288,
+      "seconds": 0.316,
+      "started_at": 42.992
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1750,
+      "output_tokens": 185,
+      "total_tokens": 1935,
+      "seconds": 0.817,
+      "started_at": 66.863
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 648,
+      "output_tokens": 379,
+      "total_tokens": 1027,
+      "seconds": 1.084,
+      "started_at": 67.68
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 367,
+      "output_tokens": 127,
+      "total_tokens": 494,
+      "seconds": 0.368,
+      "started_at": 68.764
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1631,
+      "output_tokens": 280,
+      "total_tokens": 1911,
+      "seconds": 1.032,
+      "started_at": 108.428
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How much money does Apple receive annually from its search licensing arrangement with Google?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0115, AAPL-10-K-FY2025-0164, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0257, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263",
+      "note": "0 of 6 relevant (mean relevance 0.03)",
+      "retrieval_attempt": 1,
+      "started_at": 0.009,
+      "latency_s": 17.449,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1614,
+        "output": 196,
+        "total": 1810
+      },
+      "started_at": 17.458,
+      "latency_s": 0.66,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "LLM call",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 233,
+        "output": 66,
+        "total": 299
+      },
+      "started_at": 18.118,
+      "latency_s": 0.306,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple annual search licensing revenue from Google 2023 2024 2025",
+        "strategy": "rewrite"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0115, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263, AAPL-10-K-FY2025-0338, AAPL-10-K-FY2025-0343",
+      "note": "0 of 6 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 2,
+      "started_at": 18.425,
+      "latency_s": 23.787,
+      "error": null,
+      "index": 3
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1823,
+        "output": 223,
+        "total": 2046
+      },
+      "started_at": 42.212,
+      "latency_s": 0.78,
+      "error": null,
+      "index": 4
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "LLM call",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 219,
+        "output": 69,
+        "total": 288
+      },
+      "started_at": 42.992,
+      "latency_s": 0.316,
+      "error": null,
+      "index": 5
+    },
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple annual revenue from Google search licensing 2023 2024 2025",
+        "strategy": "rewrite"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0115, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263, AAPL-10-K-FY2025-0305, AAPL-10-K-FY2025-0338, AAPL-10-K-FY2025-0343",
+      "note": "1 of 6 relevant (mean relevance 0.13)",
+      "retrieval_attempt": 3,
+      "started_at": 43.308,
+      "latency_s": 23.555,
+      "error": null,
+      "index": 6
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1750,
+        "output": 185,
+        "total": 1935
+      },
+      "started_at": 66.863,
+      "latency_s": 0.817,
+      "error": null,
+      "index": 7
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 648,
+        "output": 379,
+        "total": 1027
+      },
+      "started_at": 67.68,
+      "latency_s": 1.084,
+      "error": null,
+      "index": 8
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 367,
+        "output": 127,
+        "total": 494
+      },
+      "started_at": 68.764,
+      "latency_s": 0.368,
+      "error": null,
+      "index": 9
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1631,
+        "output": 280,
+        "total": 1911
+      },
+      "started_at": 108.428,
+      "latency_s": 1.032,
+      "error": null,
+      "index": 10
+    }
+  ],
+  "final_score": 9.753807106598988,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The system correctly states that the filing does not provide the specific dollar amount, matching the reference that the question is not answerable from the 10‑K. No contradictory or extra claims are made.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single request for the annual amount Apple receives from its Google search licensing arrangement. The source material does not disclose any specific dollar figure, and the reference answer states the question is not answerable. The system’s output correctly states that the evidence does not provide the amount, matching the reference. Hence the response is complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The output only states that the provided evidence does not contain the annual amount Apple receives from Google, which is accurate because the source material mentions the licensing relationship but gives no monetary figure. No unsupported facts are introduced.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 9,
+    "reason": "The passage confirms Apple earns revenue from Google search licensing but does not disclose the specific annual amount, which is exactly the information needed to conclude the question is not answerable; thus it is highly relevant.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "49f35d34488b",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "generic_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

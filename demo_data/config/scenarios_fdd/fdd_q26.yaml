@@ -1,0 +1,7 @@
+id: fdd_q26
+question: How many physical iPhone units did Apple sell in FY2025?
+category: no_answer
+expected_answer: NOT ANSWERABLE -- Apple's 10-K discloses iPhone revenue in dollars, not unit sales figures. Unit counts are not broken out in this filing.
+difficulty: hard
+reference_source: N/A
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #26 (sha256 c3ba6eb2ac0a)'

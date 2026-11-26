@@ -1,0 +1,7 @@
+id: fdd_q04
+question: What was Apple's total shareholders' equity at the end of FY2025?
+category: numeric_lookup
+expected_answer: $73,733,000,000 (~$73.7 billion)
+difficulty: easy
+reference_source: apple_balance_sheet.csv, row 74 'Total shareholders' equity', column 2025-09-27
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #4 (sha256 c3ba6eb2ac0a)'

@@ -1,0 +1,7 @@
+id: fdd_q14
+question: What risk does Apple disclose about acquisitions and new business investments?
+category: narrative_comprehension
+expected_answer: Investments in new business strategies, commercial relationships, and acquisitions carry risks including management distraction, unexpected liabilities, regulatory challenges, inadequate returns, potential asset impairment, and failure to obtain regulatory approval or realize anticipated benefits.
+difficulty: medium
+reference_source: apple_10k.txt, Item 1A Risk Factors (~lines 391-393)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #14 (sha256 c3ba6eb2ac0a)'

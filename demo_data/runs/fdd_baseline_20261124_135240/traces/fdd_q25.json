@@ -1,0 +1,90 @@
+{
+  "scenario_id": "fdd_q25",
+  "question": "What is Apple's projected revenue for FY2027?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 16.274,
+  "usage": {
+    "input_tokens": 2003,
+    "output_tokens": 331,
+    "total_tokens": 2334
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1641,
+      "output_tokens": 234,
+      "total_tokens": 1875,
+      "seconds": 0.806,
+      "started_at": 14.989
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 362,
+      "output_tokens": 97,
+      "total_tokens": 459,
+      "seconds": 0.475,
+      "started_at": 15.795
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What is Apple's projected revenue for FY2027?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263, AAPL-10-K-FY2025-0320, AAPL-10-K-FY2025-0343",
+      "note": "0 of 6 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.004,
+      "latency_s": 14.985,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1641,
+        "output": 234,
+        "total": 1875
+      },
+      "started_at": 14.989,
+      "latency_s": 0.806,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 362,
+        "output": 97,
+        "total": 459
+      },
+      "started_at": 15.795,
+      "latency_s": 0.475,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

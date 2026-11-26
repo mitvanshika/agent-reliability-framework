@@ -1,0 +1,93 @@
+{
+  "scenario_id": "fdd_q02",
+  "question": "What were Apple's total assets at the end of FY2025?",
+  "category": "numeric_lookup",
+  "answer": "$359,241 million [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "CONSOLIDATED BALANCE SHEETS\n(In millions, except number of shares, which are reflected in thousands, and par value)\nSeptember 27, | September 28,\n2025 | 2024\nASSETS:\nCurrent assets:\nCash and cash equivalents | $35,934 | $29,943\nMarketable securities | 18,763 | 35,228\nAccounts receivable, net | 39,777 | 33,410\nVendor non-trade receivables | 33,180 | 32,833\nInventories | 5,718 | 7,286\nOther current assets | 14,585 | 14,287\nTotal current assets | 147,957 | 152,987\nNon-current assets:\nMarketable securities | 77,723 | 91,479\nProperty, plant and equipment, net | 49,834 | 45,680\nOther non-current assets | 83,727 | 74,834\nTotal non-current assets | 211,284 | 211,993\nTotal assets | $359,241 | $364,980\nLIABILITIES AND SHAREHOLDERS’ EQUITY:\nCurrent liabilities:\nAccounts payable | $69,860 | $68,960\nOther current liabilities | 66,387 | 78,304\nDeferred revenue | 9,055 | 8,249\nCommercial paper | 7,979 | 9,967\nTerm debt | 12,350 | 10,912\nTotal current liabilities | 165,631 | 176,392",
+    "Total assets, fiscal year 2025: $359,241 million (from Apple's balance sheet)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 29.038,
+  "usage": {
+    "input_tokens": 2736,
+    "output_tokens": 691,
+    "total_tokens": 3427
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1867,
+      "output_tokens": 195,
+      "total_tokens": 2062,
+      "seconds": 0.94,
+      "started_at": 26.576
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 869,
+      "output_tokens": 496,
+      "total_tokens": 1365,
+      "seconds": 1.516,
+      "started_at": 27.517
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What were Apple's total assets at the end of FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0164, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0228, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263, AAPL-10-K-FY2025-0343",
+      "note": "1 of 6 relevant (mean relevance 0.17); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.05,
+      "latency_s": 26.526,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1867,
+        "output": 195,
+        "total": 2062
+      },
+      "started_at": 26.576,
+      "latency_s": 0.94,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 869,
+        "output": 496,
+        "total": 1365
+      },
+      "started_at": 27.517,
+      "latency_s": 1.516,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

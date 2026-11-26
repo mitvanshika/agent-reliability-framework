@@ -1,0 +1,153 @@
+{
+  "scenario_id": "fdd_q24",
+  "question": "How did Apple's total liabilities change from FY2024 to FY2025?",
+  "category": "trend",
+  "answer": "$308,030 million in FY2024 [S1]. $285,508 million in FY2025 [S2]. Total liabilities decreased by $22,522 million [S1] [S2].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Total liabilities, fiscal year 2024: $308,030 million (from Apple's balance sheet)",
+    "Total liabilities, fiscal year 2025: $285,508 million (from Apple's balance sheet)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 31.335,
+  "usage": {
+    "input_tokens": 1782,
+    "output_tokens": 1965,
+    "total_tokens": 3747
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1227,
+      "output_tokens": 195,
+      "total_tokens": 1422,
+      "seconds": 0.837,
+      "started_at": 26.091
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 555,
+      "output_tokens": 1770,
+      "total_tokens": 2325,
+      "seconds": 4.403,
+      "started_at": 26.929
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How did Apple's total liabilities change from FY2024 to FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0241, AAPL-10-K-FY2025-0299, AAPL-10-K-FY2025-0343",
+      "note": "0 of 3 relevant (mean relevance 0.00); 2 of 2 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.047,
+      "latency_s": 26.044,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1227,
+        "output": 195,
+        "total": 1422
+      },
+      "started_at": 26.091,
+      "latency_s": 0.837,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 555,
+        "output": 1770,
+        "total": 2325
+      },
+      "started_at": 26.929,
+      "latency_s": 4.403,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 9.506361323155216,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 8,
+    "reason": "The answer includes the FY2024 and FY2025 total liabilities and correctly states the decrease of $22,522\u202fmillion, matching the reference. However, it omits the percentage change (~7.3%) that is part of the reference facts, so a required fact is missing, reducing the score.",
+    "confidence": 0.97,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single input question asked for how total liabilities changed from FY2024 to FY2025. The output provided the FY2024 figure ($308,030\u202fM), the FY2025 figure ($285,508\u202fM), and correctly calculated the decrease ($22,522\u202fM), matching the source material and reference answer. No part was omitted or incorrect.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific numbers (FY2024 total liabilities $308,030\u202fmillion, FY2025 $285,508\u202fmillion) are directly taken from the provided source material, and the calculated decrease of $22,522\u202fmillion follows correctly from those figures. No unsupported facts are introduced.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved material includes both FY2024 and FY2025 total liability figures, allowing a complete answer about the change (decrease of $22,522M, ~7.3%). All necessary data is present.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "6d89a344594a",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "scenario_id": "fdd_q18",
+  "question": "Apple's diluted EPS grew faster (22.7%) than its net income (19.5%) from FY2024 to FY2025. What explains the gap?",
+  "category": "cross_referencing",
+  "answer": "Apple\u2019s diluted EPS grew faster because the diluted share count fell, reducing the denominator. Diluted shares dropped from 15,408,095\u202fthousand in FY2024 to 15,004,697\u202fthousand in FY2025 (~2.6% decline) [1]. Net income rose 19.5% from $93,736\u202fmillion to $112,010\u202fmillion [S3][S4], while diluted EPS rose 22.7% from $6.08 to $7.46 per share [S1][S2]. The lower share count amplified EPS growth relative to net income.",
+  "tools_used": [],
+  "tool_outputs": [
+    "Note 3 - Earnings Per Share\nThe following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):\n2025 | 2024 | 2023\nNumerator:\nNet income | $112,010 | $93,736 | $96,995\nDenominator:\nWeighted-average basic shares outstanding | 14,948,500 | 15,343,783 | 15,744,231\nEffect of dilutive share-based awards | 56,197 | 64,312 | 68,316\nWeighted-average diluted shares | 15,004,697 | 15,408,095 | 15,812,547\nBasic earnings per share | $7.49 | $6.11 | $6.16\nDiluted earnings per share | $7.46 | $6.08 | $6.13",
+    "The following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):",
+    "Diluted (in dollars per share), fiscal year 2024: $6.08 per share (from Apple's income statement)",
+    "Diluted (in dollars per share), fiscal year 2025: $7.46 per share (from Apple's income statement)",
+    "Net income, fiscal year 2024: $93,736 million (from Apple's income statement)",
+    "Net income, fiscal year 2025: $112,010 million (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 28.665,
+  "usage": {
+    "input_tokens": 1931,
+    "output_tokens": 1685,
+    "total_tokens": 3616
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1028,
+      "output_tokens": 410,
+      "total_tokens": 1438,
+      "seconds": 1.037,
+      "started_at": 24.548
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 903,
+      "output_tokens": 1275,
+      "total_tokens": 2178,
+      "seconds": 3.071,
+      "started_at": 25.587
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple's diluted EPS grew faster (22.7%) than its net income (19.5%) from FY2024 to FY2025. What explains the gap?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0264, AAPL-10-K-FY2025-0265",
+      "note": "2 of 3 relevant (mean relevance 0.33); 4 of 4 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.116,
+      "latency_s": 24.432,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1028,
+        "output": 410,
+        "total": 1438
+      },
+      "started_at": 24.548,
+      "latency_s": 1.037,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 903,
+        "output": 1275,
+        "total": 2178
+      },
+      "started_at": 25.587,
+      "latency_s": 3.071,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 8.804289544235925,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 7,
+    "reason": "The answer includes the key facts about the decline in diluted shares (~2.6% drop) and correctly links the lower share count to faster EPS growth, matching the reference. However, it omits the specific driver mentioned in the reference \u2013 the FY2025 share repurchase program and the $90.711\u202fbillion amount spent \u2013 which is a required fact. No contradictory statements are present, so the score reflects the missing detail but otherwise accurate content.",
+    "confidence": 0.92,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single request: explain why diluted EPS grew faster than net income. The system's output correctly identifies the key factor\u2014a reduction in diluted share count (~2.6% decline) that lowered the EPS denominator, and it cites the relevant figures from the provided source material. No required information was omitted, and the explanation aligns with the source data, making the response complete.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific numbers (net income, diluted EPS, diluted share counts) are directly present in the source material, and the percentage calculations (19.5% net income growth, 22.7% EPS growth, ~2.6% share\u2011count decline) are correctly derived from those numbers. The explanatory statements about the lower share count driving faster EPS growth are logical conclusions supported by the data. No claim lacks backing from the provided material.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 8,
+    "reason": "The retrieved material provides the diluted EPS figures and the weighted\u2011average diluted share counts for FY2024 and FY2025, showing a reduction in diluted shares (~2.6%). This directly explains why EPS grew faster than net income. However, it does not explicitly mention the share\u2011repurchase program or the amount spent, which would fully answer the question. Hence it is highly relevant but missing a detail.",
+    "confidence": 0.85
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "c08f2400bdf6",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

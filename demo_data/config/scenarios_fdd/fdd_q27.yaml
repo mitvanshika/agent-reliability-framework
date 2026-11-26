@@ -1,0 +1,7 @@
+id: fdd_q27
+question: How much money does Apple receive annually from its search licensing arrangement with Google?
+category: no_answer
+expected_answer: NOT ANSWERABLE -- the filing acknowledges Apple earns revenue from licensing arrangements with Google for search services and discusses related antitrust litigation risk, but does not disclose the specific dollar amount received.
+difficulty: hard
+reference_source: N/A -- see apple_10k.txt, Item 1A Risk Factors, Google antitrust litigation risk (~line 435), which confirms the arrangement exists but gives no dollar figure
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #27 (sha256 c3ba6eb2ac0a)'

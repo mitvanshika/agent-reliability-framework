@@ -1,0 +1,7 @@
+id: fdd_q03
+question: What were Apple's total liabilities at the end of FY2025?
+category: numeric_lookup
+expected_answer: $285,508,000,000 (~$285.5 billion)
+difficulty: easy
+reference_source: apple_balance_sheet.csv, row 65 'Total liabilities', column 2025-09-27
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #3 (sha256 c3ba6eb2ac0a)'

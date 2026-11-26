@@ -1,0 +1,7 @@
+id: fdd_q02
+question: What were Apple's total assets at the end of FY2025?
+category: numeric_lookup
+expected_answer: $359,241,000,000 (~$359.2 billion)
+difficulty: easy
+reference_source: apple_balance_sheet.csv, row 51 'Total assets', column 2025-09-27
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #2 (sha256 c3ba6eb2ac0a)'

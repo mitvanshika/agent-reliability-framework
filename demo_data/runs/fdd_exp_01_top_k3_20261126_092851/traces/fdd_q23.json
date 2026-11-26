@@ -1,0 +1,94 @@
+{
+  "scenario_id": "fdd_q23",
+  "question": "What was the 3-year trend (FY2023-FY2025) in Apple's diluted EPS?",
+  "category": "trend",
+  "answer": "Apple’s diluted earnings per share were $6.13 per share in FY2023 [S1], $6.08 per share in FY2024 [S2], and $7.46 per share in FY2025 [S3], showing a slight decline from 2023 to 2024 followed by an increase in 2025.",
+  "tools_used": [],
+  "tool_outputs": [
+    "Diluted (in dollars per share), fiscal year 2023: $6.13 per share (from Apple's income statement)",
+    "Diluted (in dollars per share), fiscal year 2024: $6.08 per share (from Apple's income statement)",
+    "Diluted (in dollars per share), fiscal year 2025: $7.46 per share (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 27.848,
+  "usage": {
+    "input_tokens": 1757,
+    "output_tokens": 2281,
+    "total_tokens": 4038
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1150,
+      "output_tokens": 272,
+      "total_tokens": 1422,
+      "seconds": 0.855,
+      "started_at": 22.381
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 607,
+      "output_tokens": 2009,
+      "total_tokens": 2616,
+      "seconds": 4.607,
+      "started_at": 23.237
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What was the 3-year trend (FY2023-FY2025) in Apple's diluted EPS?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0223, AAPL-10-K-FY2025-0320, AAPL-10-K-FY2025-0343",
+      "note": "0 of 3 relevant (mean relevance 0.00); 3 of 3 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.154,
+      "latency_s": 22.227,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1150,
+        "output": 272,
+        "total": 1422
+      },
+      "started_at": 22.381,
+      "latency_s": 0.855,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 607,
+        "output": 2009,
+        "total": 2616
+      },
+      "started_at": 23.237,
+      "latency_s": 4.607,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

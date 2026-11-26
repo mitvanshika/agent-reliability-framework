@@ -1,0 +1,156 @@
+{
+  "scenario_id": "fdd_q16",
+  "question": "Does Apple's FY2025 balance sheet satisfy Assets = Liabilities + Equity?",
+  "category": "cross_referencing",
+  "answer": "Yes, the FY2025 balance sheet balances: total assets $359,241 million [S1] equals total liabilities $285,508 million [S2] plus total shareholders\u2019 equity $73,733 million [S3], which sum to $359,241 million.",
+  "tools_used": [],
+  "tool_outputs": [
+    "CONSOLIDATED BALANCE SHEETS\n(In millions, except number of shares, which are reflected in thousands, and par value)\nSeptember 27, | September 28,\n2025 | 2024\nASSETS:\nCurrent assets:\nCash and cash equivalents | $35,934 | $29,943\nMarketable securities | 18,763 | 35,228\nAccounts receivable, net | 39,777 | 33,410\nVendor non-trade receivables | 33,180 | 32,833\nInventories | 5,718 | 7,286\nOther current assets | 14,585 | 14,287\nTotal current assets | 147,957 | 152,987\nNon-current assets:\nMarketable securities | 77,723 | 91,479\nProperty, plant and equipment, net | 49,834 | 45,680\nOther non-current assets | 83,727 | 74,834\nTotal non-current assets | 211,284 | 211,993\nTotal assets | $359,241 | $364,980\nLIABILITIES AND SHAREHOLDERS\u2019 EQUITY:\nCurrent liabilities:\nAccounts payable | $69,860 | $68,960\nOther current liabilities | 66,387 | 78,304\nDeferred revenue | 9,055 | 8,249\nCommercial paper | 7,979 | 9,967\nTerm debt | 12,350 | 10,912\nTotal current liabilities | 165,631 | 176,392",
+    "CONSOLIDATED BALANCE SHEETS\n(In millions, except number of shares, which are reflected in thousands, and par value)\nSeptember 27, | September 28,\n2025 | 2024\nNon-current liabilities:\nTerm debt | 78,328 | 85,750\nOther non-current liabilities | 41,549 | 45,888\nTotal non-current liabilities | 119,877 | 131,638\nTotal liabilities | 285,508 | 308,030\nCommitments and contingencies\nShareholders\u2019 equity:\nCommon stock and additional paid-in capital, $0.00001 par value: 50,400,000 shares authorized; 14,773,260 and 15,116,786 shares issued and outstanding, respectively | 93,568 | 83,276\nAccumulated deficit | (14,264) | (19,154)\nAccumulated other comprehensive loss | (5,571) | (7,172)\nTotal shareholders\u2019 equity | 73,733 | 56,950\nTotal liabilities and shareholders\u2019 equity | $359,241 | $364,980",
+    "Total assets, fiscal year 2025: $359,241 million (from Apple's balance sheet)",
+    "Total liabilities, fiscal year 2025: $285,508 million (from Apple's balance sheet)",
+    "Total shareholders\u2019 equity, fiscal year 2025: $73,733 million (from Apple's balance sheet)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 23.86,
+  "usage": {
+    "input_tokens": 2586,
+    "output_tokens": 1041,
+    "total_tokens": 3627
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1407,
+      "output_tokens": 270,
+      "total_tokens": 1677,
+      "seconds": 0.797,
+      "started_at": 21.114
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 1179,
+      "output_tokens": 771,
+      "total_tokens": 1950,
+      "seconds": 1.945,
+      "started_at": 21.911
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Does Apple's FY2025 balance sheet satisfy Assets = Liabilities + Equity?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0228, AAPL-10-K-FY2025-0229, AAPL-10-K-FY2025-0343",
+      "note": "2 of 3 relevant (mean relevance 0.53); 3 of 3 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.082,
+      "latency_s": 21.032,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1407,
+        "output": 270,
+        "total": 1677
+      },
+      "started_at": 21.114,
+      "latency_s": 0.797,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1179,
+        "output": 771,
+        "total": 1950
+      },
+      "started_at": 21.911,
+      "latency_s": 1.945,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The answer includes all required facts: total assets $359,241\u202fmillion, total liabilities $285,508\u202fmillion, total shareholders\u2019 equity $73,733\u202fmillion, and confirms that liabilities\u202f+\u202fequity equals assets. No contradictions or missing information.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input consists of a single request asking whether Apple's FY2025 balance sheet satisfies Assets = Liabilities + Equity. The system's output directly answers \"Yes\" and provides the exact figures for total assets, total liabilities, and total shareholders\u2019 equity taken from the supplied balance sheet, showing that the sum of liabilities and equity equals assets. This matches the reference answer and uses the source data, so the response is fully complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific numeric claims (total assets $359,241\u202fM, total liabilities $285,508\u202fM, total shareholders\u2019 equity $73,733\u202fM, and their sum equaling total assets) are directly present in the provided balance sheet data, so the output is fully grounded.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved excerpts contain the full FY2025 consolidated balance sheet with total assets, total liabilities, and total shareholders' equity, allowing direct verification that Assets = Liabilities + Equity.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "0cf4752af956",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

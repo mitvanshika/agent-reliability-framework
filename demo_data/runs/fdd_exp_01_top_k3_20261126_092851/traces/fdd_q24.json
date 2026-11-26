@@ -1,0 +1,93 @@
+{
+  "scenario_id": "fdd_q24",
+  "question": "How did Apple's total liabilities change from FY2024 to FY2025?",
+  "category": "trend",
+  "answer": "$308,030 million in FY2024 [S1]. $285,508 million in FY2025 [S2]. Total liabilities decreased by $22,522 million [S1] [S2].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Total liabilities, fiscal year 2024: $308,030 million (from Apple's balance sheet)",
+    "Total liabilities, fiscal year 2025: $285,508 million (from Apple's balance sheet)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 31.335,
+  "usage": {
+    "input_tokens": 1782,
+    "output_tokens": 1965,
+    "total_tokens": 3747
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1227,
+      "output_tokens": 195,
+      "total_tokens": 1422,
+      "seconds": 0.837,
+      "started_at": 26.091
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 555,
+      "output_tokens": 1770,
+      "total_tokens": 2325,
+      "seconds": 4.403,
+      "started_at": 26.929
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How did Apple's total liabilities change from FY2024 to FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0241, AAPL-10-K-FY2025-0299, AAPL-10-K-FY2025-0343",
+      "note": "0 of 3 relevant (mean relevance 0.00); 2 of 2 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.047,
+      "latency_s": 26.044,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1227,
+        "output": 195,
+        "total": 1422
+      },
+      "started_at": 26.091,
+      "latency_s": 0.837,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 555,
+        "output": 1770,
+        "total": 2325
+      },
+      "started_at": 26.929,
+      "latency_s": 4.403,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

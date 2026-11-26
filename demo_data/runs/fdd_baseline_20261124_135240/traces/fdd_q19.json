@@ -1,0 +1,93 @@
+{
+  "scenario_id": "fdd_q19",
+  "question": "Apple's Products gross margin dollars increased in FY2025 ($112,887M vs $109,633M in FY2024) but Products gross margin percentage decreased (36.8% vs 37.2%). What explains this?",
+  "category": "cross_referencing",
+  "answer": "Products gross margin rose to $112,887 million in FY2025 from $109,633 million in FY2024, reflecting favorable costs and a different product mix (partially offset by tariff costs) [2][1]. At the same time, the margin percentage fell to 36.8% from 37.2% because the mix shift and tariff costs reduced the overall margin rate, though other favorable costs provided some offset [2][1].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Products gross margin increased during 2025 compared to 2024 primarily due to favorable costs and a different mix of products, partially offset by tariff costs.\n\nProducts gross margin percentage decreased during 2025 compared to 2024 primarily due to a different mix of products and tariff costs, partially offset by other favorable costs.",
+    "Gross Margin\nProducts and Services gross margin and gross margin percentage for 2025, 2024 and 2023 were as follows (dollars in millions):\n2025 | 2024 | 2023\nGross margin:\nProducts | $112,887 | $109,633 | $108,803\nServices | 82,314 | 71,050 | 60,345\nTotal gross margin | $195,201 | $180,683 | $169,148\nGross margin percentage:\nProducts | 36.8% | 37.2% | 36.5%\nServices | 75.4% | 73.9% | 70.8%\nTotal gross margin percentage | 46.9% | 46.2% | 44.1%"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 27.316,
+  "usage": {
+    "input_tokens": 1941,
+    "output_tokens": 1068,
+    "total_tokens": 3009
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1159,
+      "output_tokens": 244,
+      "total_tokens": 1403,
+      "seconds": 0.79,
+      "started_at": 24.329
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 782,
+      "output_tokens": 824,
+      "total_tokens": 1606,
+      "seconds": 2.188,
+      "started_at": 25.12
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple's Products gross margin dollars increased in FY2025 ($112,887M vs $109,633M in FY2024) but Products gross margin percentage decreased (36.8% vs 37.2%). What explains this?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0189, AAPL-10-K-FY2025-0190, AAPL-10-K-FY2025-0191, AAPL-10-K-FY2025-0192",
+      "note": "2 of 6 relevant (mean relevance 0.40)",
+      "retrieval_attempt": 1,
+      "started_at": 0.001,
+      "latency_s": 24.328,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1159,
+        "output": 244,
+        "total": 1403
+      },
+      "started_at": 24.329,
+      "latency_s": 0.79,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 782,
+        "output": 824,
+        "total": 1606
+      },
+      "started_at": 25.12,
+      "latency_s": 2.188,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

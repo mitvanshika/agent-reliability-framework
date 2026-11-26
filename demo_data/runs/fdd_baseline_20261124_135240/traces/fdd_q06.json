@@ -1,0 +1,94 @@
+{
+  "scenario_id": "fdd_q06",
+  "question": "How much revenue did the iPhone generate in FY2025?",
+  "category": "numeric_lookup",
+  "answer": "$209,586 million [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "Note 2 - Revenue\nThe following table shows disaggregated net sales, as well as the portion of total net sales that was previously deferred, for 2025, 2024 and 2023 (in millions):\n2025 | 2024 | 2023\niPhone | $209,586 | $201,183 | $200,583\nMac | 33,708 | 29,984 | 29,357\niPad | 28,023 | 26,694 | 28,300\nWearables, Home and Accessories | 35,686 | 37,005 | 39,845\nServices (1) | 109,158 | 96,169 | 85,200\nTotal net sales | $416,161 | $391,035 | $383,285\nPortion of total net sales that was included in deferred revenue as of the beginning of the period | $8,229 | $7,728 | $8,169",
+    "Products and Services Performance\nThe following table shows net sales by category for 2025, 2024 and 2023 (dollars in millions):\n2025 | Change | 2024 | Change | 2023\niPhone | $209,586 | 4% | $201,183 | —% | $200,583\nMac | 33,708 | 12% | 29,984 | 2% | 29,357\niPad | 28,023 | 5% | 26,694 | (6)% | 28,300\nWearables, Home and Accessories | 35,686 | (4)% | 37,005 | (7)% | 39,845\nServices (1) | 109,158 | 14% | 96,169 | 13% | 85,200\nTotal net sales | $416,161 | 6% | $391,035 | 2% | $383,285",
+    "iPhone, fiscal year 2025: $209,586 million (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 17.572,
+  "usage": {
+    "input_tokens": 2395,
+    "output_tokens": 1418,
+    "total_tokens": 3813
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1430,
+      "output_tokens": 251,
+      "total_tokens": 1681,
+      "seconds": 0.833,
+      "started_at": 13.964
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 965,
+      "output_tokens": 1167,
+      "total_tokens": 2132,
+      "seconds": 2.771,
+      "started_at": 14.797
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How much revenue did the iPhone generate in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263",
+      "note": "2 of 6 relevant (mean relevance 0.33); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.036,
+      "latency_s": 13.927,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1430,
+        "output": 251,
+        "total": 1681
+      },
+      "started_at": 13.964,
+      "latency_s": 0.833,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 965,
+        "output": 1167,
+        "total": 2132
+      },
+      "started_at": 14.797,
+      "latency_s": 2.771,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

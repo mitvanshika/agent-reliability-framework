@@ -1,0 +1,115 @@
+{
+  "scenario_id": "fdd_q29",
+  "question": "What is Apple's estimate of its total addressable market size for the next 5 years?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 111.513,
+  "usage": {
+    "input_tokens": 3581,
+    "output_tokens": 585,
+    "total_tokens": 4166
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1592,
+      "output_tokens": 220,
+      "total_tokens": 1812,
+      "seconds": 0.879,
+      "started_at": 18.365
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 370,
+      "output_tokens": 124,
+      "total_tokens": 494,
+      "seconds": 0.612,
+      "started_at": 19.244
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1619,
+      "output_tokens": 241,
+      "total_tokens": 1860,
+      "seconds": 0.675,
+      "started_at": 110.833
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What is Apple's estimate of its total addressable market size for the next 5 years?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0164, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263, AAPL-10-K-FY2025-0320",
+      "note": "0 of 6 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.007,
+      "latency_s": 18.358,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1592,
+        "output": 220,
+        "total": 1812
+      },
+      "started_at": 18.365,
+      "latency_s": 0.879,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 370,
+        "output": 124,
+        "total": 494
+      },
+      "started_at": 19.244,
+      "latency_s": 0.612,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1619,
+        "output": 241,
+        "total": 1860
+      },
+      "started_at": 110.833,
+      "latency_s": 0.675,
+      "error": null,
+      "index": 3
+    }
+  ]
+}

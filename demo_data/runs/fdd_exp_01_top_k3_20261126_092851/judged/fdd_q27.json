@@ -1,0 +1,175 @@
+{
+  "scenario_id": "fdd_q27",
+  "question": "How much money does Apple receive annually from its search licensing arrangement with Google?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 58.757,
+  "usage": {
+    "input_tokens": 3002,
+    "output_tokens": 515,
+    "total_tokens": 3517
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1153,
+      "output_tokens": 173,
+      "total_tokens": 1326,
+      "seconds": 0.644,
+      "started_at": 17.372
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 367,
+      "output_tokens": 127,
+      "total_tokens": 494,
+      "seconds": 0.612,
+      "started_at": 18.016
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1482,
+      "output_tokens": 215,
+      "total_tokens": 1697,
+      "seconds": 0.724,
+      "started_at": 58.027
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How much money does Apple receive annually from its search licensing arrangement with Google?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0115, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0262",
+      "note": "0 of 3 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.009,
+      "latency_s": 17.363,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1153,
+        "output": 173,
+        "total": 1326
+      },
+      "started_at": 17.372,
+      "latency_s": 0.644,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 367,
+        "output": 127,
+        "total": 494
+      },
+      "started_at": 18.016,
+      "latency_s": 0.612,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1482,
+        "output": 215,
+        "total": 1697
+      },
+      "started_at": 58.027,
+      "latency_s": 0.724,
+      "error": null,
+      "index": 3
+    }
+  ],
+  "final_score": 9.333333333333332,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance",
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 9,
+    "reason": "The system correctly indicates that no answer is available, matching the reference's classification of the question as NOT ANSWERABLE because the filing does not disclose the specific dollar amount. It does not provide any contradictory information. While it does not explicitly restate that the filing acknowledges revenue, the essential required fact\u2014that the amount is not disclosed\u2014is satisfied.",
+    "confidence": 0.97,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single question asking for the annual amount Apple receives from its Google search licensing arrangement. The reference indicates this information is not disclosed in the filing, so a correct response is to refuse or state it is not answerable. The system's output refuses, indicating no relevant data found, which aligns with the expected behavior. Hence the sole part is handled completely.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 9,
+    "reason": "The output makes no factual claims about Apple or Google; it simply states that no relevant source material was found, which is accurate given that no source material was provided. This honest admission aligns with the evaluation criteria for handling missing information.",
+    "confidence": 0.97
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "nothing was retrieved"
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "49f35d34488b",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

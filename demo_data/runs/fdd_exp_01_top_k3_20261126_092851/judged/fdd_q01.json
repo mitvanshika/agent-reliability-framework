@@ -1,0 +1,152 @@
+{
+  "scenario_id": "fdd_q01",
+  "question": "What was Apple's net income for FY2025?",
+  "category": "numeric_lookup",
+  "answer": "$112,010 million [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "Net income, fiscal year 2025: $112,010 million (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 79.862,
+  "usage": {
+    "input_tokens": 1743,
+    "output_tokens": 394,
+    "total_tokens": 2137
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1221,
+      "output_tokens": 154,
+      "total_tokens": 1375,
+      "seconds": 0.748,
+      "started_at": 78.05
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 522,
+      "output_tokens": 240,
+      "total_tokens": 762,
+      "seconds": 0.788,
+      "started_at": 78.799
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What was Apple's net income for FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263",
+      "note": "0 of 3 relevant (mean relevance 0.00); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 9.949,
+      "latency_s": 68.086,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1221,
+        "output": 154,
+        "total": 1375
+      },
+      "started_at": 78.05,
+      "latency_s": 0.748,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 522,
+        "output": 240,
+        "total": 762
+      },
+      "started_at": 78.799,
+      "latency_s": 0.788,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.000000000000002,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The output provides the exact net income value ($112,010 million), which is equivalent to $112,010,000,000 as required by the reference. No contradictory or missing information is present, and the citation is acceptable.",
+    "confidence": 0.98,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input has a single part: the request for Apple's FY2025 net income. The system responded with \"112,010 million [S1]\", which matches the source material ($112,010 million) and the reference answer ($112,010,000,000). The answer is accurate and properly cited, so the part is complete.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The answer directly states the net income figure, which exactly matches the provided source material (Net income, fiscal year 2025: $112,010 million). No additional or unsupported details are present.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved snippet directly provides Apple's FY2025 net income as $112,010 million, which matches the required answer of $112.01\u202fbillion, fully satisfying the query.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "8e554e1163e9",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

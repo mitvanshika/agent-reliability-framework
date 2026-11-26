@@ -1,0 +1,156 @@
+{
+  "scenario_id": "fdd_q13",
+  "question": "Why did Services net sales increase in FY2025?",
+  "category": "narrative_comprehension",
+  "answer": "Services net sales increased in FY2025 primarily due to higher net sales from advertising, the App Store, and cloud services [1].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Services net sales increased during 2025 compared to 2024 primarily due to higher net sales from advertising, the App Store and cloud services.",
+    "Americas net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone and Services. The weakness in foreign currencies relative to the U.S. dollar had an unfavorable year-over-year impact on Americas net sales during 2025.",
+    "(1) Services net sales include amortization of the deferred value of services bundled in the sales price of certain products.\n\niPhone\n\niPhone net sales increased during 2025 compared to 2024 due to higher net sales of Pro models.",
+    "Rest of Asia Pacific net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and Mac.",
+    "(1) Services net sales include amortization of the deferred value of services bundled in the sales price of certain products.\n\nThe Company\u2019s proportion of net sales by disaggregated revenue source was generally consistent for each reportable segment in Note 13, \u201cSegment Information and Geographic Data\u201d for 2025, 2024 and 2023, except in Greater China, where iPhone revenue represented a moderately higher proportion of net sales.\n\nAs of September 27, 2025 and September 28, 2024, the Company had total deferred revenue of $ 13.7 billion and $ 12.8 billion, respectively. As of September 27, 2025, the Company expects 66 % of total deferred revenue to be realized in less than a year, 23 % within one-to-two years, 9 % within two-to-three years and 2 % in greater than three years."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 26.379,
+  "usage": {
+    "input_tokens": 2020,
+    "output_tokens": 1044,
+    "total_tokens": 3064
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1117,
+      "output_tokens": 290,
+      "total_tokens": 1407,
+      "seconds": 0.916,
+      "started_at": 23.205
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 903,
+      "output_tokens": 754,
+      "total_tokens": 1657,
+      "seconds": 2.254,
+      "started_at": 24.122
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Why did Services net sales increase in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0182, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0188, AAPL-10-K-FY2025-0192, AAPL-10-K-FY2025-0263",
+      "note": "5 of 6 relevant (mean relevance 0.63); 0 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.062,
+      "latency_s": 23.143,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1117,
+        "output": 290,
+        "total": 1407
+      },
+      "started_at": 23.205,
+      "latency_s": 0.916,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 903,
+        "output": 754,
+        "total": 1657
+      },
+      "started_at": 24.122,
+      "latency_s": 2.254,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The answer contains the exact required fact\u2014services net sales rose primarily due to higher net sales from advertising, the App Store, and cloud services\u2014and adds no contradictory or extraneous claims.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single input part\u2014question asking why Services net sales increased in FY2025\u2014was answered fully. The output states the increase was primarily due to higher net sales from advertising, the App Store, and cloud services, which matches the source material and reference answer, and includes a citation. No parts were missed or incorrect.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The output states that Services net sales increased in FY2025 primarily due to higher net sales from advertising, the App Store, and cloud services. This exact claim is present in the provided source material, so every specific assertion is directly supported. No unsupported details are introduced.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved text includes a direct statement that Services net sales increased in FY2025 primarily due to higher net sales from advertising, the App Store, and cloud services, which fully answers the question. Additional unrelated excerpts do not detract from the completeness of the needed information.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "885e5096eebb",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

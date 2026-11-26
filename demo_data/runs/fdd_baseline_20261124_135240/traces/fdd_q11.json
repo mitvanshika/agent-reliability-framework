@@ -1,0 +1,94 @@
+{
+  "scenario_id": "fdd_q11",
+  "question": "What risk does Apple disclose regarding natural disasters and its facilities?",
+  "category": "narrative_comprehension",
+  "answer": "Apple discloses that many of its operations, retail stores and facilities (and those of its suppliers) are located in areas prone to earthquakes and other natural disasters. [1] These natural disasters, which may be intensified by climate change, pose a risk of interruption to the Company’s facilities and business operations. [3]",
+  "tools_used": [],
+  "tool_outputs": [
+    "Many of the Company’s operations, retail stores and facilities, as well as critical business operations of the Company’s suppliers and contract manufacturers, are in locations that are prone to earthquakes and other natural disasters. Global climate change is resulting in certain types of natural disasters and extreme weather occurring more frequently or with more intense effects. In addition, the Company’s and its suppliers’ operations, retail stores and facilities are subject to the risk of interruption by fire, power shortages, nuclear power plant accidents and other industrial accidents, terrorist attacks and other hostile acts, ransomware and other cybersecurity attacks, labor disputes, public health issues and other events beyond the Company’s control.",
+    "The Company and its global supply chain are dependent on complex information technology systems and are exposed to information technology system failures or network disruptions caused by natural disasters, accidents, power disruptions, telecommunications failures, acts of terrorism or war, computer viruses, physical or electronic break-ins, ransomware or other cybersecurity incidents, or other events or disruptions. System upgrades, redundancy and other continuity measures may be ineffective or inadequate, and the Company’s or its vendors’ business continuity and disaster recovery planning may not be sufficient for all eventualities. Such failures or disruptions can adversely impact the Company’s business by, among other things, preventing access to the Company’s online services, interfering with customer transactions or impeding the manufacturing and shipping of the Company’s products.",
+    "The Company’s business can be impacted by political events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions.\n\nPolitical events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions can have a material adverse effect on the Company and its customers, employees, suppliers, contract manufacturers, logistics providers, distributors, cellular network carriers and other channel partners."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 20.386,
+  "usage": {
+    "input_tokens": 2294,
+    "output_tokens": 2040,
+    "total_tokens": 4334
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1380,
+      "output_tokens": 416,
+      "total_tokens": 1796,
+      "seconds": 1.138,
+      "started_at": 15.339
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 914,
+      "output_tokens": 1624,
+      "total_tokens": 2538,
+      "seconds": 3.905,
+      "started_at": 16.477
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What risk does Apple disclose regarding natural disasters and its facilities?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0033, AAPL-10-K-FY2025-0039, AAPL-10-K-FY2025-0067, AAPL-10-K-FY2025-0083, AAPL-10-K-FY2025-0121, AAPL-10-K-FY2025-0148",
+      "note": "3 of 6 relevant (mean relevance 0.42)",
+      "retrieval_attempt": 1,
+      "started_at": 0.007,
+      "latency_s": 15.332,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1380,
+        "output": 416,
+        "total": 1796
+      },
+      "started_at": 15.339,
+      "latency_s": 1.138,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 914,
+        "output": 1624,
+        "total": 2538
+      },
+      "started_at": 16.477,
+      "latency_s": 3.905,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

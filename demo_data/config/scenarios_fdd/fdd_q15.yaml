@@ -1,0 +1,7 @@
+id: fdd_q15
+question: What does Apple disclose about legal proceedings and government investigations as a risk?
+category: narrative_comprehension
+expected_answer: Apple is subject to various claims, legal proceedings, and government investigations arising in the ordinary course of business, some unresolved, with new matters possibly arising in the future; the number and scale of such matters has generally increased over time.
+difficulty: medium
+reference_source: apple_10k.txt, Item 1A Risk Factors, 'Legal and Regulatory Compliance Risks' (~lines 397-400)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #15 (sha256 c3ba6eb2ac0a)'

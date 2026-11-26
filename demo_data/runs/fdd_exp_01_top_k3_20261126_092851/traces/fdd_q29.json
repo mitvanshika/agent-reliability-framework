@@ -1,0 +1,90 @@
+{
+  "scenario_id": "fdd_q29",
+  "question": "What is Apple's estimate of its total addressable market size for the next 5 years?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 18.666,
+  "usage": {
+    "input_tokens": 1463,
+    "output_tokens": 153,
+    "total_tokens": 1616
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1093,
+      "output_tokens": 130,
+      "total_tokens": 1223,
+      "seconds": 0.737,
+      "started_at": 17.414
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 370,
+      "output_tokens": 23,
+      "total_tokens": 393,
+      "seconds": 0.512,
+      "started_at": 18.15
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What is Apple's estimate of its total addressable market size for the next 5 years?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0164, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0320",
+      "note": "0 of 3 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.007,
+      "latency_s": 17.406,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1093,
+        "output": 130,
+        "total": 1223
+      },
+      "started_at": 17.414,
+      "latency_s": 0.737,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 370,
+        "output": 23,
+        "total": 393
+      },
+      "started_at": 18.15,
+      "latency_s": 0.512,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

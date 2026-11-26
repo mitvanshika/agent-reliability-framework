@@ -1,0 +1,7 @@
+id: fdd_q22
+question: What was the 3-year trend (FY2023-FY2025) in Apple's net income?
+category: trend
+expected_answer: '$96,995M (FY2023) -> $93,736M (FY2024, a ~3.4% dip) -> $112,010M (FY2025, a ~19.5% rise). Non-monotonic: a decline followed by a sharp rebound.'
+difficulty: medium
+reference_source: apple_income_statement.csv, Net income row, all three fiscal-year columns
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #22 (sha256 c3ba6eb2ac0a)'

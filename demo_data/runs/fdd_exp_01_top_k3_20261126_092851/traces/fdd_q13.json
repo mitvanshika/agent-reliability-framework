@@ -1,0 +1,93 @@
+{
+  "scenario_id": "fdd_q13",
+  "question": "Why did Services net sales increase in FY2025?",
+  "category": "narrative_comprehension",
+  "answer": "Services net sales increased due to higher net sales from advertising, the App Store and cloud services [1].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Services net sales increased during 2025 compared to 2024 primarily due to higher net sales from advertising, the App Store and cloud services.",
+    "Americas net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone and Services. The weakness in foreign currencies relative to the U.S. dollar had an unfavorable year-over-year impact on Americas net sales during 2025."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 21.603,
+  "usage": {
+    "input_tokens": 1345,
+    "output_tokens": 745,
+    "total_tokens": 2090
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 747,
+      "output_tokens": 187,
+      "total_tokens": 934,
+      "seconds": 0.755,
+      "started_at": 19.203
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 598,
+      "output_tokens": 558,
+      "total_tokens": 1156,
+      "seconds": 1.639,
+      "started_at": 19.958
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Why did Services net sales increase in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0188",
+      "note": "2 of 3 relevant (mean relevance 0.67); 0 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.106,
+      "latency_s": 19.097,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 747,
+        "output": 187,
+        "total": 934
+      },
+      "started_at": 19.203,
+      "latency_s": 0.755,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 598,
+        "output": 558,
+        "total": 1156
+      },
+      "started_at": 19.958,
+      "latency_s": 1.639,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

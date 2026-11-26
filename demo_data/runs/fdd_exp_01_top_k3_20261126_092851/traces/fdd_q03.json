@@ -1,0 +1,93 @@
+{
+  "scenario_id": "fdd_q03",
+  "question": "What were Apple's total liabilities at the end of FY2025?",
+  "category": "numeric_lookup",
+  "answer": "$285,508 million [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "CONSOLIDATED BALANCE SHEETS\n(In millions, except number of shares, which are reflected in thousands, and par value)\nSeptember 27, | September 28,\n2025 | 2024\nNon-current liabilities:\nTerm debt | 78,328 | 85,750\nOther non-current liabilities | 41,549 | 45,888\nTotal non-current liabilities | 119,877 | 131,638\nTotal liabilities | 285,508 | 308,030\nCommitments and contingencies\nShareholders’ equity:\nCommon stock and additional paid-in capital, $0.00001 par value: 50,400,000 shares authorized; 14,773,260 and 15,116,786 shares issued and outstanding, respectively | 93,568 | 83,276\nAccumulated deficit | (14,264) | (19,154)\nAccumulated other comprehensive loss | (5,571) | (7,172)\nTotal shareholders’ equity | 73,733 | 56,950\nTotal liabilities and shareholders’ equity | $359,241 | $364,980",
+    "Total liabilities, fiscal year 2025: $285,508 million (from Apple's balance sheet)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 25.677,
+  "usage": {
+    "input_tokens": 1909,
+    "output_tokens": 883,
+    "total_tokens": 2792
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1134,
+      "output_tokens": 153,
+      "total_tokens": 1287,
+      "seconds": 0.704,
+      "started_at": 22.919
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 775,
+      "output_tokens": 730,
+      "total_tokens": 1505,
+      "seconds": 2.049,
+      "started_at": 23.623
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What were Apple's total liabilities at the end of FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0164, AAPL-10-K-FY2025-0229, AAPL-10-K-FY2025-0343",
+      "note": "1 of 3 relevant (mean relevance 0.33); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.038,
+      "latency_s": 22.881,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1134,
+        "output": 153,
+        "total": 1287
+      },
+      "started_at": 22.919,
+      "latency_s": 0.704,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 775,
+        "output": 730,
+        "total": 1505
+      },
+      "started_at": 23.623,
+      "latency_s": 2.049,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

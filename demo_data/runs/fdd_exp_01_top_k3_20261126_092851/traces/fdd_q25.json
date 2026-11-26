@@ -1,0 +1,90 @@
+{
+  "scenario_id": "fdd_q25",
+  "question": "What is Apple's projected revenue for FY2027?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 15.253,
+  "usage": {
+    "input_tokens": 1560,
+    "output_tokens": 246,
+    "total_tokens": 1806
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1198,
+      "output_tokens": 150,
+      "total_tokens": 1348,
+      "seconds": 0.771,
+      "started_at": 14.069
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 362,
+      "output_tokens": 96,
+      "total_tokens": 458,
+      "seconds": 0.41,
+      "started_at": 14.84
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What is Apple's projected revenue for FY2027?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263",
+      "note": "0 of 3 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.005,
+      "latency_s": 14.064,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1198,
+        "output": 150,
+        "total": 1348
+      },
+      "started_at": 14.069,
+      "latency_s": 0.771,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 362,
+        "output": 96,
+        "total": 458
+      },
+      "started_at": 14.84,
+      "latency_s": 0.41,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

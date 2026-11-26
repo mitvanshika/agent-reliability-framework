@@ -1,11 +1,14 @@
 {
-  "created": "2026-11-10T11:15:22",
-  "git_commit": "1b5278d",
+  "created": "2026-11-26T13:23:33",
+  "git_commit": "9832dac",
   "runs": [
     "baseline_20261106_101645",
     "baseline_20261106_101856",
     "baseline_20261106_111506",
     "exp_01_weak_prompt_20261107_164943",
+    "fdd_baseline_20261124_135240",
+    "fdd_baseline_20261124_154652",
+    "fdd_exp_01_top_k3_20261126_092851",
     "summarizer_baseline_20261109_111741"
   ],
   "note": "snapshot for DEMO_MODE=1; rebuild with python make_demo_data.py"

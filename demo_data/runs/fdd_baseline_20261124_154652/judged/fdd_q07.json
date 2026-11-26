@@ -1,0 +1,155 @@
+{
+  "scenario_id": "fdd_q07",
+  "question": "What was Apple's diluted earnings per share (EPS) for FY2025?",
+  "category": "numeric_lookup",
+  "answer": "$7.46 per share [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "Note 3 - Earnings Per Share\nThe following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):\n2025 | 2024 | 2023\nNumerator:\nNet income | $112,010 | $93,736 | $96,995\nDenominator:\nWeighted-average basic shares outstanding | 14,948,500 | 15,343,783 | 15,744,231\nEffect of dilutive share-based awards | 56,197 | 64,312 | 68,316\nWeighted-average diluted shares | 15,004,697 | 15,408,095 | 15,812,547\nBasic earnings per share | $7.49 | $6.11 | $6.16\nDiluted earnings per share | $7.46 | $6.08 | $6.13",
+    "CONSOLIDATED STATEMENTS OF OPERATIONS\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\nYears ended\nSeptember 27, | September 28, | September 30,\n2025 | 2024 | 2023\nCost of sales:\nProducts | 194,116 | 185,233 | 189,282\nServices | 26,844 | 25,119 | 24,855\nTotal cost of sales | 220,960 | 210,352 | 214,137\nGross margin | 195,201 | 180,683 | 169,148\nOperating expenses:\nResearch and development | 34,550 | 31,370 | 29,915\nSelling, general and administrative | 27,601 | 26,097 | 24,932\nTotal operating expenses | 62,151 | 57,467 | 54,847\nOperating income | 133,050 | 123,216 | 114,301\nOther income/(expense), net | (321) | 269 | (565)\nIncome before provision for income taxes | 132,729 | 123,485 | 113,736\nProvision for income taxes | 20,719 | 29,749 | 16,741\nNet income | $112,010 | $93,736 | $96,995\nEarnings per share:\nBasic | $7.49 | $6.11 | $6.16\nDiluted | $7.46 | $6.08 | $6.13",
+    "The following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):",
+    "Diluted (in dollars per share), fiscal year 2025: $7.46 per share (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 29.08,
+  "usage": {
+    "input_tokens": 2874,
+    "output_tokens": 1341,
+    "total_tokens": 4215
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1731,
+      "output_tokens": 360,
+      "total_tokens": 2091,
+      "seconds": 0.931,
+      "started_at": 25.688
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 1143,
+      "output_tokens": 981,
+      "total_tokens": 2124,
+      "seconds": 2.457,
+      "started_at": 26.619
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What was Apple's diluted earnings per share (EPS) for FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0222, AAPL-10-K-FY2025-0223, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0264, AAPL-10-K-FY2025-0265, AAPL-10-K-FY2025-0343",
+      "note": "3 of 6 relevant (mean relevance 0.50); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.036,
+      "latency_s": 25.652,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1731,
+        "output": 360,
+        "total": 2091
+      },
+      "started_at": 25.688,
+      "latency_s": 0.931,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1143,
+        "output": 981,
+        "total": 2124
+      },
+      "started_at": 26.619,
+      "latency_s": 2.457,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The system's answer includes the exact required fact ($7.46) and adds only harmless extra wording ('per share') and a citation marker, which does not contradict the reference. All required information is present and correct.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single input question asked for Apple's diluted EPS for FY2025. The output provided \"$7.46 per share\", which exactly matches the value in the source material and reference answer, thus fully handling the only part of the input.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The answer states Apple's diluted EPS for FY2025 is $7.46 per share, which is directly provided in the source material (Note 3 and the Consolidated Statements of Operations both list Diluted earnings per share as $7.46 for 2025). No unsupported claims are present.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved content includes the Note 3 table and the consolidated statements that explicitly list Apple\u2019s diluted earnings per share for FY2025 as $7.46, directly answering the question.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "818e7391a3ef",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

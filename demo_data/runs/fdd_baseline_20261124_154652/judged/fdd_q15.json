@@ -1,0 +1,157 @@
+{
+  "scenario_id": "fdd_q15",
+  "question": "What does Apple disclose about legal proceedings and government investigations as a risk?",
+  "category": "narrative_comprehension",
+  "answer": "Apple warns that legal proceedings and government investigations could materially harm its business, results of operations, financial condition, and stock price, and that the number and magnitude of such claims have generally increased over time [1]. It notes that the technology industry faces intense media, political, and regulatory scrutiny, leading to heightened regulation, investigations, legal actions, and penalties [2]. The outcomes of litigation are uncertain and could result in significant monetary damages, disgorgement, remedial measures, injunctive relief, and required changes to business practices [4]. Apple is currently subject to antitrust investigations and civil lawsuits in the U.S. and investigations in Europe concerning its App Store terms, as well as investigations involving its commercial partners such as Google, which could affect Apple\u2019s relationships and financial condition [5][6]. Additionally, failure to comply with privacy and data\u2011protection statements could trigger inquiries, proceedings, and penalties [3].",
+  "tools_used": [],
+  "tool_outputs": [
+    "The Company\u2019s business, results of operations and financial condition could be adversely impacted by unfavorable results of legal proceedings or government investigations.\n\nThe Company is subject to various claims, legal proceedings and government investigations that have arisen in the ordinary course of business and have not yet been fully resolved, and new matters may arise in the future. In addition, the Company enters into agreements that include indemnification provisions that can subject the Company to costs and damages in the event of a claim against an indemnified third party. The number of claims, legal proceedings and government investigations involving the Company, and the alleged magnitude of such claims, proceedings and government investigations, has generally increased over time and may continue to increase.",
+    "The technology industry, including, in some instances, the Company, is subject to intense media, political and regulatory scrutiny, which exposes the Company to increasing regulation, government investigations, legal actions and penalties.\n\nFrom time to time, the Company has made changes to its business, including actions taken in response to litigation, competition, market conditions and legal and regulatory requirements. The Company expects to make further business changes in the future. For example, in the U.S., the Company has implemented changes to how developers communicate with consumers within apps on the U.S. storefront of the iOS and iPadOS App Store regarding alternative purchasing mechanisms and is currently subject to a court order preventing it from imposing any commission or fee on certain purchases that consumers make.",
+    "The Company makes statements about its use and disclosure of personal data through its privacy policy, information provided on its website, press statements and other privacy notices provided to customers. Any failure or perceived failure by the Company to comply with these public statements or with federal, state or international privacy or data protection laws and regulations could result in inquiries, proceedings and penalties from governmental entities or others. Such a failure or perceived failure could also result in reputational impacts, ongoing audit requirements and significant legal liability. The risks of inadvertent disclosure of personal data can increase with the introduction of new and complex technologies, such as artificial intelligence features, further exacerbating such risks.",
+    "The outcome of litigation or government investigations is inherently uncertain. If one or more legal matters were resolved against the Company or an indemnified third party in a reporting period for amounts above management\u2019s expectations, the Company\u2019s results of operations, financial condition and stock price for that reporting period could be materially adversely affected. Further, such an outcome can result in significant monetary damages, disgorgement of revenue or profits, remedial corporate measures or injunctive relief against the Company. Adverse resolution of legal matters has from time to time required, and can in the future require, the Company to change its business practices.",
+    "Further, the Company has commercial relationships with other companies in the technology industry that are or may become subject to investigations and litigation that, if resolved against those other companies, could materially adversely affect the Company\u2019s commercial relationships with those business partners and materially adversely affect the Company\u2019s business, results of operations, financial condition and stock price. For example, the Company earns revenue from licensing arrangements with Google LLC (\u201cGoogle\u201d) and other companies to offer their search services on the Company\u2019s platforms and applications, and certain of these arrangements are currently subject to government investigations and legal proceedings. On August 5, 2024, Google was found to have violated U.S. antitrust laws.",
+    "The Company is also currently subject to antitrust investigations and litigation in various jurisdictions around the world, which can result in legal proceedings and claims against the Company that could, individually or in the aggregate, have a material adverse impact on the Company\u2019s business, results of operations, financial condition and stock price. For example, the Company is subject to civil antitrust lawsuits in the U.S. alleging monopolization or attempted monopolization in the markets for \u201cperformance smartphones\u201d and \u201csmartphones\u201d generally in violation of U.S. antitrust laws. In addition, the Company is the subject of investigations in Europe and other jurisdictions relating to App Store terms and conditions."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 21.958,
+  "usage": {
+    "input_tokens": 2843,
+    "output_tokens": 1855,
+    "total_tokens": 4698
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1454,
+      "output_tokens": 304,
+      "total_tokens": 1758,
+      "seconds": 0.943,
+      "started_at": 17.275
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 1389,
+      "output_tokens": 1551,
+      "total_tokens": 2940,
+      "seconds": 3.734,
+      "started_at": 18.218
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What does Apple disclose about legal proceedings and government investigations as a risk?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0095, AAPL-10-K-FY2025-0099, AAPL-10-K-FY2025-0110, AAPL-10-K-FY2025-0113, AAPL-10-K-FY2025-0115, AAPL-10-K-FY2025-0121",
+      "note": "6 of 6 relevant (mean relevance 1.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.008,
+      "latency_s": 17.267,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1454,
+        "output": 304,
+        "total": 1758
+      },
+      "started_at": 17.275,
+      "latency_s": 0.943,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1389,
+        "output": 1551,
+        "total": 2940
+      },
+      "started_at": 18.218,
+      "latency_s": 3.734,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 8.819628647214854,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 6,
+    "reason": "The output includes most of the reference facts: it states Apple is subject to legal proceedings and government investigations and that the number and magnitude of such claims have generally increased over time. However, it does not explicitly mention that some of these matters are unresolved nor that new matters may arise in the future, which are required elements of the reference answer. The extra details do not contradict the reference, but the missing required facts lower the score.",
+    "confidence": 0.88,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 9,
+    "reason": "The input can be divided into eight distinct parts (general risk statement, increase in claims, industry scrutiny, business changes due to litigation, privacy compliance risks, outcome uncertainty, partner investigations, antitrust investigations). The system's output correctly addresses seven of these parts: it covers the general risk, the increase in claims, industry scrutiny, privacy risks, outcome uncertainty, partner investigations, and antitrust investigations. It mentions business changes in general but omits the specific example of the court order on App Store commissions, so that part is not fully handled. Thus 7/8 parts are complete, yielding a score of 9 out of 10.",
+    "confidence": 0.93
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "Every specific statement in the output is directly supported by the provided source material, either verbatim or through accurate summarization. No unsupported facts, dates, or names are introduced.",
+    "confidence": 0.98
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved passages directly contain Apple's risk disclosure about legal proceedings and government investigations, describing their nature, potential impact, increasing frequency, and related antitrust matters, which fully answers the query.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "c2fe7fafddee",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "scenario_id": "fdd_q19",
+  "question": "Apple's Products gross margin dollars increased in FY2025 ($112,887M vs $109,633M in FY2024) but Products gross margin percentage decreased (36.8% vs 37.2%). What explains this?",
+  "category": "cross_referencing",
+  "answer": "The Products gross margin rose to $112,887 million in FY2025 from $109,633 million in FY2024, a $3,254 million increase, but the margin percentage fell to 36.8% from 37.2% [2]. Apple says the dollar increase was driven by favorable costs and a different product mix, while the percentage decline was caused by the same mix shift and tariff costs that lowered the overall margin rate, only partially offset by the favorable costs [1].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Products gross margin increased during 2025 compared to 2024 primarily due to favorable costs and a different mix of products, partially offset by tariff costs.\n\nProducts gross margin percentage decreased during 2025 compared to 2024 primarily due to a different mix of products and tariff costs, partially offset by other favorable costs.",
+    "Gross Margin\nProducts and Services gross margin and gross margin percentage for 2025, 2024 and 2023 were as follows (dollars in millions):\n2025 | 2024 | 2023\nGross margin:\nProducts | $112,887 | $109,633 | $108,803\nServices | 82,314 | 71,050 | 60,345\nTotal gross margin | $195,201 | $180,683 | $169,148\nGross margin percentage:\nProducts | 36.8% | 37.2% | 36.5%\nServices | 75.4% | 73.9% | 70.8%\nTotal gross margin percentage | 46.9% | 46.2% | 44.1%"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 28.038,
+  "usage": {
+    "input_tokens": 1941,
+    "output_tokens": 985,
+    "total_tokens": 2926
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1159,
+      "output_tokens": 244,
+      "total_tokens": 1403,
+      "seconds": 1.049,
+      "started_at": 25.037
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 782,
+      "output_tokens": 741,
+      "total_tokens": 1523,
+      "seconds": 1.946,
+      "started_at": 26.087
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple's Products gross margin dollars increased in FY2025 ($112,887M vs $109,633M in FY2024) but Products gross margin percentage decreased (36.8% vs 37.2%). What explains this?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0189, AAPL-10-K-FY2025-0190, AAPL-10-K-FY2025-0191, AAPL-10-K-FY2025-0192",
+      "note": "2 of 6 relevant (mean relevance 0.40)",
+      "retrieval_attempt": 1,
+      "started_at": 0.0,
+      "latency_s": 25.037,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1159,
+        "output": 244,
+        "total": 1403
+      },
+      "started_at": 25.037,
+      "latency_s": 1.049,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 782,
+        "output": 741,
+        "total": 1523
+      },
+      "started_at": 26.087,
+      "latency_s": 1.946,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 9.321052631578949,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 7,
+    "reason": "The answer includes the correct dollar and percentage changes and correctly attributes the dollar increase to favorable costs and a different product mix, and the percentage decline to mix shift and tariff costs, partially offset by favorable costs. However, it omits the reference's detail that tariff costs partially offset the margin dollar increase, which is a required fact. No contradictory or extraneous claims are made.",
+    "confidence": 0.86,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input asks why margin dollars rose while percentage fell. The output correctly reports the figures and explains the increase as due to favorable costs and a different product mix, and the percentage decline as due to the mix shift and tariff costs, partially offset by favorable costs\u2014exactly matching the source material and reference. No part was omitted or fabricated.",
+    "confidence": 0.98
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific claims\u2014including the dollar amounts, percentage figures, the $3,254\u202fmillion increase, and the explanations about favorable costs, product\u2011mix shift, and tariff impacts\u2014are directly supported by the provided source material. The answer merely summarizes and calculates from the given data, without adding unsupported information.",
+    "confidence": 0.98
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved passage directly explains that Products gross margin dollars rose because of favorable costs and a different product mix, partially offset by tariff costs, and that the margin percentage fell because of the product mix and tariff costs, partially offset by other favorable costs\u2014exactly the explanation required. The included table also confirms the figures, so the needed information is fully present.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "43e9b97b9a34",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

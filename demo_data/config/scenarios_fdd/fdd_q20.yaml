@@ -1,0 +1,7 @@
+id: fdd_q20
+question: Apple's net income dipped from $96,995M in FY2023 to $93,736M in FY2024 before rising sharply to $112,010M in FY2025. What caused the FY2024 dip?
+category: cross_referencing
+expected_answer: A one-time income tax charge of $10.2 billion, net, recorded in Q4 FY2024 related to the European Commission's State Aid Decision (a 2016 ruling on Irish tax treatment of Apple subsidiaries, upheld by the European Court of Justice in September 2024). This depressed FY2024 net income; the charge did not recur in FY2025, contributing to the sharp rebound.
+difficulty: hard
+reference_source: apple_10k.txt, Notes to Financial Statements, 'European Commission State Aid Decision' section (~lines 1365-1403); apple_income_statement.csv, Net income row across 2023/2024/2025 columns
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #20 (sha256 c3ba6eb2ac0a)'

@@ -1,0 +1,7 @@
+id: fdd_q21
+question: Did Apple's Services revenue grow faster than its iPhone revenue between FY2024 and FY2025?
+category: trend
+expected_answer: Yes. Services grew ~13.5% (from $96,169M to $109,158M) while iPhone grew ~4.2% (from $201,183M to $209,586M).
+difficulty: medium
+reference_source: apple_income_statement.csv, iPhone and Services rows, 2024-09-28 and 2025-09-27 columns
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #21 (sha256 c3ba6eb2ac0a)'
