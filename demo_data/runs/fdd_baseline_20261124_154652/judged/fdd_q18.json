@@ -1,0 +1,153 @@
+{
+  "scenario_id": "fdd_q18",
+  "question": "Apple's diluted EPS grew faster (22.7%) than its net income (19.5%) from FY2024 to FY2025. What explains the gap?",
+  "category": "cross_referencing",
+  "answer": "Apple's diluted EPS rose from $6.08 per share in FY2024 to $7.46 per share in FY2025, a 22.7% increase[1], while net income grew from $93,736 million to $112,010 million, a 19.5% increase[1]. The weighted\u2011average diluted shares fell from 15,408,095 thousand in FY2024 to 15,004,697 thousand in FY2025, a reduction of about 403,398 thousand shares (\u22482.6%)[1]. This decline in the share denominator amplified EPS growth relative to net income growth[1].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Note 3 - Earnings Per Share\nThe following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):\n2025 | 2024 | 2023\nNumerator:\nNet income | $112,010 | $93,736 | $96,995\nDenominator:\nWeighted-average basic shares outstanding | 14,948,500 | 15,343,783 | 15,744,231\nEffect of dilutive share-based awards | 56,197 | 64,312 | 68,316\nWeighted-average diluted shares | 15,004,697 | 15,408,095 | 15,812,547\nBasic earnings per share | $7.49 | $6.11 | $6.16\nDiluted earnings per share | $7.46 | $6.08 | $6.13",
+    "The following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 31.322,
+  "usage": {
+    "input_tokens": 2111,
+    "output_tokens": 2110,
+    "total_tokens": 4221
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1332,
+      "output_tokens": 215,
+      "total_tokens": 1547,
+      "seconds": 0.869,
+      "started_at": 26.146
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 779,
+      "output_tokens": 1895,
+      "total_tokens": 2674,
+      "seconds": 4.3,
+      "started_at": 27.016
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple's diluted EPS grew faster (22.7%) than its net income (19.5%) from FY2024 to FY2025. What explains the gap?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0264, AAPL-10-K-FY2025-0265, AAPL-10-K-FY2025-0343",
+      "note": "2 of 6 relevant (mean relevance 0.33); 0 of 4 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.096,
+      "latency_s": 26.05,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1332,
+        "output": 215,
+        "total": 1547
+      },
+      "started_at": 26.146,
+      "latency_s": 0.869,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 779,
+        "output": 1895,
+        "total": 2674
+      },
+      "started_at": 27.016,
+      "latency_s": 4.3,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 8.572192513368986,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 7,
+    "reason": "The answer includes the key quantitative facts: diluted EPS increase, net income increase, diluted share count drop, and the ~2.6% reduction, and correctly links the share count decline to higher EPS growth. However, it omits the reference's required explanation that the reduction was driven by Apple's share repurchase program and the specific $90.711\u202fbillion buyback amount. Missing this required fact lowers the score.",
+    "confidence": 0.93,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input has two parts: (1) stating the EPS and net income growth percentages, and (2) asking why EPS grew faster. The output correctly reports the 22.7% EPS increase and 19.5% net\u2011income increase using the source data, and it explains the gap by noting the reduction in diluted shares (share\u2011repurchase effect), which matches the reference explanation. Both parts are fully addressed.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific numeric claims (EPS values, net income, diluted share counts, percentage changes) are directly present in the source table or can be precisely calculated from it, and the explanation that the share\u2011count decline amplified EPS growth is a logical inference supported by those numbers.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 7,
+    "reason": "The retrieved material includes the diluted share counts for FY2024 and FY2025, showing a ~2.6% reduction in diluted shares, which can explain why EPS grew faster than net income. However, it does not provide the explicit explanation of the share repurchase program or the buyback amount, which would fully answer the question.",
+    "confidence": 0.85
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "c08f2400bdf6",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

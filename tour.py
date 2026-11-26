@@ -83,8 +83,9 @@ def _pct(new, old):
 
 
 def _clean_diff(lines):
-    """Config diff lines without the empty-settings artefact older runs recorded."""
-    return [ln for ln in lines or [] if not ln.endswith("{} -> (unset)") and not ln.startswith("settings: {}")]
+    """Config diff lines without the empty-settings artefact older runs recorded (shared with overview.py)."""
+    import overview
+    return overview.real_changes(lines)
 
 
 def _runs(runs_dir, target):

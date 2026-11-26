@@ -402,7 +402,7 @@ has its own rate limiter (it is a separate process), so its calls are not in the
 
 A read-only copy of the dashboard runs with `DEMO_MODE=1`: [live demo](https://agent-reliability-framework.onrender.com) (free hosting: the first load after a quiet spell can take about a minute).
 
-- It reads only `demo_data/`, a committed snapshot of the runs behind the truth tests (smoke, baseline, A/A, exp_01), the summarizer run, baselines, noise bands, evidence, and (`demo_data/config/`) the prompt, tool-description and scenario files those runs used. Rebuild it with `python make_demo_data.py` (0 API calls).
+- It reads only `demo_data/`, a committed snapshot of the runs behind the truth tests (smoke, baseline, A/A, exp_01), the summarizer run, baselines, noise bands, evidence, and (`demo_data/config/`) the prompt, tool-description and scenario files those runs used. Rebuild it with `python make_demo_data.py` (0 API calls). To update the live site after new runs: `python publish.py` refreshes the snapshot, shows what changed, and (after you say yes) commits only `demo_data/` and pushes. On master Render redeploys; on a branch, merge a pull request into master. The site can't run evaluations itself: the systems under test, the API keys and hours-long runs stay on your machine, so it shows copies of your real run files.
 - The Ask box serves only the recorded answers to the suggestion cards (`demo_data/ask_cache.json`, made with `python make_demo_data.py --ask`: one Groq call per card, asks first; `--redo invented` re-records one card). Every recorded answer was checked against the data before it was committed; one that was wrong is withheld (marked in the cache), so its card is not shown. Any other question gets a "read-only demo" message; no LLM is ever called and no key is configured.
 - The Track 1 tab is hidden (its judged traces aren't in the snapshot; `/track1` redirects to `/`); exp_01 tells the same strong-vs-weak story with paired stats.
 - Approval decisions are disabled; every page shows a "Demo: recorded results, read-only" banner.
@@ -475,6 +475,7 @@ export_finetune.py                  train-split fine-tuning export with leakage 
 app.py / templates/                 dashboards: / overview, /tour, /experiments, /evidence, /systems, /approvals, /track1
 overview.py / ask_context.py        overview + evidence + systems data; the Ask box context (no LLM imports)
 make_demo_data.py / demo_data/      the DEMO_MODE=1 snapshot (+ recorded Ask answers) for the live demo
+publish.py                          refresh demo_data/ and commit + push it (updates the live site)
 tests/                              offline tests (python tests/test_<name>.py; all: python tests/run_all.py)
 .github/workflows/                  CI: tests.yml (all offline tests, every push), regression-check.yml (Track 1), experiment-check.yml (Track 2)
 ```

@@ -1,0 +1,153 @@
+{
+  "scenario_id": "fdd_q06",
+  "question": "How much revenue did the iPhone generate in FY2025?",
+  "category": "numeric_lookup",
+  "answer": "The iPhone generated $209,586 million in FY2025 [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "Note 2 - Revenue\nThe following table shows disaggregated net sales, as well as the portion of total net sales that was previously deferred, for 2025, 2024 and 2023 (in millions):\n2025 | 2024 | 2023\niPhone | $209,586 | $201,183 | $200,583\nMac | 33,708 | 29,984 | 29,357\niPad | 28,023 | 26,694 | 28,300\nWearables, Home and Accessories | 35,686 | 37,005 | 39,845\nServices (1) | 109,158 | 96,169 | 85,200\nTotal net sales | $416,161 | $391,035 | $383,285\nPortion of total net sales that was included in deferred revenue as of the beginning of the period | $8,229 | $7,728 | $8,169",
+    "iPhone, fiscal year 2025: $209,586 million (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 16.692,
+  "usage": {
+    "input_tokens": 1812,
+    "output_tokens": 1382,
+    "total_tokens": 3194
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1067,
+      "output_tokens": 156,
+      "total_tokens": 1223,
+      "seconds": 0.594,
+      "started_at": 13.038
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 745,
+      "output_tokens": 1226,
+      "total_tokens": 1971,
+      "seconds": 3.055,
+      "started_at": 13.633
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How much revenue did the iPhone generate in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263",
+      "note": "1 of 3 relevant (mean relevance 0.33); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.024,
+      "latency_s": 13.014,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1067,
+        "output": 156,
+        "total": 1223
+      },
+      "started_at": 13.038,
+      "latency_s": 0.594,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 745,
+        "output": 1226,
+        "total": 1971
+      },
+      "started_at": 13.633,
+      "latency_s": 3.055,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The output correctly states the iPhone revenue as $209,586 million, which is equivalent to $209,586,000,000 (~$209.6\u202fbillion) as required. No contradictory or missing facts are present.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The only input part asks for iPhone FY2025 revenue. The output provides $209,586 million, matching the source table and the reference ($209,586,000,000). The answer is complete and correctly cited.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The output states that iPhone generated $209,586\u202fmillion in FY2025, which matches the exact figure provided in the source material (both the table and the explicit line). No additional or contradictory information is present, so the claim is fully supported.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved material includes a table and a statement that iPhone net sales for fiscal year 2025 were $209,586 million, which directly answers the question and matches the reference output.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "30940a83be59",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

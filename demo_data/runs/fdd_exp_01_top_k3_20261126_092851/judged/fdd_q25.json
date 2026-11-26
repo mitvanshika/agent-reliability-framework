@@ -1,0 +1,150 @@
+{
+  "scenario_id": "fdd_q25",
+  "question": "What is Apple's projected revenue for FY2027?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 15.253,
+  "usage": {
+    "input_tokens": 1560,
+    "output_tokens": 246,
+    "total_tokens": 1806
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1198,
+      "output_tokens": 150,
+      "total_tokens": 1348,
+      "seconds": 0.771,
+      "started_at": 14.069
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 362,
+      "output_tokens": 96,
+      "total_tokens": 458,
+      "seconds": 0.41,
+      "started_at": 14.84
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What is Apple's projected revenue for FY2027?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263",
+      "note": "0 of 3 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.005,
+      "latency_s": 14.064,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1198,
+        "output": 150,
+        "total": 1348
+      },
+      "started_at": 14.069,
+      "latency_s": 0.771,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 362,
+        "output": 96,
+        "total": 458
+      },
+      "started_at": 14.84,
+      "latency_s": 0.41,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance",
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The system correctly indicates that the question cannot be answered because the 10-K does not contain forward\u2011looking revenue projections, matching the reference's 'NOT ANSWERABLE' requirement. No contradictory claims are made, and the extra explanation about chunk retrieval does not conflict with the required response.",
+    "confidence": 0.98,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single input part asks for Apple's projected FY2027 revenue. The reference states this is not answerable from a 10-K, and the system correctly responded with no answer, indicating the information is unavailable. This matches the expected handling.",
+    "confidence": 0.98
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The system's output contains no factual claims and correctly states it cannot answer because no source material was provided. This is fully consistent with the given input and source (which is empty), so the response is entirely grounded.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "nothing was retrieved"
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "dde87a01baa3",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

@@ -244,12 +244,23 @@ def evidence_html(name, evidence_dir=EVIDENCE_DIR):
 ROLE_LABELS = {"smoke_test": "smoke test", "aa_test": "A/A re-run"}
 
 
-def run_role(run_id, is_baseline=False):
-    """'approved baseline' / 'A/A re-run' / 'smoke test' / None."""
+def real_changes(config_diff):
+    """A comparison's config diff without the empty-settings artefact older runs recorded."""
+    return [ln for ln in config_diff or [] if not ln.endswith("{} -> (unset)") and not ln.startswith("settings: {}")]
+
+
+def run_role(run_id, is_baseline=False, comparison=None):
+    """'approved baseline' / 'A/A re-run' / 'smoke test' / None. Works for any system: a run compared
+    with its baseline with nothing changed in the config is an A/A re-run, whatever it's called."""
     if is_baseline:
         return "approved baseline"
-    return next((ROLE_LABELS[t["evidence"]] for t in TRUTH_TESTS
-                 if t.get("run") == run_id and t.get("evidence") in ROLE_LABELS), None)
+    named = next((ROLE_LABELS[t["evidence"]] for t in TRUTH_TESTS
+                  if t.get("run") == run_id and t.get("evidence") in ROLE_LABELS), None)
+    if named:
+        return named
+    if comparison and "config_diff" in comparison and not real_changes(comparison.get("config_diff")):
+        return "A/A re-run"
+    return None
 
 
 TRACK1_TARGETS = ("strong", "weak")   # run_suite.py / pipeline.py: compared with each other, no baseline file

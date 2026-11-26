@@ -1,0 +1,177 @@
+{
+  "scenario_id": "fdd_q29",
+  "question": "What is Apple's estimate of its total addressable market size for the next 5 years?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 104.957,
+  "usage": {
+    "input_tokens": 3581,
+    "output_tokens": 594,
+    "total_tokens": 4175
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1592,
+      "output_tokens": 229,
+      "total_tokens": 1821,
+      "seconds": 0.713,
+      "started_at": 17.658
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 370,
+      "output_tokens": 124,
+      "total_tokens": 494,
+      "seconds": 0.462,
+      "started_at": 18.371
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1619,
+      "output_tokens": 241,
+      "total_tokens": 1860,
+      "seconds": 0.765,
+      "started_at": 104.187
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What is Apple's estimate of its total addressable market size for the next 5 years?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0164, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263, AAPL-10-K-FY2025-0320",
+      "note": "0 of 6 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.007,
+      "latency_s": 17.65,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1592,
+        "output": 229,
+        "total": 1821
+      },
+      "started_at": 17.658,
+      "latency_s": 0.713,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 370,
+        "output": 124,
+        "total": 494
+      },
+      "started_at": 18.371,
+      "latency_s": 0.462,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1619,
+        "output": 241,
+        "total": 1860
+      },
+      "started_at": 104.187,
+      "latency_s": 0.765,
+      "error": null,
+      "index": 3
+    }
+  ],
+  "final_score": 10.000000000000002,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The system correctly indicated that no answer is available, matching the reference that the question is not answerable from the 10‑K. It did not provide any forward‑looking market estimate, nor contradict the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single question. The correct response is that the 10-K does not provide such forward‑looking market size estimates. The system's output indicates it cannot answer because no relevant information was found, which aligns with the reference answer. Hence the sole part is handled completely.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The system's output contains no factual claims; it correctly states that no answer can be provided because no source material was given. This aligns with the guideline that an honest inability to answer is acceptable, so the output is fully grounded.",
+    "confidence": 0.98
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "nothing was retrieved"
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "717f7ba491a7",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "generic_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

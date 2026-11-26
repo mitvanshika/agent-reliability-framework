@@ -1,0 +1,153 @@
+{
+  "scenario_id": "fdd_q03",
+  "question": "What were Apple's total liabilities at the end of FY2025?",
+  "category": "numeric_lookup",
+  "answer": "$285,508 million [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "CONSOLIDATED BALANCE SHEETS\n(In millions, except number of shares, which are reflected in thousands, and par value)\nSeptember 27, | September 28,\n2025 | 2024\nNon-current liabilities:\nTerm debt | 78,328 | 85,750\nOther non-current liabilities | 41,549 | 45,888\nTotal non-current liabilities | 119,877 | 131,638\nTotal liabilities | 285,508 | 308,030\nCommitments and contingencies\nShareholders\u2019 equity:\nCommon stock and additional paid-in capital, $0.00001 par value: 50,400,000 shares authorized; 14,773,260 and 15,116,786 shares issued and outstanding, respectively | 93,568 | 83,276\nAccumulated deficit | (14,264) | (19,154)\nAccumulated other comprehensive loss | (5,571) | (7,172)\nTotal shareholders\u2019 equity | 73,733 | 56,950\nTotal liabilities and shareholders\u2019 equity | $359,241 | $364,980",
+    "Total liabilities, fiscal year 2025: $285,508 million (from Apple's balance sheet)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 30.591,
+  "usage": {
+    "input_tokens": 2404,
+    "output_tokens": 1211,
+    "total_tokens": 3615
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1629,
+      "output_tokens": 419,
+      "total_tokens": 2048,
+      "seconds": 1.082,
+      "started_at": 27.356
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 775,
+      "output_tokens": 792,
+      "total_tokens": 1567,
+      "seconds": 2.148,
+      "started_at": 28.438
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What were Apple's total liabilities at the end of FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0164, AAPL-10-K-FY2025-0228, AAPL-10-K-FY2025-0229, AAPL-10-K-FY2025-0283, AAPL-10-K-FY2025-0291, AAPL-10-K-FY2025-0343",
+      "note": "1 of 6 relevant (mean relevance 0.23); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.033,
+      "latency_s": 27.323,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1629,
+        "output": 419,
+        "total": 2048
+      },
+      "started_at": 27.356,
+      "latency_s": 1.082,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 775,
+        "output": 792,
+        "total": 1567
+      },
+      "started_at": 28.438,
+      "latency_s": 2.148,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The system output provides the exact total liabilities value ($285,508 million), which is equivalent to the reference $285,508,000,000. No contradictory or missing information is present, and the citation does not affect correctness.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single request for Apple's total liabilities at the end of FY2025. The system's output provides \"$285,508 million\", which matches the source material (total liabilities = 285,508 million) and is equivalent to the reference answer of $285.508\u202fbillion. Thus the request is fully satisfied.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The answer provides the exact total liabilities figure ($285,508 million) which is directly stated in the provided balance sheet data for FY2025. No additional or contradictory information is present, and the citation indicates the source. All specific claims are fully supported by the source material.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved snippet includes the consolidated balance sheet showing \"Total liabilities | 285,508\" for FY2025, directly answering the question about Apple's total liabilities at the end of FY2025.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "2d2d04e1003d",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

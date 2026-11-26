@@ -1,0 +1,92 @@
+{
+  "scenario_id": "fdd_q01",
+  "question": "What was Apple's net income for FY2025?",
+  "category": "numeric_lookup",
+  "answer": "$112,010 million [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "Net income, fiscal year 2025: $112,010 million (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 79.862,
+  "usage": {
+    "input_tokens": 1743,
+    "output_tokens": 394,
+    "total_tokens": 2137
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1221,
+      "output_tokens": 154,
+      "total_tokens": 1375,
+      "seconds": 0.748,
+      "started_at": 78.05
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 522,
+      "output_tokens": 240,
+      "total_tokens": 762,
+      "seconds": 0.788,
+      "started_at": 78.799
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What was Apple's net income for FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263",
+      "note": "0 of 3 relevant (mean relevance 0.00); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 9.949,
+      "latency_s": 68.086,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1221,
+        "output": 154,
+        "total": 1375
+      },
+      "started_at": 78.05,
+      "latency_s": 0.748,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 522,
+        "output": 240,
+        "total": 762
+      },
+      "started_at": 78.799,
+      "latency_s": 0.788,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

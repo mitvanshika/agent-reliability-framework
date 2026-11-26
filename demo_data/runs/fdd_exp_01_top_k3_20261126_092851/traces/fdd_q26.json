@@ -1,0 +1,155 @@
+{
+  "scenario_id": "fdd_q26",
+  "question": "How many physical iPhone units did Apple sell in FY2025?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 2 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 32.254,
+  "usage": {
+    "input_tokens": 2722,
+    "output_tokens": 355,
+    "total_tokens": 3077
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1089,
+      "output_tokens": 146,
+      "total_tokens": 1235,
+      "seconds": 0.681,
+      "started_at": 15.0
+    },
+    {
+      "label": null,
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 199,
+      "output_tokens": 60,
+      "total_tokens": 259,
+      "seconds": 0.495,
+      "started_at": 15.681
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1068,
+      "output_tokens": 126,
+      "total_tokens": 1194,
+      "seconds": 0.543,
+      "started_at": 31.4
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 366,
+      "output_tokens": 23,
+      "total_tokens": 389,
+      "seconds": 0.307,
+      "started_at": 31.943
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How many physical iPhone units did Apple sell in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0262",
+      "note": "0 of 3 relevant (mean relevance 0.20); 0 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.061,
+      "latency_s": 14.939,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1089,
+        "output": 146,
+        "total": 1235
+      },
+      "started_at": 15.0,
+      "latency_s": 0.681,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "LLM call",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 199,
+        "output": 60,
+        "total": 259
+      },
+      "started_at": 15.681,
+      "latency_s": 0.495,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple iPhone units shipped FY2025 2025 quarterly report units sold",
+        "strategy": "rewrite"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0262",
+      "note": "0 of 3 relevant (mean relevance 0.20); stagnated: essentially the same chunks as the attempt before; 0 of 1 database facts relevant",
+      "retrieval_attempt": 2,
+      "started_at": 16.176,
+      "latency_s": 15.224,
+      "error": null,
+      "index": 3
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1068,
+        "output": 126,
+        "total": 1194
+      },
+      "started_at": 31.4,
+      "latency_s": 0.543,
+      "error": null,
+      "index": 4
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 366,
+        "output": 23,
+        "total": 389
+      },
+      "started_at": 31.943,
+      "latency_s": 0.307,
+      "error": null,
+      "index": 5
+    }
+  ]
+}

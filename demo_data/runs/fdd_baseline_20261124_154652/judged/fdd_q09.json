@@ -1,0 +1,157 @@
+{
+  "scenario_id": "fdd_q09",
+  "question": "What risks does Apple disclose related to tariffs and international trade restrictions?",
+  "category": "narrative_comprehension",
+  "answer": "Apple warns that tariffs and other international trade restrictions can materially adversely affect its business and supply chain, especially in regions where it generates significant revenue or has major supply\u2011chain operations [1]. Such restrictions can increase the cost or limit the availability of Apple\u2019s products, components, rare earths and other raw materials, and may require the company to change suppliers, restructure relationships, or cease offering certain products or services, which can be expensive, time\u2011consuming and disruptive [4][6]. Tariffs and trade measures can be announced with little or no advance notice, creating uncertainty and making mitigation difficult, and can lead to higher product prices, reduced consumer spending and negative sentiment [3][2]. The imposition of new or increased tariffs and retaliatory actions can put downward pressure on net sales, gross margins and overall financial results [2][6].",
+  "tools_used": [],
+  "tool_outputs": [
+    "The Company has a large, global business with sales outside the U.S. representing a majority of the Company\u2019s total net sales, and the Company believes that it generally benefits from growth in international trade. A significant majority of the Company\u2019s manufacturing is performed in whole or in part by outsourcing partners located primarily in China mainland, India, Japan, South Korea, Taiwan and Vietnam, in addition to sourcing from partners and facilities located in the U.S. Restrictions on international trade, such as tariffs and other controls on imports or exports of goods, technology or data, can materially adversely affect the Company\u2019s business and supply chain. The impact can be particularly significant if these restrictive measures apply to countries and regions where the Company derives a significant portion of its revenues and/or has significant supply chain operations.",
+    "The Company\u2019s gross margins vary significantly across its products, services, geographic segments and distribution channels and can change over time. The Company\u2019s net sales and gross margins are subject to volatility and downward pressure due to a variety of factors, including: continued industry-wide global product pricing pressures and product pricing actions that the Company may take in response to such pressures; increased competition; the Company\u2019s ability to effectively stimulate demand for certain of its products and services; compressed product life cycles; supply shortages; potential increases in the cost of components, outside manufacturing services, and developing, acquiring and delivering content for the Company\u2019s services; the Company\u2019s ability to manage product quality and warranty costs effectively; shifts in the mix of products and services, or in the geographic, currency or channel mix, including to the extent that regulatory changes require the Company to modify its product and service offerings; fluctuations in foreign exchange rates; inflation and other macroeconomic pressures; the imposition of new or increased tariffs and other trade restrictions, their overall magnitude and duration, and retaliatory actions in response; and the introduction of new products or services, including new products or services with lower profit margins.",
+    "Trade and other international disputes can also have an adverse impact on the overall macroeconomic environment and result in shifts and reductions in consumer spending and negative consumer sentiment for the Company\u2019s products and services, all of which can further adversely affect the Company\u2019s business and results of operations. Such restrictions can be announced with little or no advance notice, which can create uncertainty, and the Company may not be able to effectively mitigate any or all adverse impacts from such measures. Global supply chains can be highly concentrated, and an escalation of geopolitical tensions or conflict could result in significant disruptions.",
+    "Restrictive measures can increase the cost or limit the availability of the Company\u2019s products and the components and rare earths and other raw materials that go into them. Restrictive measures can also require the Company to change suppliers, restructure business relationships and operations, refrain from offering and distributing or cease to offer and distribute affected products, services and third-party applications to its customers, and increase the prices of its products and services. Changing the Company\u2019s business and supply chain in accordance with new or changed restrictions on international trade can be expensive, time-consuming and disruptive to the Company\u2019s business and results of operations.",
+    "Although most components essential to the Company\u2019s business are generally available from multiple sources, certain components are currently obtained from single or limited sources. The Company also competes for various components with other participants in the markets for smartphones, personal computers, tablets, wearables and accessories. Therefore, many components used by the Company, including those that are available from multiple sources, are at times subject to industry-wide shortage and significant commodity pricing fluctuations. Restrictions on international trade can increase the cost or limit the availability of the Company\u2019s products and the components and rare earths and other raw materials that go into them.",
+    "Tariffs and other measures that are applied to the Company\u2019s products or their components can have a material adverse impact on the Company\u2019s business, results of operations and financial condition, including impacting the Company\u2019s supply chain, the availability of rare earths and other raw materials and components, pricing and gross margin. The ultimate impact remains uncertain and will depend on several factors, including whether additional or incremental U.S. Tariffs or other measures are announced or imposed, to what extent other countries implement tariffs or other retaliatory measures in response, and the overall magnitude and duration of these measures."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 27.339,
+  "usage": {
+    "input_tokens": 2935,
+    "output_tokens": 2491,
+    "total_tokens": 5426
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1500,
+      "output_tokens": 303,
+      "total_tokens": 1803,
+      "seconds": 0.909,
+      "started_at": 20.947
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 1435,
+      "output_tokens": 2188,
+      "total_tokens": 3623,
+      "seconds": 5.478,
+      "started_at": 21.856
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What risks does Apple disclose related to tariffs and international trade restrictions?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0015, AAPL-10-K-FY2025-0034, AAPL-10-K-FY2025-0035, AAPL-10-K-FY2025-0036, AAPL-10-K-FY2025-0126, AAPL-10-K-FY2025-0174",
+      "note": "6 of 6 relevant (mean relevance 1.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.008,
+      "latency_s": 20.939,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1500,
+        "output": 303,
+        "total": 1803
+      },
+      "started_at": 20.947,
+      "latency_s": 0.909,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1435,
+        "output": 2188,
+        "total": 3623
+      },
+      "started_at": 21.856,
+      "latency_s": 5.478,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 6.975999999999999,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 2,
+    "reason": "The answer omits several critical facts from the reference: it does not mention the new U.S. tariffs, the specific countries (China, India, Japan, South Korea, Taiwan, Vietnam, EU), or the Q2 FY2025 timing. While it includes some general impacts (cost increase, limited availability, supplier restructuring, retaliatory actions), it lacks the required specificity and therefore fails to meet the reference requirements.",
+    "confidence": 0.97,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 8,
+    "reason": "The answer addresses the main risks Apple discloses about tariffs and trade restrictions: adverse impact on business and supply chain, increased costs and limited availability of products/components, need to change suppliers or restructure, uncertainty from sudden measures, higher prices and reduced consumer demand, and pressure on margins and financial results. These correspond to six of the identified sub\u2011parts. However, it omits the specific reference to new U.S. tariffs beginning in Q2 FY2025 and the list of affected countries, as well as the mention of retaliatory tariffs from other nations, which are part of the reference answer. Thus 6 of 8 parts are fully covered, yielding a score of about 75% (rounded to 8).",
+    "confidence": 0.86
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific statements in the answer are directly supported by the provided source excerpts. The claims about material adverse effects of tariffs, regional impact, cost and availability issues, need to change suppliers or cease offerings, uncertainty and lack of notice, consumer spending and sentiment effects, and downward pressure on net sales and gross margins are all found in the source material. No unsupported facts are introduced.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 8,
+    "reason": "The excerpts include several passages where Apple outlines how tariffs and trade restrictions can materially adversely affect its business, supply chain, component availability, costs, pricing, and margins, directly addressing the requested risk disclosures. Although specific FY2025 tariff timing isn\u2019t mentioned, the core risk information is present.",
+    "confidence": 0.93
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "68ba1e00b353",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

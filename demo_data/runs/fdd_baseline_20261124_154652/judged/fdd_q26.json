@@ -1,0 +1,175 @@
+{
+  "scenario_id": "fdd_q26",
+  "question": "How many physical iPhone units did Apple sell in FY2025?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 77.223,
+  "usage": {
+    "input_tokens": 3010,
+    "output_tokens": 540,
+    "total_tokens": 3550
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1431,
+      "output_tokens": 232,
+      "total_tokens": 1663,
+      "seconds": 0.891,
+      "started_at": 15.999
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 366,
+      "output_tokens": 95,
+      "total_tokens": 461,
+      "seconds": 0.509,
+      "started_at": 16.891
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1213,
+      "output_tokens": 213,
+      "total_tokens": 1426,
+      "seconds": 0.764,
+      "started_at": 76.454
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How many physical iPhone units did Apple sell in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263",
+      "note": "0 of 6 relevant (mean relevance 0.00); 0 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.038,
+      "latency_s": 15.961,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1431,
+        "output": 232,
+        "total": 1663
+      },
+      "started_at": 15.999,
+      "latency_s": 0.891,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 366,
+        "output": 95,
+        "total": 461
+      },
+      "started_at": 16.891,
+      "latency_s": 0.509,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1213,
+        "output": 213,
+        "total": 1426
+      },
+      "started_at": 76.454,
+      "latency_s": 0.764,
+      "error": null,
+      "index": 3
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "context_relevance",
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The system correctly indicates that the question cannot be answered because the 10-K does not provide unit sales figures, matching the reference's 'NOT ANSWERABLE' statement and not adding any contradictory information.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single request for iPhone unit sales in FY2025. The reference states this information is not available in the 10-K, and the system's output correctly reports no answer found, aligning with the reference. Hence the part is handled completely.",
+    "confidence": 0.98
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The output makes no factual claim about iPhone unit sales; it simply states that no relevant source material was found, which is accurate given the absence of any source. Therefore, the response is fully grounded.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "na": true,
+    "reason": "nothing was retrieved"
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "f2e9b399830a",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "scenario_id": "fdd_q11",
+  "question": "What risk does Apple disclose regarding natural disasters and its facilities?",
+  "category": "narrative_comprehension",
+  "answer": "Apple discloses that many of its operations, retail stores and facilities, as well as those of its suppliers and contract manufacturers, are located in areas prone to earthquakes and other natural disasters, which creates a risk of interruption to its facilities and business operations [1].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Many of the Company\u2019s operations, retail stores and facilities, as well as critical business operations of the Company\u2019s suppliers and contract manufacturers, are in locations that are prone to earthquakes and other natural disasters. Global climate change is resulting in certain types of natural disasters and extreme weather occurring more frequently or with more intense effects. In addition, the Company\u2019s and its suppliers\u2019 operations, retail stores and facilities are subject to the risk of interruption by fire, power shortages, nuclear power plant accidents and other industrial accidents, terrorist attacks and other hostile acts, ransomware and other cybersecurity attacks, labor disputes, public health issues and other events beyond the Company\u2019s control.",
+    "The Company and its global supply chain are dependent on complex information technology systems and are exposed to information technology system failures or network disruptions caused by natural disasters, accidents, power disruptions, telecommunications failures, acts of terrorism or war, computer viruses, physical or electronic break-ins, ransomware or other cybersecurity incidents, or other events or disruptions. System upgrades, redundancy and other continuity measures may be ineffective or inadequate, and the Company\u2019s or its vendors\u2019 business continuity and disaster recovery planning may not be sufficient for all eventualities. Such failures or disruptions can adversely impact the Company\u2019s business by, among other things, preventing access to the Company\u2019s online services, interfering with customer transactions or impeding the manufacturing and shipping of the Company\u2019s products.",
+    "The Company\u2019s business can be impacted by political events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions.\n\nPolitical events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions can have a material adverse effect on the Company and its customers, employees, suppliers, contract manufacturers, logistics providers, distributors, cellular network carriers and other channel partners."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 16.996,
+  "usage": {
+    "input_tokens": 1893,
+    "output_tokens": 1021,
+    "total_tokens": 2914
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 979,
+      "output_tokens": 255,
+      "total_tokens": 1234,
+      "seconds": 0.888,
+      "started_at": 14.263
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 914,
+      "output_tokens": 766,
+      "total_tokens": 1680,
+      "seconds": 1.839,
+      "started_at": 15.152
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What risk does Apple disclose regarding natural disasters and its facilities?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0033, AAPL-10-K-FY2025-0039, AAPL-10-K-FY2025-0083",
+      "note": "3 of 3 relevant (mean relevance 0.67)",
+      "retrieval_attempt": 1,
+      "started_at": 0.009,
+      "latency_s": 14.252,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 979,
+        "output": 255,
+        "total": 1234
+      },
+      "started_at": 14.263,
+      "latency_s": 0.888,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 914,
+        "output": 766,
+        "total": 1680
+      },
+      "started_at": 15.152,
+      "latency_s": 1.839,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 9.02061855670103,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 6,
+    "reason": "The answer correctly states that many of Apple's operations, retail stores, and supplier/contract manufacturer facilities are in areas prone to earthquakes and other natural disasters, matching the first part of the reference. However, it omits the second required fact that climate change is increasing the frequency and intensity of extreme weather, which could disrupt operations. No contradictory claims are present, but the missing fact reduces the score.",
+    "confidence": 0.95,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single request asking for the risk Apple discloses about natural disasters and its facilities. The system's output correctly states that Apple discloses many of its operations, retail stores, and supplier/contract manufacturer facilities are located in areas prone to earthquakes and other natural disasters, creating a risk of interruption. This aligns with the source material and the reference answer, fully satisfying the request.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "The output restates the source material: the source explicitly says many of Apple\u2019s operations, retail stores, facilities, and those of its suppliers and contract manufacturers are in locations prone to earthquakes and other natural disasters, implying a risk of interruption. No extra unsupported details are added.",
+    "confidence": 0.98
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved excerpts directly mention Apple\u2019s risk that many of its operations, retail stores, and supplier facilities are located in areas prone to earthquakes and other natural disasters, and that climate change may increase the frequency and intensity of such events, potentially disrupting operations. This fully addresses the query about the disclosed natural disaster risk.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "6a9d86d979aa",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

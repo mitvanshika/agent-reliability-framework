@@ -1,0 +1,94 @@
+{
+  "scenario_id": "fdd_q12",
+  "question": "Why did Wearables, Home and Accessories net sales decrease in FY2025?",
+  "category": "narrative_comprehension",
+  "answer": "Wearables, Home and Accessories net sales fell because lower net sales of Accessories and Wearables reduced overall sales, leading to a 4% decline from $37,005 million in 2024 to $35,686 million in 2025 [1][2].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Wearables, Home and Accessories net sales decreased during 2025 compared to 2024 primarily due to lower net sales of Accessories and Wearables.",
+    "Products and Services Performance\nThe following table shows net sales by category for 2025, 2024 and 2023 (dollars in millions):\n2025 | Change | 2024 | Change | 2023\niPhone | $209,586 | 4% | $201,183 | —% | $200,583\nMac | 33,708 | 12% | 29,984 | 2% | 29,357\niPad | 28,023 | 5% | 26,694 | (6)% | 28,300\nWearables, Home and Accessories | 35,686 | (4)% | 37,005 | (7)% | 39,845\nServices (1) | 109,158 | 14% | 96,169 | 13% | 85,200\nTotal net sales | $416,161 | 6% | $391,035 | 2% | $383,285",
+    "Note 2 - Revenue\nThe following table shows disaggregated net sales, as well as the portion of total net sales that was previously deferred, for 2025, 2024 and 2023 (in millions):\n2025 | 2024 | 2023\niPhone | $209,586 | $201,183 | $200,583\nMac | 33,708 | 29,984 | 29,357\niPad | 28,023 | 26,694 | 28,300\nWearables, Home and Accessories | 35,686 | 37,005 | 39,845\nServices (1) | 109,158 | 96,169 | 85,200\nTotal net sales | $416,161 | $391,035 | $383,285\nPortion of total net sales that was included in deferred revenue as of the beginning of the period | $8,229 | $7,728 | $8,169"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 19.867,
+  "usage": {
+    "input_tokens": 2062,
+    "output_tokens": 837,
+    "total_tokens": 2899
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1077,
+      "output_tokens": 174,
+      "total_tokens": 1251,
+      "seconds": 0.753,
+      "started_at": 17.37
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 985,
+      "output_tokens": 663,
+      "total_tokens": 1648,
+      "seconds": 1.738,
+      "started_at": 18.123
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Why did Wearables, Home and Accessories net sales decrease in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0187, AAPL-10-K-FY2025-0262",
+      "note": "3 of 3 relevant (mean relevance 0.87); 0 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.04,
+      "latency_s": 17.33,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1077,
+        "output": 174,
+        "total": 1251
+      },
+      "started_at": 17.37,
+      "latency_s": 0.753,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 985,
+        "output": 663,
+        "total": 1648
+      },
+      "started_at": 18.123,
+      "latency_s": 1.738,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

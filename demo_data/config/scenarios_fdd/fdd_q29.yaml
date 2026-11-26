@@ -1,0 +1,7 @@
+id: fdd_q29
+question: What is Apple's estimate of its total addressable market size for the next 5 years?
+category: no_answer
+expected_answer: NOT ANSWERABLE -- 10-K filings do not include forward-looking total addressable market forecasts.
+difficulty: hard
+reference_source: N/A
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #29 (sha256 c3ba6eb2ac0a)'

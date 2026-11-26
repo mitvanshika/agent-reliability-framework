@@ -340,7 +340,7 @@ def _run_row(run_id, baselines):
         "verdict": comparison.get("verdict"),
         "suite": meta.get("suite") or "main",
         "is_baseline": is_baseline,
-        "role": overview.run_role(run_id, is_baseline),
+        "role": overview.run_role(run_id, is_baseline, comparison),
     }
 
 

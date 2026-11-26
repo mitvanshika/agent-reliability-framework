@@ -1,0 +1,152 @@
+{
+  "experiment": "fdd_baseline",
+  "description": "Financial DD exactly as its own config.yaml sets it: no overrides",
+  "experiment_file": "experiments/fdd_baseline.yaml",
+  "parent": null,
+  "chain": [
+    "fdd_baseline"
+  ],
+  "changes_vs_parent": [],
+  "resolved_config": {
+    "target": "financial_dd",
+    "settings": {}
+  },
+  "target_function": "adapters.financial_dd.run",
+  "accepts_settings": true,
+  "git": {
+    "commit": "dafb6f796ca28ea6f311585b6754fb91af7d7138",
+    "dirty": false,
+    "changed_files": 0
+  },
+  "timestamp": "20261124_135240",
+  "python": "3.11.9",
+  "scenario_ids": [
+    "fdd_q01",
+    "fdd_q02",
+    "fdd_q03",
+    "fdd_q04",
+    "fdd_q05",
+    "fdd_q06",
+    "fdd_q07",
+    "fdd_q08",
+    "fdd_q09",
+    "fdd_q10",
+    "fdd_q11",
+    "fdd_q12",
+    "fdd_q13",
+    "fdd_q14",
+    "fdd_q15",
+    "fdd_q16",
+    "fdd_q17",
+    "fdd_q18",
+    "fdd_q19",
+    "fdd_q20",
+    "fdd_q21",
+    "fdd_q22",
+    "fdd_q23",
+    "fdd_q24",
+    "fdd_q25",
+    "fdd_q26",
+    "fdd_q27",
+    "fdd_q28",
+    "fdd_q29"
+  ],
+  "scenario_dir": "scenarios_fdd",
+  "suite": "main",
+  "status": "complete",
+  "system": {
+    "system": "financial_dd",
+    "git": {
+      "commit": "acf96edd22bc2d2ac4826e946a3978d391837b1e",
+      "dirty": false,
+      "changed_files": [],
+      "untracked_files": 0
+    },
+    "config_hash": "2af67ac392a3",
+    "effective_config": {
+      "company": {
+        "ticker": "AAPL",
+        "form": "10-K",
+        "year": 2025,
+        "slug": "apple",
+        "name": "Apple Inc."
+      },
+      "chunking": {
+        "target_chars": 900,
+        "overlap_chars": 150,
+        "min_chars": 120,
+        "max_chars": 2000,
+        "table_max_chars": 1000,
+        "exclude_items": [
+          "Item 15"
+        ]
+      },
+      "embedding": {
+        "model": "BAAI/bge-small-en-v1.5",
+        "dim": 384,
+        "batch_size": 32,
+        "query_prefix": "Represent this sentence for searching relevant passages: "
+      },
+      "vector_store": {
+        "collection": "filings",
+        "distance": "Cosine"
+      },
+      "retrieval": {
+        "vector_top_k": 30,
+        "bm25_top_k": 30,
+        "rrf_k": 60,
+        "rerank_candidates": 25,
+        "final_top_k": 6,
+        "keep_if_both_top": 5
+      },
+      "reranker": {
+        "model": "BAAI/bge-reranker-large",
+        "batch_size": 16
+      },
+      "self_healing": {
+        "max_attempts": 3,
+        "relevance_threshold": 0.5,
+        "min_relevant_chunks": 2,
+        "strong_chunk_threshold": 0.8,
+        "give_up_below": 0.2,
+        "stagnation_jaccard": 0.9,
+        "batch_grading": true
+      },
+      "generation": {
+        "model": "openai/gpt-oss-120b",
+        "max_tokens": 4000,
+        "effort": "high",
+        "temperature": 0.0,
+        "utility_model": "openai/gpt-oss-20b",
+        "utility_max_tokens": 2000,
+        "utility_effort": "low",
+        "base_url": "https://api.groq.com/openai/v1",
+        "max_retries": 5
+      },
+      "confidence": {
+        "weights": {
+          "hybrid_agreement": 0.3,
+          "rerank_strength": 0.45,
+          "loop_cleanliness": 0.25
+        },
+        "bands": {
+          "high": 0.7,
+          "medium": 0.45
+        }
+      }
+    }
+  },
+  "totals": {
+    "scenarios": 29,
+    "scenarios_with_usage": 29,
+    "input_tokens": 86689,
+    "output_tokens": 46351,
+    "total_tokens": 133040,
+    "latency_mean_s": 48.786,
+    "latency_p95_s": 132.1,
+    "errors": 0,
+    "errors_by_type": {},
+    "estimated_cost_usd": null,
+    "cost_note": "no pricing.yaml: tokens only"
+  }
+}

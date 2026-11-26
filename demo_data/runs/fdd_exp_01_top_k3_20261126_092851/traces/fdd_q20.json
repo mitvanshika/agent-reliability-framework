@@ -1,0 +1,189 @@
+{
+  "scenario_id": "fdd_q20",
+  "question": "Apple's net income dipped from $96,995M in FY2023 to $93,736M in FY2024 before rising sharply to $112,010M in FY2025. What caused the FY2024 dip?",
+  "category": "cross_referencing",
+  "answer": "The FY2024 dip was driven by a sharp rise in the provision for income taxes, which jumped to $29,749 million in FY2024 from $16,741 million in FY2023 – an increase of $13,008 million – largely due to a $10,246 million impact of the State Aid Decision that pushed the effective tax rate up to 24.1% from 14.7% the prior year [S4][S5][2][3].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Provision for Income Taxes and Effective Tax Rate\nThe provision for income taxes for 2025, 2024 and 2023, consisted of the following (in millions):\n2025 | 2024 | 2023\nFederal:\nCurrent | $11,487 | $5,571 | $9,445\nDeferred | (1,804) | (3,080) | (3,644)\nTotal | 9,683 | 2,491 | 5,801\nState:\nCurrent | 1,680 | 1,726 | 1,570\nDeferred | (139) | (298) | (49)\nTotal | 1,541 | 1,428 | 1,521\nForeign:\nCurrent | 8,891 | 25,483 | 8,750\nDeferred | 604 | 347 | 669\nTotal | 9,495 | 25,830 | 9,419\nProvision for income taxes | $20,719 | $29,749 | $16,741",
+    "Provision for Income Taxes and Effective Tax Rate\nA reconciliation of the provision for income taxes to the amount computed by applying the statutory federal income tax rate ( 21 % in 2025, 2024 and 2023) to income before provision for income taxes for 2025, 2024 and 2023 is as follows (dollars in millions):\n2025 | 2024 | 2023\nComputed expected tax | $27,873 | $25,932 | $23,885\nEarnings of foreign subsidiaries | (8,120) | (5,311) | (5,744)\nChange in valuation allowance | 2,091 | — | —\nResearch and development credit, net | (1,049) | (1,397) | (1,212)\nImpact of the State Aid Decision | (486) | 10,246 | —\nOther | 410 | 279 | (188)\nProvision for income taxes | $20,719 | $29,749 | $16,741\nEffective tax rate | 15.6 | % | 24.1 | % | 14.7 | %",
+    "Provision for Income Taxes\nProvision for income taxes, effective tax rate and statutory federal income tax rate for 2025, 2024 and 2023 were as follows (dollars in millions):\n2025 | 2024 | 2023\nProvision for income taxes | $20,719 | $29,749 | $16,741\nEffective tax rate | 15.6 | % | 24.1 | % | 14.7 | %\nStatutory federal income tax rate | 21 | % | 21 | % | 21 | %",
+    "Net income, fiscal year 2024: $93,736 million (from Apple's income statement)",
+    "Operating income, fiscal year 2024: $123,216 million (from Apple's income statement)",
+    "Operating income, fiscal year 2023: $114,301 million (from Apple's income statement)",
+    "Provision for income taxes, fiscal year 2024: $29,749 million (from Apple's income statement)",
+    "Provision for income taxes, fiscal year 2023: $16,741 million (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 130.972,
+  "usage": {
+    "input_tokens": 5669,
+    "output_tokens": 2902,
+    "total_tokens": 8571
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1012,
+      "output_tokens": 192,
+      "total_tokens": 1204,
+      "seconds": 0.816,
+      "started_at": 26.008
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 763,
+      "output_tokens": 851,
+      "total_tokens": 1614,
+      "seconds": 2.251,
+      "started_at": 26.824
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 398,
+      "output_tokens": 202,
+      "total_tokens": 600,
+      "seconds": 0.717,
+      "started_at": 29.075
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 2205,
+      "output_tokens": 437,
+      "total_tokens": 2642,
+      "seconds": 1.127,
+      "started_at": 126.765
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 1291,
+      "output_tokens": 1220,
+      "total_tokens": 2511,
+      "seconds": 3.071,
+      "started_at": 127.893
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple's net income dipped from $96,995M in FY2023 to $93,736M in FY2024 before rising sharply to $112,010M in FY2025. What caused the FY2024 dip?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0225",
+      "note": "1 of 3 relevant (mean relevance 0.27); 1 of 3 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.07,
+      "latency_s": 25.937,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1012,
+        "output": 192,
+        "total": 1204
+      },
+      "started_at": 26.008,
+      "latency_s": 0.816,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 763,
+        "output": 851,
+        "total": 1614
+      },
+      "started_at": 26.824,
+      "latency_s": 2.251,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 398,
+        "output": 202,
+        "total": 600
+      },
+      "started_at": 29.075,
+      "latency_s": 0.717,
+      "error": null,
+      "index": 3
+    },
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Operating income for FY2024 and FY2023 as reported in Apple’s Form 10‑K; Other income and other expenses for FY2024 and FY2023 as reported in Apple’s Form 10‑K; Provision for income taxes for FY2024 and FY2023 as reported in Apple’s Form 10‑K; One‑time items (e.g., impairment charges, restructuring costs, legal settlements) reported in FY2024 as disclosed in Apple’s Form 10‑K",
+        "strategy": "decompose"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0026, AAPL-10-K-FY2025-0165, AAPL-10-K-FY2025-0198, AAPL-10-K-FY2025-0225, AAPL-10-K-FY2025-0295, AAPL-10-K-FY2025-0297, AAPL-10-K-FY2025-0343",
+      "note": "3 of 7 relevant (mean relevance 0.34); split into 4 parts after the first search found no answer",
+      "retrieval_attempt": 2,
+      "started_at": 29.792,
+      "latency_s": 96.973,
+      "error": null,
+      "index": 4
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 2205,
+        "output": 437,
+        "total": 2642
+      },
+      "started_at": 126.765,
+      "latency_s": 1.127,
+      "error": null,
+      "index": 5
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1291,
+        "output": 1220,
+        "total": 2511
+      },
+      "started_at": 127.893,
+      "latency_s": 3.071,
+      "error": null,
+      "index": 6
+    }
+  ]
+}

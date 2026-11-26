@@ -7,6 +7,7 @@ at import time). Data: the committed demo_data/ snapshot, so this runs in CI.
 """
 
 import json
+import glob
 import os
 import shutil
 import subprocess
@@ -97,10 +98,24 @@ def normal_mode():
 
     print("\n[experiments: run roles]")
     roles = {r["run_id"]: r["role"] for r in c.get("/api/experiments/runs").get_json()}
-    ok("role labels: approved baseline / A/A re-run / smoke test, others none", roles == {
-        "baseline_20261106_101856": "approved baseline", "baseline_20261106_111506": "A/A re-run",
-        "baseline_20261106_101645": "smoke test", "exp_01_weak_prompt_20261107_164943": None,
-        "summarizer_baseline_20261109_111741": None}, roles)
+    known = {"baseline_20261106_101856": "approved baseline", "baseline_20261106_111506": "A/A re-run",
+             "baseline_20261106_101645": "smoke test", "exp_01_weak_prompt_20261107_164943": None,
+             "summarizer_baseline_20261109_111741": None}
+    ok("role labels of the store bot's runs: approved baseline / A/A re-run / smoke test, others none",
+       all(roles.get(k, "missing") == v for k, v in known.items()), {k: roles.get(k, "missing") for k in known})
+    # The rule for any system (the snapshot changes with every publish, so no fixed list of runs):
+    import overview  # noqa: E402
+    current = {os.path.basename(str(b.get("run_dir") or "").replace("\\", "/").rstrip("/"))
+               for b in (json.load(open(f, encoding="utf-8")) for f in glob.glob(f"{D}/baselines/*.json"))}
+    want = {}
+    for rid in roles:
+        comp = os.path.join(D, "runs", rid, "comparison.json")
+        comp = json.load(open(comp, encoding="utf-8")) if os.path.isfile(comp) else None
+        want[rid] = overview.run_role(rid, rid in current, comp)
+    ok("every run: baseline -> approved, compared with nothing changed -> A/A re-run (any system)",
+       roles == want, {k: (roles[k], want[k]) for k in roles if roles[k] != want[k]})
+    aa_runs = [rid for rid, r in roles.items() if r == "A/A re-run"]
+    ok("A/A runs found by their comparison, not by name", "baseline_20261106_111506" in aa_runs, aa_runs)
     ok("experiments table renders the role badge", "badge role" in html(c, "/experiments")[1])
 
     print("\n[evidence]")

@@ -1,0 +1,96 @@
+{
+  "scenario_id": "fdd_q13",
+  "question": "Why did Services net sales increase in FY2025?",
+  "category": "narrative_comprehension",
+  "answer": "Services net sales increased in FY2025 because higher net sales from advertising, the App Store, and cloud services drove the growth [1].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Services net sales increased during 2025 compared to 2024 primarily due to higher net sales from advertising, the App Store and cloud services.",
+    "Americas net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone and Services. The weakness in foreign currencies relative to the U.S. dollar had an unfavorable year-over-year impact on Americas net sales during 2025.",
+    "(1) Services net sales include amortization of the deferred value of services bundled in the sales price of certain products.\n\niPhone\n\niPhone net sales increased during 2025 compared to 2024 due to higher net sales of Pro models.",
+    "Rest of Asia Pacific net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and Mac.",
+    "(1) Services net sales include amortization of the deferred value of services bundled in the sales price of certain products.\n\nThe Company’s proportion of net sales by disaggregated revenue source was generally consistent for each reportable segment in Note 13, “Segment Information and Geographic Data” for 2025, 2024 and 2023, except in Greater China, where iPhone revenue represented a moderately higher proportion of net sales.\n\nAs of September 27, 2025 and September 28, 2024, the Company had total deferred revenue of $ 13.7 billion and $ 12.8 billion, respectively. As of September 27, 2025, the Company expects 66 % of total deferred revenue to be realized in less than a year, 23 % within one-to-two years, 9 % within two-to-three years and 2 % in greater than three years."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 26.72,
+  "usage": {
+    "input_tokens": 2020,
+    "output_tokens": 785,
+    "total_tokens": 2805
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1117,
+      "output_tokens": 290,
+      "total_tokens": 1407,
+      "seconds": 1.065,
+      "started_at": 24.01
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 903,
+      "output_tokens": 495,
+      "total_tokens": 1398,
+      "seconds": 1.64,
+      "started_at": 25.076
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Why did Services net sales increase in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0182, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0188, AAPL-10-K-FY2025-0192, AAPL-10-K-FY2025-0263",
+      "note": "5 of 6 relevant (mean relevance 0.63); 0 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.08,
+      "latency_s": 23.93,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1117,
+        "output": 290,
+        "total": 1407
+      },
+      "started_at": 24.01,
+      "latency_s": 1.065,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 903,
+        "output": 495,
+        "total": 1398
+      },
+      "started_at": 25.076,
+      "latency_s": 1.64,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

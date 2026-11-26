@@ -1,0 +1,97 @@
+{
+  "scenario_id": "fdd_q10",
+  "question": "What cybersecurity-related risks does Apple describe in its filing?",
+  "category": "narrative_comprehension",
+  "answer": "Apple notes that its global supply chain and IT systems are exposed to failures or network disruptions caused by computer viruses, ransomware, physical or electronic break‑ins and other cybersecurity incidents, which could prevent access to online services or disrupt manufacturing and shipping [2]. It also warns that its security may be insufficient, leaving it vulnerable to hacking, ransomware attacks, employee error, malfeasance, system errors, faulty password management and social‑engineering schemes that could lead to unauthorized access [4]. The company experiences regular malicious attacks that target the confidentiality, integrity and availability of information, potentially disrupting operations, harming its reputation, attracting litigation, fines or penalties, and these attacks are expected to increase in frequency and sophistication [5]. Additionally, errors, bugs and vulnerabilities in its hardware, software, services or new technologies such as AI could be exploited by third parties, compromising user safety and security [6].",
+  "tools_used": [],
+  "tool_outputs": [
+    "The Company’s enterprise risk management program is designed to identify, assess, and monitor the Company’s business risks, including financial, operational, compliance and reputational risks, and reflects management’s assessment of cybersecurity risks.",
+    "The Company and its global supply chain are dependent on complex information technology systems and are exposed to information technology system failures or network disruptions caused by natural disasters, accidents, power disruptions, telecommunications failures, acts of terrorism or war, computer viruses, physical or electronic break-ins, ransomware or other cybersecurity incidents, or other events or disruptions. System upgrades, redundancy and other continuity measures may be ineffective or inadequate, and the Company’s or its vendors’ business continuity and disaster recovery planning may not be sufficient for all eventualities. Such failures or disruptions can adversely impact the Company’s business by, among other things, preventing access to the Company’s online services, interfering with customer transactions or impeding the manufacturing and shipping of the Company’s products.",
+    "The Audit Committee assists the Board in the oversight and monitoring of cybersecurity matters. The Audit Committee regularly reviews and discusses the Company’s cybersecurity risks with management, including the Company’s Head of Corporate Information Security, its General Counsel and the Heads of Compliance and Business Conduct, Business Assurance, and Internal Audit, and receives updates, as necessary, regarding cybersecurity incidents. The Chair of the Audit Committee regularly reports the substance of such reviews and discussions to the Board, as necessary, and recommends to the Board such actions as the Audit Committee deems appropriate.\n\nFor a discussion of the Company’s cybersecurity-related risks, see Item 1A of this Form 10-K under the heading “Risk Factors.”",
+    "As with all companies, the security the Company has implemented may not be sufficient for all eventualities and are vulnerable to hacking, ransomware attacks, employee error, malfeasance, system error, faulty password management or other irregularities. For example, third parties can fraudulently induce the Company’s or its suppliers’ and other third parties’ employees or customers into disclosing usernames, passwords or other sensitive information, which can, in turn, be used for unauthorized access to the Company’s or such suppliers’ or third parties’ systems and services.",
+    "The Company experiences malicious attacks and other attempts to gain unauthorized access to its systems on a regular basis. These attacks target the confidentiality, integrity or availability of confidential information and may disrupt normal business operations. Attacks can impair the Company’s ability to attract and retain customers for its products and services, affect its stock price, damage commercial relationships, and expose the Company to litigation or government investigations, potentially resulting in penalties, fines or judgments. Globally, attacks are expected to continue accelerating in both frequency and sophistication with increasing use by actors of tools and techniques that are designed to circumvent controls, avoid detection, and remove or obfuscate forensic evidence, all of which hinders the Company’s ability to identify, investigate and recover from incidents.",
+    "In addition, the Company’s service offerings can have quality issues and from time to time experience outages, service slowdowns or errors. As a result, from time to time the Company’s services have not performed as anticipated and may not meet customer expectations. The introduction of new and complex technologies, such as artificial intelligence features, can increase these and other safety risks, including exposing users to harmful, inaccurate or other negative content and experiences. The Company may not be able to detect and fix all issues and defects in the hardware, software and services it offers, which can result in widespread technical and performance issues affecting the Company’s products and services. Errors, bugs and vulnerabilities can be exploited by third parties, compromising the safety and security of a user’s device."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 19.843,
+  "usage": {
+    "input_tokens": 2657,
+    "output_tokens": 2757,
+    "total_tokens": 5414
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1361,
+      "output_tokens": 557,
+      "total_tokens": 1918,
+      "seconds": 1.237,
+      "started_at": 13.482
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 1296,
+      "output_tokens": 2200,
+      "total_tokens": 3496,
+      "seconds": 5.119,
+      "started_at": 14.719
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What cybersecurity-related risks does Apple describe in its filing?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0065, AAPL-10-K-FY2025-0083, AAPL-10-K-FY2025-0087, AAPL-10-K-FY2025-0090, AAPL-10-K-FY2025-0146, AAPL-10-K-FY2025-0147",
+      "note": "6 of 6 relevant (mean relevance 0.83)",
+      "retrieval_attempt": 1,
+      "started_at": 0.006,
+      "latency_s": 13.476,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1361,
+        "output": 557,
+        "total": 1918
+      },
+      "started_at": 13.482,
+      "latency_s": 1.237,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1296,
+        "output": 2200,
+        "total": 3496
+      },
+      "started_at": 14.719,
+      "latency_s": 5.119,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

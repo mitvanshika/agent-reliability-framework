@@ -1,0 +1,93 @@
+{
+  "scenario_id": "fdd_q18",
+  "question": "Apple's diluted EPS grew faster (22.7%) than its net income (19.5%) from FY2024 to FY2025. What explains the gap?",
+  "category": "cross_referencing",
+  "answer": "Apple's diluted EPS rose from $6.08 per share in FY2024 to $7.46 per share in FY2025, a 22.7% increase[1], while net income grew from $93,736 million to $112,010 million, a 19.5% increase[1]. The weighted‑average diluted shares fell from 15,408,095 thousand in FY2024 to 15,004,697 thousand in FY2025, a reduction of about 403,398 thousand shares (≈2.6%)[1]. This decline in the share denominator amplified EPS growth relative to net income growth[1].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Note 3 - Earnings Per Share\nThe following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):\n2025 | 2024 | 2023\nNumerator:\nNet income | $112,010 | $93,736 | $96,995\nDenominator:\nWeighted-average basic shares outstanding | 14,948,500 | 15,343,783 | 15,744,231\nEffect of dilutive share-based awards | 56,197 | 64,312 | 68,316\nWeighted-average diluted shares | 15,004,697 | 15,408,095 | 15,812,547\nBasic earnings per share | $7.49 | $6.11 | $6.16\nDiluted earnings per share | $7.46 | $6.08 | $6.13",
+    "The following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 31.322,
+  "usage": {
+    "input_tokens": 2111,
+    "output_tokens": 2110,
+    "total_tokens": 4221
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1332,
+      "output_tokens": 215,
+      "total_tokens": 1547,
+      "seconds": 0.869,
+      "started_at": 26.146
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 779,
+      "output_tokens": 1895,
+      "total_tokens": 2674,
+      "seconds": 4.3,
+      "started_at": 27.016
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple's diluted EPS grew faster (22.7%) than its net income (19.5%) from FY2024 to FY2025. What explains the gap?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0264, AAPL-10-K-FY2025-0265, AAPL-10-K-FY2025-0343",
+      "note": "2 of 6 relevant (mean relevance 0.33); 0 of 4 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.096,
+      "latency_s": 26.05,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1332,
+        "output": 215,
+        "total": 1547
+      },
+      "started_at": 26.146,
+      "latency_s": 0.869,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 779,
+        "output": 1895,
+        "total": 2674
+      },
+      "started_at": 27.016,
+      "latency_s": 4.3,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

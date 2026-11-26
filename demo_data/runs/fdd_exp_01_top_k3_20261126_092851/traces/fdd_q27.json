@@ -1,0 +1,115 @@
+{
+  "scenario_id": "fdd_q27",
+  "question": "How much money does Apple receive annually from its search licensing arrangement with Google?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 58.757,
+  "usage": {
+    "input_tokens": 3002,
+    "output_tokens": 515,
+    "total_tokens": 3517
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1153,
+      "output_tokens": 173,
+      "total_tokens": 1326,
+      "seconds": 0.644,
+      "started_at": 17.372
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 367,
+      "output_tokens": 127,
+      "total_tokens": 494,
+      "seconds": 0.612,
+      "started_at": 18.016
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1482,
+      "output_tokens": 215,
+      "total_tokens": 1697,
+      "seconds": 0.724,
+      "started_at": 58.027
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How much money does Apple receive annually from its search licensing arrangement with Google?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0115, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0262",
+      "note": "0 of 3 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.009,
+      "latency_s": 17.363,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1153,
+        "output": 173,
+        "total": 1326
+      },
+      "started_at": 17.372,
+      "latency_s": 0.644,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 367,
+        "output": 127,
+        "total": 494
+      },
+      "started_at": 18.016,
+      "latency_s": 0.612,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1482,
+        "output": 215,
+        "total": 1697
+      },
+      "started_at": 58.027,
+      "latency_s": 0.724,
+      "error": null,
+      "index": 3
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "scenario_id": "fdd_q20",
+  "question": "Apple's net income dipped from $96,995M in FY2023 to $93,736M in FY2024 before rising sharply to $112,010M in FY2025. What caused the FY2024 dip?",
+  "category": "cross_referencing",
+  "answer": "Apple’s net income fell because the provision for income taxes more than doubled in FY2024, rising to $29,749 million [S5] from $16,741 million in FY2023 [S6], which more than offset higher operating income of $123,216 million [S3] versus $114,301 million [S4] and a $269 million gain in other income [1] versus a $565 million loss in FY2023 [1]. The result was net income of $93,736 million [S2] compared with $96,995 million [S1] the year before.",
+  "tools_used": [],
+  "tool_outputs": [
+    "CONSOLIDATED STATEMENTS OF OPERATIONS\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\nYears ended\nSeptember 27, | September 28, | September 30,\n2025 | 2024 | 2023\nCost of sales:\nProducts | 194,116 | 185,233 | 189,282\nServices | 26,844 | 25,119 | 24,855\nTotal cost of sales | 220,960 | 210,352 | 214,137\nGross margin | 195,201 | 180,683 | 169,148\nOperating expenses:\nResearch and development | 34,550 | 31,370 | 29,915\nSelling, general and administrative | 27,601 | 26,097 | 24,932\nTotal operating expenses | 62,151 | 57,467 | 54,847\nOperating income | 133,050 | 123,216 | 114,301\nOther income/(expense), net | (321) | 269 | (565)\nIncome before provision for income taxes | 132,729 | 123,485 | 113,736\nProvision for income taxes | 20,719 | 29,749 | 16,741\nNet income | $112,010 | $93,736 | $96,995\nEarnings per share:\nBasic | $7.49 | $6.11 | $6.16\nDiluted | $7.46 | $6.08 | $6.13",
+    "Net income, fiscal year 2023: $96,995 million (from Apple's income statement)",
+    "Net income, fiscal year 2024: $93,736 million (from Apple's income statement)",
+    "Operating income, fiscal year 2024: $123,216 million (from Apple's income statement)",
+    "Operating income, fiscal year 2023: $114,301 million (from Apple's income statement)",
+    "Provision for income taxes, fiscal year 2024: $29,749 million (from Apple's income statement)",
+    "Provision for income taxes, fiscal year 2023: $16,741 million (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 141.614,
+  "usage": {
+    "input_tokens": 6851,
+    "output_tokens": 4311,
+    "total_tokens": 11162
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1464,
+      "output_tokens": 281,
+      "total_tokens": 1745,
+      "seconds": 0.945,
+      "started_at": 28.334
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 791,
+      "output_tokens": 812,
+      "total_tokens": 1603,
+      "seconds": 2.144,
+      "started_at": 29.28
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 398,
+      "output_tokens": 202,
+      "total_tokens": 600,
+      "seconds": 0.409,
+      "started_at": 31.424
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 3148,
+      "output_tokens": 858,
+      "total_tokens": 4006,
+      "seconds": 1.555,
+      "started_at": 135.138
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 1050,
+      "output_tokens": 2158,
+      "total_tokens": 3208,
+      "seconds": 4.913,
+      "started_at": 136.694
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Apple's net income dipped from $96,995M in FY2023 to $93,736M in FY2024 before rising sharply to $112,010M in FY2025. What caused the FY2024 dip?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0225, AAPL-10-K-FY2025-0265, AAPL-10-K-FY2025-0343",
+      "note": "1 of 6 relevant (mean relevance 0.13); 2 of 3 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.088,
+      "latency_s": 28.246,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1464,
+        "output": 281,
+        "total": 1745
+      },
+      "started_at": 28.334,
+      "latency_s": 0.945,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 791,
+        "output": 812,
+        "total": 1603
+      },
+      "started_at": 29.28,
+      "latency_s": 2.144,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 398,
+        "output": 202,
+        "total": 600
+      },
+      "started_at": 31.424,
+      "latency_s": 0.409,
+      "error": null,
+      "index": 3
+    },
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Operating income for FY2024 and FY2023 as reported in Apple’s Form 10‑K; Other income and other expenses for FY2024 and FY2023 as reported in Apple’s Form 10‑K; Provision for income taxes for FY2024 and FY2023 as reported in Apple’s Form 10‑K; One‑time items (e.g., impairment charges, restructuring costs, legal settlements) reported in FY2024 as disclosed in Apple’s Form 10‑K",
+        "strategy": "decompose"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0026, AAPL-10-K-FY2025-0110, AAPL-10-K-FY2025-0198, AAPL-10-K-FY2025-0222, AAPL-10-K-FY2025-0225, AAPL-10-K-FY2025-0235, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0295, AAPL-10-K-FY2025-0297, AAPL-10-K-FY2025-0343",
+      "note": "1 of 10 relevant (mean relevance 0.16); split into 4 parts after the first search found no answer",
+      "retrieval_attempt": 2,
+      "started_at": 31.834,
+      "latency_s": 103.304,
+      "error": null,
+      "index": 4
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 3148,
+        "output": 858,
+        "total": 4006
+      },
+      "started_at": 135.138,
+      "latency_s": 1.555,
+      "error": null,
+      "index": 5
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1050,
+        "output": 2158,
+        "total": 3208
+      },
+      "started_at": 136.694,
+      "latency_s": 4.913,
+      "error": null,
+      "index": 6
+    }
+  ]
+}

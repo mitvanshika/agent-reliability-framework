@@ -1,0 +1,115 @@
+{
+  "scenario_id": "fdd_q26",
+  "question": "How many physical iPhone units did Apple sell in FY2025?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 73.32,
+  "usage": {
+    "input_tokens": 3010,
+    "output_tokens": 542,
+    "total_tokens": 3552
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1431,
+      "output_tokens": 234,
+      "total_tokens": 1665,
+      "seconds": 0.947,
+      "started_at": 15.332
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 366,
+      "output_tokens": 95,
+      "total_tokens": 461,
+      "seconds": 0.511,
+      "started_at": 16.279
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1213,
+      "output_tokens": 213,
+      "total_tokens": 1426,
+      "seconds": 0.7,
+      "started_at": 72.616
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How many physical iPhone units did Apple sell in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263",
+      "note": "0 of 6 relevant (mean relevance 0.00); 0 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.036,
+      "latency_s": 15.295,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1431,
+        "output": 234,
+        "total": 1665
+      },
+      "started_at": 15.332,
+      "latency_s": 0.947,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 366,
+        "output": 95,
+        "total": 461
+      },
+      "started_at": 16.279,
+      "latency_s": 0.511,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1213,
+        "output": 213,
+        "total": 1426
+      },
+      "started_at": 72.616,
+      "latency_s": 0.7,
+      "error": null,
+      "index": 3
+    }
+  ]
+}

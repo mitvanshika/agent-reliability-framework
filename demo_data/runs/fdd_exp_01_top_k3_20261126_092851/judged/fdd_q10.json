@@ -1,0 +1,153 @@
+{
+  "scenario_id": "fdd_q10",
+  "question": "What cybersecurity-related risks does Apple describe in its filing?",
+  "category": "narrative_comprehension",
+  "answer": "Apple notes that its enterprise risk management program includes assessment of cybersecurity risks [1]. It also states that the Company and its global supply chain are exposed to information technology system failures or network disruptions caused by computer viruses, ransomware or other cybersecurity incidents, as well as physical or electronic break\u2011ins [2]. Apple further warns that system upgrades, redundancy and other continuity measures may be ineffective or inadequate, and that business continuity and disaster recovery planning may not be sufficient, potentially preventing access to online services, interfering with customer transactions, or impeding manufacturing and shipping of its products [2].",
+  "tools_used": [],
+  "tool_outputs": [
+    "The Company\u2019s enterprise risk management program is designed to identify, assess, and monitor the Company\u2019s business risks, including financial, operational, compliance and reputational risks, and reflects management\u2019s assessment of cybersecurity risks.",
+    "The Company and its global supply chain are dependent on complex information technology systems and are exposed to information technology system failures or network disruptions caused by natural disasters, accidents, power disruptions, telecommunications failures, acts of terrorism or war, computer viruses, physical or electronic break-ins, ransomware or other cybersecurity incidents, or other events or disruptions. System upgrades, redundancy and other continuity measures may be ineffective or inadequate, and the Company\u2019s or its vendors\u2019 business continuity and disaster recovery planning may not be sufficient for all eventualities. Such failures or disruptions can adversely impact the Company\u2019s business by, among other things, preventing access to the Company\u2019s online services, interfering with customer transactions or impeding the manufacturing and shipping of the Company\u2019s products."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 16.791,
+  "usage": {
+    "input_tokens": 1625,
+    "output_tokens": 1300,
+    "total_tokens": 2925
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 919,
+      "output_tokens": 133,
+      "total_tokens": 1052,
+      "seconds": 0.619,
+      "started_at": 13.302
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 706,
+      "output_tokens": 1167,
+      "total_tokens": 1873,
+      "seconds": 2.866,
+      "started_at": 13.921
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What cybersecurity-related risks does Apple describe in its filing?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0083, AAPL-10-K-FY2025-0146, AAPL-10-K-FY2025-0147",
+      "note": "2 of 3 relevant (mean relevance 0.67)",
+      "retrieval_attempt": 1,
+      "started_at": 0.006,
+      "latency_s": 13.296,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 919,
+        "output": 133,
+        "total": 1052
+      },
+      "started_at": 13.302,
+      "latency_s": 0.619,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 706,
+        "output": 1167,
+        "total": 1873
+      },
+      "started_at": 13.921,
+      "latency_s": 2.866,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 5.997237569060774,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 1,
+    "reason": "The answer omits all the required reference facts: it does not mention regular malicious attacks or unauthorized access attempts on confidential/personal data, the high\u2011profile target status, encryption/MFA limitations, or the potential reputational, financial, legal, and operational harms. It only repeats generic risk\u2011management language, so it fails to meet the reference requirements.",
+    "confidence": 0.97,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 7,
+    "reason": "The output correctly references the two source bullet points (enterprise risk management program and exposure to IT failures, viruses, ransomware, etc.), so those parts are complete. However, the overall question asks for the cybersecurity-related risks Apple describes, and the reference answer expects mention of malicious attacks, unauthorized access attempts, higher-value target status, and potential reputational/financial/legal/operational harms, which the output omits. Therefore the answer to the main question is not fully complete.",
+    "confidence": 0.88
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific statements in the output are directly supported by the provided source material, either verbatim or through accurate summarization, with no unsupported details.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 6,
+    "reason": "The retrieved text mentions several cybersecurity-related risks such as computer viruses, ransomware, and other cyber incidents, which are relevant to the question. However, it lacks details about malicious attacks, unauthorized access attempts, and the specific impacts (reputational, financial, legal) highlighted in the reference answer, so it is only partially complete.",
+    "confidence": 0.78
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "b321430788ee",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

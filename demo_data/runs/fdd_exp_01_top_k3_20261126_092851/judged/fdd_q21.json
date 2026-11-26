@@ -1,0 +1,155 @@
+{
+  "scenario_id": "fdd_q21",
+  "question": "Did Apple's Services revenue grow faster than its iPhone revenue between FY2024 and FY2025?",
+  "category": "trend",
+  "answer": "Yes, Services revenue grew faster, increasing from $96,169 million in FY2024 [S1] to $109,158 million in FY2025 [S2] (a $12,989 million increase [S1][S2], about 13.5% growth [S1][S2]) while iPhone revenue rose from $201,183 million in FY2024 [S3] to $209,586 million in FY2025 [S4] (a $8,403 million increase [S3][S4], about 4.2% growth [S3][S4]).",
+  "tools_used": [],
+  "tool_outputs": [
+    "Services, fiscal year 2024: $96,169 million (from Apple's income statement)",
+    "Services, fiscal year 2025: $109,158 million (from Apple's income statement)",
+    "iPhone, fiscal year 2024: $201,183 million (from Apple's income statement)",
+    "iPhone, fiscal year 2025: $209,586 million (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 20.371,
+  "usage": {
+    "input_tokens": 1574,
+    "output_tokens": 2359,
+    "total_tokens": 3933
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 960,
+      "output_tokens": 217,
+      "total_tokens": 1177,
+      "seconds": 0.824,
+      "started_at": 14.831
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 614,
+      "output_tokens": 2142,
+      "total_tokens": 2756,
+      "seconds": 4.711,
+      "started_at": 15.656
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Did Apple's Services revenue grow faster than its iPhone revenue between FY2024 and FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0188, AAPL-10-K-FY2025-0263",
+      "note": "0 of 3 relevant (mean relevance 0.07); 4 of 4 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.098,
+      "latency_s": 14.733,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 960,
+        "output": 217,
+        "total": 1177
+      },
+      "started_at": 14.831,
+      "latency_s": 0.824,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 614,
+        "output": 2142,
+        "total": 2756
+      },
+      "started_at": 15.656,
+      "latency_s": 4.711,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The answer includes all required facts: it states that Services revenue grew faster, provides the FY2024 and FY2025 figures for Services and iPhone, and correctly gives the approximate growth percentages (~13.5% for Services, ~4.2% for iPhone). No contradictions or missing facts are present, and the extra detail does not conflict with the reference.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single input question asked whether Services revenue grew faster than iPhone revenue between FY2024 and FY2025. The output correctly answered \"Yes,\" provided the FY2024 and FY2025 figures for both Services and iPhone, calculated the percentage growth (~13.5% for Services, ~4.2% for iPhone), and cited the appropriate source placeholders. All required information was present and accurately addressed.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific numerical claims (revenues, absolute increases, percentage growth) match the provided source figures, and the conclusion that Services grew faster follows directly from those numbers. No unsupported information is present.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved data provides the exact Services and iPhone revenue figures for both FY2024 and FY2025, enabling calculation of growth percentages and a complete answer to the question.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "f805e9dae0f2",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

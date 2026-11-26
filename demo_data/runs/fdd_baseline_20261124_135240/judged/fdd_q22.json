@@ -1,0 +1,155 @@
+{
+  "scenario_id": "fdd_q22",
+  "question": "What was the 3-year trend (FY2023-FY2025) in Apple's net income?",
+  "category": "trend",
+  "answer": "Apple's net income was $96,995 million in FY2023 [S1], $93,736 million in FY2024 [S2], and $112,010 million in FY2025 [S3], showing a decline in FY2024 followed by a rise in FY2025 [S2][S3].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Net income, fiscal year 2023: $96,995 million (from Apple's income statement)",
+    "Net income, fiscal year 2024: $93,736 million (from Apple's income statement)",
+    "Net income, fiscal year 2025: $112,010 million (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 30.105,
+  "usage": {
+    "input_tokens": 2188,
+    "output_tokens": 2755,
+    "total_tokens": 4943
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1599,
+      "output_tokens": 277,
+      "total_tokens": 1876,
+      "seconds": 0.869,
+      "started_at": 23.696
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 589,
+      "output_tokens": 2478,
+      "total_tokens": 3067,
+      "seconds": 5.534,
+      "started_at": 24.565
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What was the 3-year trend (FY2023-FY2025) in Apple's net income?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0186, AAPL-10-K-FY2025-0262, AAPL-10-K-FY2025-0263, AAPL-10-K-FY2025-0343",
+      "note": "0 of 6 relevant (mean relevance 0.00); 3 of 3 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.106,
+      "latency_s": 23.59,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1599,
+        "output": 277,
+        "total": 1876
+      },
+      "started_at": 23.696,
+      "latency_s": 0.869,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 589,
+        "output": 2478,
+        "total": 3067
+      },
+      "started_at": 24.565,
+      "latency_s": 5.534,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 9.524547803617573,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 8,
+    "reason": "The output includes all three net income figures and correctly describes the decline in FY2024 followed by a rise in FY2025, matching the reference. However, it omits the specific percentage changes (~3.4% dip and ~19.5% rise) that are part of the reference facts, so it is missing a required detail. No contradictions or false statements are present.",
+    "confidence": 0.92,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The output provides the net income for FY2023, FY2024, and FY2025 exactly as given in the source material and correctly describes the 3‑year trend (decline in FY2024 then rise in FY2025). All required information is present and accurate.",
+    "confidence": 0.98
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific numeric claims (FY2023 $96,995 M, FY2024 $93,736 M, FY2025 $112,010 M) are directly present in the provided source material, and the trend description (decline then rise) follows logically from those numbers. No unsupported facts are introduced.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved material provides the net income figures for FY2023, FY2024, and FY2025, exactly what is required to describe the three‑year trend, so the answer can be completed fully and accurately.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "f1cc199a54ac",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "generic_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

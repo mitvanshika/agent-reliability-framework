@@ -1,0 +1,7 @@
+id: fdd_q23
+question: What was the 3-year trend (FY2023-FY2025) in Apple's diluted EPS?
+category: trend
+expected_answer: $6.13 (FY2023) -> $6.08 (FY2024, slight dip) -> $7.46 (FY2025, sharp rise). Follows the same pattern as net income, amplified by a shrinking share count from buybacks.
+difficulty: medium
+reference_source: apple_income_statement.csv, Diluted EPS row, all three fiscal-year columns
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #23 (sha256 c3ba6eb2ac0a)'

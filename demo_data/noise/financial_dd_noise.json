@@ -1,0 +1,639 @@
+{
+  "variant": "fdd_baseline",
+  "experiment": "fdd_baseline",
+  "target": "financial_dd",
+  "config_hash": "a7f5654831927990",
+  "resolved_config": {
+    "target": "financial_dd",
+    "settings": {}
+  },
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "scenario_suite": "main",
+  "mode": "from_runs",
+  "runs": 2,
+  "source_runs": [
+    "runs/fdd_baseline_20261124_135240",
+    "runs/fdd_baseline_20261124_154652"
+  ],
+  "created": "2026-11-26T09:24:20",
+  "note": "bands from 2 existing runs (agent + judge noise). With few runs the range underestimates the real spread; add runs with --from-runs a b c ... to improve it. Do not evaluate these same runs against these bands (circular).",
+  "threshold": 7.0,
+  "jumpy_range": 2.0,
+  "scenarios": {
+    "fdd_q01": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q02": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q03": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q04": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q05": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q06": {
+      "scores": [
+        9.999999999999998,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 9.999999999999998,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q07": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q08": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q09": {
+      "scores": [
+        7.983739837398375,
+        6.975999999999999
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PF",
+      "flips": 1,
+      "mean": 7.48,
+      "std": 0.713,
+      "min": 6.975999999999999,
+      "max": 7.983739837398375,
+      "range": 1.008,
+      "jumpy": true,
+      "skipped_runs": []
+    },
+    "fdd_q10": {
+      "scores": [
+        6.827027027027027,
+        8.359580052493438
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "FP",
+      "flips": 1,
+      "mean": 7.593,
+      "std": 1.084,
+      "min": 6.827027027027027,
+      "max": 8.359580052493438,
+      "range": 1.533,
+      "jumpy": true,
+      "skipped_runs": []
+    },
+    "fdd_q11": {
+      "scores": [
+        10.0,
+        9.036269430051814
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 9.518,
+      "std": 0.681,
+      "min": 9.036269430051814,
+      "max": 10.0,
+      "range": 0.964,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q12": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q13": {
+      "scores": [
+        10.000000000000002,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.000000000000002,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q14": {
+      "scores": [
+        10.000000000000002,
+        9.522077922077923
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 9.761,
+      "std": 0.338,
+      "min": 9.522077922077923,
+      "max": 10.000000000000002,
+      "range": 0.478,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q15": {
+      "scores": [
+        9.056603773584905,
+        8.819628647214854
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 8.938,
+      "std": 0.168,
+      "min": 8.819628647214854,
+      "max": 9.056603773584905,
+      "range": 0.237,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q16": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q17": {
+      "scores": [
+        10.000000000000002,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.000000000000002,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q18": {
+      "scores": [
+        8.381215469613261,
+        8.572192513368986
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 8.477,
+      "std": 0.135,
+      "min": 8.381215469613261,
+      "max": 8.572192513368986,
+      "range": 0.191,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q19": {
+      "scores": [
+        10.000000000000002,
+        9.321052631578949
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 9.661,
+      "std": 0.48,
+      "min": 9.321052631578949,
+      "max": 10.000000000000002,
+      "range": 0.679,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q20": {
+      "scores": [
+        9.089005235602095,
+        4.043360433604336
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PF",
+      "flips": 1,
+      "mean": 6.566,
+      "std": 3.568,
+      "min": 4.043360433604336,
+      "max": 9.089005235602095,
+      "range": 5.046,
+      "jumpy": true,
+      "skipped_runs": []
+    },
+    "fdd_q21": {
+      "scores": [
+        9.999999999999998,
+        10.000000000000002
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 9.999999999999998,
+      "max": 10.000000000000002,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q22": {
+      "scores": [
+        9.524547803617573,
+        9.546666666666665
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 9.536,
+      "std": 0.016,
+      "min": 9.524547803617573,
+      "max": 9.546666666666665,
+      "range": 0.022,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q23": {
+      "scores": [
+        10.0,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q24": {
+      "scores": [
+        9.526992287917738,
+        9.526992287917738
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 9.527,
+      "std": 0.0,
+      "min": 9.526992287917738,
+      "max": 9.526992287917738,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q25": {
+      "scores": [
+        8.576642335766422,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 9.288,
+      "std": 1.006,
+      "min": 8.576642335766422,
+      "max": 10.0,
+      "range": 1.423,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q26": {
+      "scores": [
+        10.000000000000002,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.000000000000002,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q27": {
+      "scores": [
+        9.753807106598988,
+        9.145985401459853
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 9.45,
+      "std": 0.43,
+      "min": 9.145985401459853,
+      "max": 9.753807106598988,
+      "range": 0.608,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q28": {
+      "scores": [
+        10.000000000000002,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.000000000000002,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    },
+    "fdd_q29": {
+      "scores": [
+        10.000000000000002,
+        10.0
+      ],
+      "n_runs": 2,
+      "n_scored": 2,
+      "pass_fail": "PP",
+      "flips": 0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.000000000000002,
+      "range": 0.0,
+      "jumpy": false,
+      "skipped_runs": []
+    }
+  },
+  "suite": {
+    "per_run": [
+      {
+        "run": 1,
+        "run_dir": "runs/fdd_baseline_20261124_135240",
+        "mean_score": 9.611,
+        "passed": 28,
+        "total": 29,
+        "pass_rate": 0.9655
+      },
+      {
+        "run": 2,
+        "run_dir": "runs/fdd_baseline_20261124_154652",
+        "mean_score": 9.409,
+        "passed": 27,
+        "total": 29,
+        "pass_rate": 0.931
+      }
+    ],
+    "mean_score_range": 0.202,
+    "pass_rate_range": 0.0345
+  },
+  "jumpy": [
+    "fdd_q09",
+    "fdd_q10",
+    "fdd_q20"
+  ],
+  "jumpy_explained": {
+    "fdd_q09": {
+      "kind": "WORDING",
+      "why": "same evidence (overlap 100%), answer reworded",
+      "borderline": true,
+      "scores": [
+        7.983739837398375,
+        6.975999999999999
+      ],
+      "judges_moved": {
+        "completeness": [
+          10,
+          8
+        ],
+        "correctness_gt": [
+          4,
+          2
+        ]
+      },
+      "evidence_overlap": 1.0,
+      "answer_similarity": 0.22,
+      "detail": []
+    },
+    "fdd_q10": {
+      "kind": "WORDING",
+      "why": "same evidence (overlap 83%), answer reworded",
+      "borderline": true,
+      "scores": [
+        6.827027027027027,
+        8.359580052493438
+      ],
+      "judges_moved": {
+        "completeness": [
+          6,
+          10
+        ]
+      },
+      "evidence_overlap": 0.8333333333333334,
+      "answer_similarity": 0.04,
+      "detail": []
+    },
+    "fdd_q20": {
+      "kind": "SYSTEM",
+      "why": "the runs found different evidence (overlap 8%)",
+      "borderline": false,
+      "scores": [
+        9.089005235602095,
+        4.043360433604336
+      ],
+      "judges_moved": {
+        "completeness": [
+          10,
+          0
+        ],
+        "context_relevance": [
+          10,
+          4
+        ],
+        "correctness_gt": [
+          6,
+          2
+        ]
+      },
+      "evidence_overlap": 0.08333333333333333,
+      "answer_similarity": 0.23,
+      "detail": [
+        "step 2 (retrieve) searched differently:",
+        "  only in run 1: or gains settlement tax charge",
+        "  only in run 2: form expenses costs settlements disclosed",
+        "  run 1 found: 5 of 10 relevant (mean relevance 0.42)",
+        "  run 2 found: 1 of 10 relevant (mean relevance 0.16)"
+      ]
+    }
+  }
+}

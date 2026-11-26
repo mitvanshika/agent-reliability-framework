@@ -1,0 +1,93 @@
+{
+  "scenario_id": "fdd_q10",
+  "question": "What cybersecurity-related risks does Apple describe in its filing?",
+  "category": "narrative_comprehension",
+  "answer": "Apple notes that its enterprise risk management program includes assessment of cybersecurity risks [1]. It also states that the Company and its global supply chain are exposed to information technology system failures or network disruptions caused by computer viruses, ransomware or other cybersecurity incidents, as well as physical or electronic break‑ins [2]. Apple further warns that system upgrades, redundancy and other continuity measures may be ineffective or inadequate, and that business continuity and disaster recovery planning may not be sufficient, potentially preventing access to online services, interfering with customer transactions, or impeding manufacturing and shipping of its products [2].",
+  "tools_used": [],
+  "tool_outputs": [
+    "The Company’s enterprise risk management program is designed to identify, assess, and monitor the Company’s business risks, including financial, operational, compliance and reputational risks, and reflects management’s assessment of cybersecurity risks.",
+    "The Company and its global supply chain are dependent on complex information technology systems and are exposed to information technology system failures or network disruptions caused by natural disasters, accidents, power disruptions, telecommunications failures, acts of terrorism or war, computer viruses, physical or electronic break-ins, ransomware or other cybersecurity incidents, or other events or disruptions. System upgrades, redundancy and other continuity measures may be ineffective or inadequate, and the Company’s or its vendors’ business continuity and disaster recovery planning may not be sufficient for all eventualities. Such failures or disruptions can adversely impact the Company’s business by, among other things, preventing access to the Company’s online services, interfering with customer transactions or impeding the manufacturing and shipping of the Company’s products."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 16.791,
+  "usage": {
+    "input_tokens": 1625,
+    "output_tokens": 1300,
+    "total_tokens": 2925
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 919,
+      "output_tokens": 133,
+      "total_tokens": 1052,
+      "seconds": 0.619,
+      "started_at": 13.302
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 706,
+      "output_tokens": 1167,
+      "total_tokens": 1873,
+      "seconds": 2.866,
+      "started_at": 13.921
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What cybersecurity-related risks does Apple describe in its filing?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0083, AAPL-10-K-FY2025-0146, AAPL-10-K-FY2025-0147",
+      "note": "2 of 3 relevant (mean relevance 0.67)",
+      "retrieval_attempt": 1,
+      "started_at": 0.006,
+      "latency_s": 13.296,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 919,
+        "output": 133,
+        "total": 1052
+      },
+      "started_at": 13.302,
+      "latency_s": 0.619,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 706,
+        "output": 1167,
+        "total": 1873
+      },
+      "started_at": 13.921,
+      "latency_s": 2.866,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

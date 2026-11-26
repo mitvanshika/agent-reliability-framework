@@ -1,0 +1,155 @@
+{
+  "scenario_id": "fdd_q12",
+  "question": "Why did Wearables, Home and Accessories net sales decrease in FY2025?",
+  "category": "narrative_comprehension",
+  "answer": "Wearables, Home and Accessories net sales fell in FY2025 because lower net sales of Accessories and Wearables reduced the segment’s revenue[1], resulting in net sales of $35,686 million in 2025 versus $37,005 million in 2024, a 4% decline[2]",
+  "tools_used": [],
+  "tool_outputs": [
+    "Wearables, Home and Accessories net sales decreased during 2025 compared to 2024 primarily due to lower net sales of Accessories and Wearables.",
+    "Products and Services Performance\nThe following table shows net sales by category for 2025, 2024 and 2023 (dollars in millions):\n2025 | Change | 2024 | Change | 2023\niPhone | $209,586 | 4% | $201,183 | —% | $200,583\nMac | 33,708 | 12% | 29,984 | 2% | 29,357\niPad | 28,023 | 5% | 26,694 | (6)% | 28,300\nWearables, Home and Accessories | 35,686 | (4)% | 37,005 | (7)% | 39,845\nServices (1) | 109,158 | 14% | 96,169 | 13% | 85,200\nTotal net sales | $416,161 | 6% | $391,035 | 2% | $383,285",
+    "Note 2 - Revenue\nThe following table shows disaggregated net sales, as well as the portion of total net sales that was previously deferred, for 2025, 2024 and 2023 (in millions):\n2025 | 2024 | 2023\niPhone | $209,586 | $201,183 | $200,583\nMac | 33,708 | 29,984 | 29,357\niPad | 28,023 | 26,694 | 28,300\nWearables, Home and Accessories | 35,686 | 37,005 | 39,845\nServices (1) | 109,158 | 96,169 | 85,200\nTotal net sales | $416,161 | $391,035 | $383,285\nPortion of total net sales that was included in deferred revenue as of the beginning of the period | $8,229 | $7,728 | $8,169"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 27.331,
+  "usage": {
+    "input_tokens": 2396,
+    "output_tokens": 1820,
+    "total_tokens": 4216
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1411,
+      "output_tokens": 282,
+      "total_tokens": 1693,
+      "seconds": 0.912,
+      "started_at": 22.621
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 985,
+      "output_tokens": 1538,
+      "total_tokens": 2523,
+      "seconds": 3.79,
+      "started_at": 23.534
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Why did Wearables, Home and Accessories net sales decrease in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0003, AAPL-10-K-FY2025-0022, AAPL-10-K-FY2025-0180, AAPL-10-K-FY2025-0184, AAPL-10-K-FY2025-0187, AAPL-10-K-FY2025-0262",
+      "note": "3 of 6 relevant (mean relevance 0.47); 0 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.033,
+      "latency_s": 22.588,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1411,
+        "output": 282,
+        "total": 1693
+      },
+      "started_at": 22.621,
+      "latency_s": 0.912,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 985,
+        "output": 1538,
+        "total": 2523
+      },
+      "started_at": 23.534,
+      "latency_s": 3.79,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The answer includes the required fact that the decline was primarily due to lower net sales of Accessories and Wearables, matching the reference. It adds correct supporting numbers without contradicting the reference, which is permissible. Hence full credit.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single request asking for the reason behind the decline in Wearables, Home and Accessories net sales in FY2025. The system’s answer explains that the decline was due to lower net sales of Accessories and Wearables, directly matching the source material and reference answer, and even adds supporting figures. Hence the part is handled completely.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific statements in the output—cause of the decline (lower net sales of Accessories and Wearables) and the exact net‑sales figures ($35,686 M in 2025 vs $37,005 M in 2024) and the 4% decrease—are directly present in the provided source material. No unsupported facts are introduced.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved material explicitly states that the decrease was primarily due to lower net sales of Accessories and Wearables and provides supporting sales figures, fully addressing the question.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "51c34e1bc336",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "generic_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

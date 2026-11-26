@@ -1,0 +1,156 @@
+{
+  "scenario_id": "fdd_q23",
+  "question": "What was the 3-year trend (FY2023-FY2025) in Apple's diluted EPS?",
+  "category": "trend",
+  "answer": "Apple's diluted EPS was $6.13 per share in FY2023 [S1], $6.08 per share in FY2024 [S2], and $7.46 per share in FY2025 [S3], indicating a slight decline from 2023 to 2024 and a substantial increase in 2025 [S1][S2][S3].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Note 3 - Earnings Per Share\nThe following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):\n2025 | 2024 | 2023\nNumerator:\nNet income | $112,010 | $93,736 | $96,995\nDenominator:\nWeighted-average basic shares outstanding | 14,948,500 | 15,343,783 | 15,744,231\nEffect of dilutive share-based awards | 56,197 | 64,312 | 68,316\nWeighted-average diluted shares | 15,004,697 | 15,408,095 | 15,812,547\nBasic earnings per share | $7.49 | $6.11 | $6.16\nDiluted earnings per share | $7.46 | $6.08 | $6.13",
+    "Diluted (in dollars per share), fiscal year 2023: $6.13 per share (from Apple's income statement)",
+    "Diluted (in dollars per share), fiscal year 2024: $6.08 per share (from Apple's income statement)",
+    "Diluted (in dollars per share), fiscal year 2025: $7.46 per share (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 26.902,
+  "usage": {
+    "input_tokens": 2428,
+    "output_tokens": 2120,
+    "total_tokens": 4548
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1610,
+      "output_tokens": 271,
+      "total_tokens": 1881,
+      "seconds": 0.941,
+      "started_at": 21.675
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 818,
+      "output_tokens": 1849,
+      "total_tokens": 2667,
+      "seconds": 4.282,
+      "started_at": 22.617
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What was the 3-year trend (FY2023-FY2025) in Apple's diluted EPS?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0171, AAPL-10-K-FY2025-0223, AAPL-10-K-FY2025-0241, AAPL-10-K-FY2025-0265, AAPL-10-K-FY2025-0320, AAPL-10-K-FY2025-0343",
+      "note": "1 of 6 relevant (mean relevance 0.20); 3 of 3 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.086,
+      "latency_s": 21.589,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1610,
+        "output": 271,
+        "total": 1881
+      },
+      "started_at": 21.675,
+      "latency_s": 0.941,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 818,
+        "output": 1849,
+        "total": 2667
+      },
+      "started_at": 22.617,
+      "latency_s": 4.282,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.0,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The output includes all required EPS figures ($6.13 FY2023, $6.08 FY2024, $7.46 FY2025) and correctly describes the trend (slight decline then sharp rise), matching the reference exactly with no contradictions or missing facts.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input asks for the 3‑year trend of Apple’s diluted EPS (FY2023‑FY2025). The system’s output supplies the exact diluted EPS figures for FY2023 ($6.13), FY2024 ($6.08), and FY2025 ($7.46) and correctly describes the trend (a slight dip then a sharp rise), matching the source data and reference answer. No part of the request is missed or fabricated.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific numeric claims (diluted EPS values for FY2023, FY2024, FY2025) match the figures provided in the source material, and the trend description accurately reflects the change between those numbers.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved excerpt includes a table and explicit values for diluted earnings per share for FY2023, FY2024, and FY2025, directly answering the 3‑year trend request. All necessary data are present and correctly cited.",
+    "confidence": 0.98
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "47db718e3977",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "generic_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

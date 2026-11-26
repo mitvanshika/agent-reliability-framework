@@ -1,0 +1,156 @@
+{
+  "scenario_id": "fdd_q10",
+  "question": "What cybersecurity-related risks does Apple describe in its filing?",
+  "category": "narrative_comprehension",
+  "answer": "Apple\u2019s enterprise risk management program explicitly assesses cybersecurity risks as part of its overall risk oversight [1]. The company is dependent on complex information technology systems and is exposed to IT system failures, network disruptions, computer viruses, ransomware, and other cybersecurity incidents that could prevent access to online services, interfere with customer transactions, and impede manufacturing and shipping [2]. Apple acknowledges that its security measures may be insufficient, leaving it vulnerable to hacking, ransomware attacks, employee error, malfeasance, system errors, faulty password management, and credential theft by third parties [3]. The firm experiences frequent malicious attacks targeting the confidentiality, integrity, or availability of data, which can disrupt operations, damage its reputation, affect its stock price, and expose it to litigation or regulatory penalties [4]. It also warns that system upgrades, redundancy, and business continuity planning may be ineffective, and that new technologies such as artificial intelligence can increase safety and security risks, with errors, bugs, and vulnerabilities potentially exploitable by third parties [5].",
+  "tools_used": [],
+  "tool_outputs": [
+    "The Company\u2019s enterprise risk management program is designed to identify, assess, and monitor the Company\u2019s business risks, including financial, operational, compliance and reputational risks, and reflects management\u2019s assessment of cybersecurity risks.",
+    "The Company and its global supply chain are dependent on complex information technology systems and are exposed to information technology system failures or network disruptions caused by natural disasters, accidents, power disruptions, telecommunications failures, acts of terrorism or war, computer viruses, physical or electronic break-ins, ransomware or other cybersecurity incidents, or other events or disruptions. System upgrades, redundancy and other continuity measures may be ineffective or inadequate, and the Company\u2019s or its vendors\u2019 business continuity and disaster recovery planning may not be sufficient for all eventualities. Such failures or disruptions can adversely impact the Company\u2019s business by, among other things, preventing access to the Company\u2019s online services, interfering with customer transactions or impeding the manufacturing and shipping of the Company\u2019s products.",
+    "As with all companies, the security the Company has implemented may not be sufficient for all eventualities and are vulnerable to hacking, ransomware attacks, employee error, malfeasance, system error, faulty password management or other irregularities. For example, third parties can fraudulently induce the Company\u2019s or its suppliers\u2019 and other third parties\u2019 employees or customers into disclosing usernames, passwords or other sensitive information, which can, in turn, be used for unauthorized access to the Company\u2019s or such suppliers\u2019 or third parties\u2019 systems and services.",
+    "The Company experiences malicious attacks and other attempts to gain unauthorized access to its systems on a regular basis. These attacks target the confidentiality, integrity or availability of confidential information and may disrupt normal business operations. Attacks can impair the Company\u2019s ability to attract and retain customers for its products and services, affect its stock price, damage commercial relationships, and expose the Company to litigation or government investigations, potentially resulting in penalties, fines or judgments. Globally, attacks are expected to continue accelerating in both frequency and sophistication with increasing use by actors of tools and techniques that are designed to circumvent controls, avoid detection, and remove or obfuscate forensic evidence, all of which hinders the Company\u2019s ability to identify, investigate and recover from incidents.",
+    "In addition, the Company\u2019s service offerings can have quality issues and from time to time experience outages, service slowdowns or errors. As a result, from time to time the Company\u2019s services have not performed as anticipated and may not meet customer expectations. The introduction of new and complex technologies, such as artificial intelligence features, can increase these and other safety risks, including exposing users to harmful, inaccurate or other negative content and experiences. The Company may not be able to detect and fix all issues and defects in the hardware, software and services it offers, which can result in widespread technical and performance issues affecting the Company\u2019s products and services. Errors, bugs and vulnerabilities can be exploited by third parties, compromising the safety and security of a user\u2019s device."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_154652",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 20.682,
+  "usage": {
+    "input_tokens": 2509,
+    "output_tokens": 2271,
+    "total_tokens": 4780
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1361,
+      "output_tokens": 393,
+      "total_tokens": 1754,
+      "seconds": 0.956,
+      "started_at": 15.216
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 1148,
+      "output_tokens": 1878,
+      "total_tokens": 3026,
+      "seconds": 4.505,
+      "started_at": 16.172
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What cybersecurity-related risks does Apple describe in its filing?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0065, AAPL-10-K-FY2025-0083, AAPL-10-K-FY2025-0087, AAPL-10-K-FY2025-0090, AAPL-10-K-FY2025-0146, AAPL-10-K-FY2025-0147",
+      "note": "5 of 6 relevant (mean relevance 0.78)",
+      "retrieval_attempt": 1,
+      "started_at": 0.005,
+      "latency_s": 15.211,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1361,
+        "output": 393,
+        "total": 1754
+      },
+      "started_at": 15.216,
+      "latency_s": 0.956,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1148,
+        "output": 1878,
+        "total": 3026
+      },
+      "started_at": 16.172,
+      "latency_s": 4.505,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 8.359580052493438,
+  "disagreement": true,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 4,
+    "reason": "The answer includes several relevant points such as frequent malicious attacks, potential reputational, financial, legal, and operational impacts, and acknowledges that security measures may be insufficient. However, it omits key facts from the reference: that Apple is considered a higher\u2011value target because of its high profile, and that despite measures like encryption and multifactor authentication it cannot guarantee absolute protection. It also does not explicitly mention attacks on personal/confidential information. Because of these missing required facts, the score is low.",
+    "confidence": 0.88,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The output addresses each component of the input: it answers the question, and it accurately reflects each of the five source bullet points, matching the reference answer's key points without omission or fabrication.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific statements in the output are directly supported by the provided source material, either verbatim or through accurate summarization. No unsupported facts or details are introduced.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 9,
+    "reason": "The retrieved excerpts comprehensively list Apple\u2019s cybersecurity risks, including malicious attacks, unauthorized access attempts, ransomware, hacking, system failures, and supply\u2011chain vulnerabilities, which directly address the query. While it lacks some specific mitigation details (e.g., encryption, MFA) mentioned in the reference, the core risk descriptions are present.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "b321430788ee",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "scenario_id": "fdd_q14",
+  "question": "What risk does Apple disclose about acquisitions and new business investments?",
+  "category": "narrative_comprehension",
+  "answer": "Apple discloses that acquisitions and new business investments may fail to obtain required regulatory approvals, may be hindered by a counterparty\u2019s failure to perform or deliver as anticipated, or may be subject to onerous conditions that could delay or prevent the transaction and limit the ability to realize anticipated benefits [1]. It also notes that new business strategies and ventures are inherently risky and may not be successful, potentially causing management distraction, greater-than-expected liabilities and expenses, economic, political, legal and regulatory challenges, inadequate return on capital, potential impairment of tangible and intangible assets, and significant write\u2011offs [2]. These risks could materially adversely affect Apple\u2019s business, reputation, results of operations, financial condition and stock price [1][3].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Some transactions, including investments and acquisitions, are exposed to additional risks, including failing to obtain required regulatory approvals on a timely basis or at all, a counterparty\u2019s failure to perform or deliver as anticipated, or the imposition of onerous conditions that could delay or prevent the Company from completing a transaction or otherwise limit the Company\u2019s ability to fully realize the anticipated benefits of a transaction. New business strategies and ventures are inherently risky and may not be successful. The Company\u2019s business strategies and investments may not be successful, which could materially adversely affect the Company\u2019s business, reputation, results of operations, financial condition and stock price.",
+    "The Company has invested, and in the future may invest, in new business strategies, commercial relationships and acquisitions. Such endeavors may involve significant risks and uncertainties, including distraction of management from current operations, greater-than-expected liabilities and expenses, economic, political, legal and regulatory challenges associated with operating in new businesses, regions or countries, inadequate return on capital, potential impairment of tangible and intangible assets, and significant write-offs.",
+    "While the Company maintains insurance coverage that is intended to address certain aspects of data security risks, such insurance coverage may be insufficient to cover all losses or all types of claims that may arise.\n\nInvestment in new business strategies, commercial relationships and acquisitions could disrupt the Company\u2019s ongoing business, present risks not originally contemplated, and materially adversely affect the Company\u2019s business, reputation, results of operations and financial condition."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 19.355,
+  "usage": {
+    "input_tokens": 1705,
+    "output_tokens": 1695,
+    "total_tokens": 3400
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 885,
+      "output_tokens": 216,
+      "total_tokens": 1101,
+      "seconds": 0.813,
+      "started_at": 15.055
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 820,
+      "output_tokens": 1479,
+      "total_tokens": 2299,
+      "seconds": 3.483,
+      "started_at": 15.868
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What risk does Apple disclose about acquisitions and new business investments?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0092, AAPL-10-K-FY2025-0093, AAPL-10-K-FY2025-0094",
+      "note": "3 of 3 relevant (mean relevance 1.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.004,
+      "latency_s": 15.051,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 885,
+        "output": 216,
+        "total": 1101
+      },
+      "started_at": 15.055,
+      "latency_s": 0.813,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 820,
+        "output": 1479,
+        "total": 2299
+      },
+      "started_at": 15.868,
+      "latency_s": 3.483,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 9.999999999999998,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The output includes all required risk factors from the reference: regulatory approval failure, inability to realize benefits, management distraction, unexpected liabilities, regulatory/economic/political/legal challenges, inadequate returns, and potential asset impairment. No contradictions are present, and extra details do not conflict with the reference.",
+    "confidence": 0.98,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input can be split into two relevant parts: (A) risks related to regulatory approvals, counterparty performance, and onerous conditions for acquisitions; (B) risks associated with new business strategies and investments such as management distraction, unexpected liabilities, regulatory challenges, inadequate returns, asset impairment, and write\u2011offs. The system's output addresses both parts comprehensively, citing the appropriate source excerpts and matching the reference answer. No required information was omitted or fabricated.",
+    "confidence": 0.97
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific statements in the answer\u2014regulatory approval risks, counterparty performance risks, onerous conditions, limits on realizing benefits, inherent risk of new strategies, potential management distraction, higher liabilities, economic/political/legal/regulatory challenges, inadequate return on capital, asset impairment, write\u2011offs, and material adverse effects on business, reputation, operations, financial condition, and stock price\u2014are directly found in the provided source excerpts. No unsupported facts are introduced.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved excerpts directly list the risks Apple discloses for acquisitions and new business investments, covering regulatory approval delays, counterparty performance, management distraction, liabilities, economic/political/legal challenges, inadequate returns, and asset impairment, which fully addresses the query.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "8cc33cad1053",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

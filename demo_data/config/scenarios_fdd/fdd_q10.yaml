@@ -1,0 +1,7 @@
+id: fdd_q10
+question: What cybersecurity-related risks does Apple describe in its filing?
+category: narrative_comprehension
+expected_answer: Apple states it regularly experiences malicious attacks and unauthorized access attempts targeting confidential and personal information; it is considered a higher-value target due to its high profile; and despite security measures like encryption and multifactor authentication, it cannot guarantee absolute protection, which could lead to reputational, financial, legal, and operational harm.
+difficulty: medium
+reference_source: apple_10k.txt, Item 1A Risk Factors, cybersecurity section (~lines 373-389)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #10 (sha256 c3ba6eb2ac0a)'

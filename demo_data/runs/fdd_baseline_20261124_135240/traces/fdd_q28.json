@@ -1,0 +1,115 @@
+{
+  "scenario_id": "fdd_q28",
+  "question": "What is Apple's market share by country for smartphones?",
+  "category": "no_answer",
+  "answer": "No answer: only 0 relevant chunk(s) found after 1 attempt(s) (need 2, or one scoring 0.8+)",
+  "tools_used": [],
+  "tool_outputs": [],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 109.053,
+  "usage": {
+    "input_tokens": 2913,
+    "output_tokens": 753,
+    "total_tokens": 3666
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1189,
+      "output_tokens": 232,
+      "total_tokens": 1421,
+      "seconds": 0.832,
+      "started_at": 15.029
+    },
+    {
+      "label": "question_parts",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 362,
+      "output_tokens": 257,
+      "total_tokens": 619,
+      "seconds": 0.82,
+      "started_at": 15.861
+    },
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1362,
+      "output_tokens": 264,
+      "total_tokens": 1626,
+      "seconds": 0.877,
+      "started_at": 108.172
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What is Apple's market share by country for smartphones?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0014, AAPL-10-K-FY2025-0049, AAPL-10-K-FY2025-0073, AAPL-10-K-FY2025-0113, AAPL-10-K-FY2025-0164, AAPL-10-K-FY2025-0182",
+      "note": "0 of 6 relevant (mean relevance 0.00)",
+      "retrieval_attempt": 1,
+      "started_at": 0.005,
+      "latency_s": 15.024,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1189,
+        "output": 232,
+        "total": 1421
+      },
+      "started_at": 15.029,
+      "latency_s": 0.832,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "question_parts",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 362,
+        "output": 257,
+        "total": 619
+      },
+      "started_at": 15.861,
+      "latency_s": 0.82,
+      "error": null,
+      "index": 2
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1362,
+        "output": 264,
+        "total": 1626
+      },
+      "started_at": 108.172,
+      "latency_s": 0.877,
+      "error": null,
+      "index": 3
+    }
+  ]
+}

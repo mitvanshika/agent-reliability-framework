@@ -1,0 +1,94 @@
+{
+  "scenario_id": "fdd_q04",
+  "question": "What was Apple's total shareholders' equity at the end of FY2025?",
+  "category": "numeric_lookup",
+  "answer": "$73,733 million [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "CONSOLIDATED STATEMENTS OF SHAREHOLDERS’ EQUITY\n(In millions, except per-share amounts)\nYears ended\nSeptember 27, | September 28, | September 30,\n2025 | 2024 | 2023\nTotal shareholders’ equity, beginning balances | $56,950 | $62,146 | $50,672",
+    "CONSOLIDATED STATEMENTS OF SHAREHOLDERS’ EQUITY\n(In millions, except per-share amounts)\nYears ended\nSeptember 27, | September 28, | September 30,\n2025 | 2024 | 2023\nAccumulated other comprehensive loss:\nBeginning balances | (7,172) | (11,452) | (11,109)\nOther comprehensive income/(loss) | 1,601 | 4,280 | (343)\nEnding balances | (5,571) | (7,172) | (11,452)\nTotal shareholders’ equity, ending balances | $73,733 | $56,950 | $62,146\nDividends and dividend equivalents declared per share or RSU | $1.02 | $0.98 | $0.94",
+    "Total shareholders’ equity, fiscal year 2025: $73,733 million (from Apple's balance sheet)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 25.804,
+  "usage": {
+    "input_tokens": 1872,
+    "output_tokens": 1307,
+    "total_tokens": 3179
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 1055,
+      "output_tokens": 159,
+      "total_tokens": 1214,
+      "seconds": 0.713,
+      "started_at": 22.219
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 817,
+      "output_tokens": 1148,
+      "total_tokens": 1965,
+      "seconds": 2.867,
+      "started_at": 22.932
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What was Apple's total shareholders' equity at the end of FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0231, AAPL-10-K-FY2025-0233, AAPL-10-K-FY2025-0343",
+      "note": "2 of 3 relevant (mean relevance 0.60); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.044,
+      "latency_s": 22.175,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 1055,
+        "output": 159,
+        "total": 1214
+      },
+      "started_at": 22.219,
+      "latency_s": 0.713,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 817,
+        "output": 1148,
+        "total": 1965
+      },
+      "started_at": 22.932,
+      "latency_s": 2.867,
+      "error": null,
+      "index": 2
+    }
+  ]
+}

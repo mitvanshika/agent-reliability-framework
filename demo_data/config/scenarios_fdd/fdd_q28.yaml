@@ -1,0 +1,7 @@
+id: fdd_q28
+question: What is Apple's market share by country for smartphones?
+category: no_answer
+expected_answer: NOT ANSWERABLE -- the 10-K reports revenue by geographic segment (Americas, Europe, Greater China, Japan, Rest of Asia Pacific) but does not disclose market share percentages.
+difficulty: hard
+reference_source: N/A
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #28 (sha256 c3ba6eb2ac0a)'

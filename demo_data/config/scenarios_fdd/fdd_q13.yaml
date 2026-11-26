@@ -1,0 +1,7 @@
+id: fdd_q13
+question: Why did Services net sales increase in FY2025?
+category: narrative_comprehension
+expected_answer: Primarily due to higher net sales from advertising, the App Store, and cloud services.
+difficulty: medium
+reference_source: apple_10k.txt, MD&A section, 'Services' (~line 707)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #13 (sha256 c3ba6eb2ac0a)'

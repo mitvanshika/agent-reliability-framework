@@ -1,0 +1,153 @@
+{
+  "scenario_id": "fdd_q13",
+  "question": "Why did Services net sales increase in FY2025?",
+  "category": "narrative_comprehension",
+  "answer": "Services net sales increased due to higher net sales from advertising, the App Store and cloud services [1].",
+  "tools_used": [],
+  "tool_outputs": [
+    "Services net sales increased during 2025 compared to 2024 primarily due to higher net sales from advertising, the App Store and cloud services.",
+    "Americas net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone and Services. The weakness in foreign currencies relative to the U.S. dollar had an unfavorable year-over-year impact on Americas net sales during 2025."
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 21.603,
+  "usage": {
+    "input_tokens": 1345,
+    "output_tokens": 745,
+    "total_tokens": 2090
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 747,
+      "output_tokens": 187,
+      "total_tokens": 934,
+      "seconds": 0.755,
+      "started_at": 19.203
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 598,
+      "output_tokens": 558,
+      "total_tokens": 1156,
+      "seconds": 1.639,
+      "started_at": 19.958
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "Why did Services net sales increase in FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0178, AAPL-10-K-FY2025-0185, AAPL-10-K-FY2025-0188",
+      "note": "2 of 3 relevant (mean relevance 0.67); 0 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.106,
+      "latency_s": 19.097,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 747,
+        "output": 187,
+        "total": 934
+      },
+      "started_at": 19.203,
+      "latency_s": 0.755,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 598,
+        "output": 558,
+        "total": 1156
+      },
+      "started_at": 19.958,
+      "latency_s": 1.639,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 10.000000000000004,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [
+    "tool_efficiency",
+    "tool_match"
+  ],
+  "correctness_gt_result": {
+    "score": 10,
+    "reason": "The output includes all required facts\u2014higher net sales from advertising, the App Store, and cloud services\u2014as stated in the reference, with no contradictory or extra claims. It fully satisfies the correctness criteria.",
+    "confidence": 0.99,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The input contains a single part: the question asking why Services net sales increased in FY2025. The system's output directly answers with the exact reason from the source material and reference\u2014higher net sales from advertising, the App Store, and cloud services\u2014providing a complete and accurate response.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific claims in the output directly match the provided source material, which states that Services net sales increased due to higher net sales from advertising, the App Store, and cloud services. No unsupported details are present.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved snippet directly states that Services net sales increased in FY2025 primarily due to higher net sales from advertising, the App Store, and cloud services, which fully answers the question. The extra mention of Americas net sales is irrelevant but does not detract from the completeness of the answer.",
+    "confidence": 0.97
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "885e5096eebb",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  }
+}

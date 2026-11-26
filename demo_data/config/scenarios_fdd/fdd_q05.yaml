@@ -1,0 +1,7 @@
+id: fdd_q05
+question: What was Apple's total net sales (revenue) for FY2025?
+category: numeric_lookup
+expected_answer: $416,161,000,000 (~$416.2 billion)
+difficulty: easy
+reference_source: apple_income_statement.csv, row 0 'Net sales', column 2025-09-27 (FY)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #5 (sha256 c3ba6eb2ac0a)'

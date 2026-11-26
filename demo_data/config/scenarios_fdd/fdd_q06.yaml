@@ -1,0 +1,7 @@
+id: fdd_q06
+question: How much revenue did the iPhone generate in FY2025?
+category: numeric_lookup
+expected_answer: $209,586,000,000 (~$209.6 billion)
+difficulty: easy
+reference_source: apple_income_statement.csv, row 2 'iPhone', column 2025-09-27 (FY)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #6 (sha256 c3ba6eb2ac0a)'

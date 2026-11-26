@@ -1,0 +1,7 @@
+id: fdd_q07
+question: What was Apple's diluted earnings per share (EPS) for FY2025?
+category: numeric_lookup
+expected_answer: $7.46
+difficulty: easy
+reference_source: apple_income_statement.csv, row 43 'Diluted (in dollars per share)', column 2025-09-27 (FY)
+generated_from: 'Financial-Due-Diligence eval/eval_set.json #7 (sha256 c3ba6eb2ac0a)'

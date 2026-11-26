@@ -1,0 +1,155 @@
+{
+  "scenario_id": "fdd_q24",
+  "question": "How did Apple's total liabilities change from FY2024 to FY2025?",
+  "category": "trend",
+  "answer": "Apple's total liabilities fell from $308,030 million in FY2024 to $285,508 million in FY2025, a decrease of $22,522 million [S1][S2].",
+  "tools_used": [],
+  "tool_outputs": [
+    "CONSOLIDATED BALANCE SHEETS\n(In millions, except number of shares, which are reflected in thousands, and par value)\nSeptember 27, | September 28,\n2025 | 2024\nNon-current liabilities:\nTerm debt | 78,328 | 85,750\nOther non-current liabilities | 41,549 | 45,888\nTotal non-current liabilities | 119,877 | 131,638\nTotal liabilities | 285,508 | 308,030\nCommitments and contingencies\nShareholders’ equity:\nCommon stock and additional paid-in capital, $0.00001 par value: 50,400,000 shares authorized; 14,773,260 and 15,116,786 shares issued and outstanding, respectively | 93,568 | 83,276\nAccumulated deficit | (14,264) | (19,154)\nAccumulated other comprehensive loss | (5,571) | (7,172)\nTotal shareholders’ equity | 73,733 | 56,950\nTotal liabilities and shareholders’ equity | $359,241 | $364,980",
+    "Total liabilities, fiscal year 2024: $308,030 million (from Apple's balance sheet)",
+    "Total liabilities, fiscal year 2025: $285,508 million (from Apple's balance sheet)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261124_135240",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_baseline",
+  "latency_s": 28.997,
+  "usage": {
+    "input_tokens": 2966,
+    "output_tokens": 1053,
+    "total_tokens": 4019
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 2161,
+      "output_tokens": 272,
+      "total_tokens": 2433,
+      "seconds": 0.993,
+      "started_at": 25.849
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 805,
+      "output_tokens": 781,
+      "total_tokens": 1586,
+      "seconds": 2.151,
+      "started_at": 26.842
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "How did Apple's total liabilities change from FY2024 to FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0228, AAPL-10-K-FY2025-0229, AAPL-10-K-FY2025-0235, AAPL-10-K-FY2025-0241, AAPL-10-K-FY2025-0299, AAPL-10-K-FY2025-0343",
+      "note": "1 of 6 relevant (mean relevance 0.17); 2 of 2 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.074,
+      "latency_s": 25.774,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 2161,
+        "output": 272,
+        "total": 2433
+      },
+      "started_at": 25.849,
+      "latency_s": 0.993,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 805,
+        "output": 781,
+        "total": 1586
+      },
+      "started_at": 26.842,
+      "latency_s": 2.151,
+      "error": null,
+      "index": 2
+    }
+  ],
+  "final_score": 9.526992287917738,
+  "disagreement": false,
+  "low_confidence_judges": [],
+  "na_judges": [],
+  "correctness_gt_result": {
+    "score": 8,
+    "reason": "The answer correctly states the total liabilities for FY2024 and FY2025 and the absolute decrease of $22,522 million, matching the reference facts. However, it omits the percentage reduction (~7.3%) that is part of the reference answer, so a required fact is missing. No contradictory statements are present.",
+    "confidence": 0.92,
+    "mode": "answer_key"
+  },
+  "completeness_result": {
+    "score": 10,
+    "reason": "The single input part asks how Apple's total liabilities changed from FY2024 to FY2025. The output correctly reports FY2024 liabilities ($308,030 M), FY2025 liabilities ($285,508 M), and the decrease ($22,522 M), matching the source data and reference answer. No part is missing or incorrect.",
+    "confidence": 0.99
+  },
+  "groundedness_result": {
+    "score": 10,
+    "reason": "All specific claims (FY2024 total liabilities $308,030 million, FY2025 total liabilities $285,508 million, and the $22,522 million decrease) are directly present in the provided balance‑sheet data. No unsupported information is introduced.",
+    "confidence": 0.99
+  },
+  "context_relevance_result": {
+    "score": 10,
+    "reason": "The retrieved excerpt includes the total liabilities for FY2024 ($308,030 M) and FY2025 ($285,508 M), which directly answers the question about the change between the two years. No additional information is required.",
+    "confidence": 0.99
+  },
+  "tool_efficiency_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "tool_match_result": {
+    "na": true,
+    "reason": "not applicable to this target (targets.yaml judges)"
+  },
+  "answer_key_hash": "6d89a344594a",
+  "judge_error": null,
+  "judge_set": {
+    "name": "generic_v2",
+    "llm_judges": [
+      "correctness_gt",
+      "completeness",
+      "groundedness",
+      "context_relevance"
+    ],
+    "checks": [],
+    "versions": {
+      "correctness_gt": "generic",
+      "completeness": "generic_v2",
+      "groundedness": "generic",
+      "tool_efficiency": "generic",
+      "context_relevance": "generic"
+    },
+    "not_applicable": [
+      "tool_efficiency",
+      "tool_match"
+    ],
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "regraded_from": "generic_v1",
+  "regraded_judges": [
+    "completeness"
+  ]
+}

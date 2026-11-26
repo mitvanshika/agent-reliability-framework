@@ -1,0 +1,93 @@
+{
+  "scenario_id": "fdd_q07",
+  "question": "What was Apple's diluted earnings per share (EPS) for FY2025?",
+  "category": "numeric_lookup",
+  "answer": "$7.46 per share [S1]",
+  "tools_used": [],
+  "tool_outputs": [
+    "Note 3 - Earnings Per Share\nThe following table shows the computation of basic and diluted earnings per share for 2025, 2024 and 2023 (net income in millions and shares in thousands):\n2025 | 2024 | 2023\nNumerator:\nNet income | $112,010 | $93,736 | $96,995\nDenominator:\nWeighted-average basic shares outstanding | 14,948,500 | 15,343,783 | 15,744,231\nEffect of dilutive share-based awards | 56,197 | 64,312 | 68,316\nWeighted-average diluted shares | 15,004,697 | 15,408,095 | 15,812,547\nBasic earnings per share | $7.49 | $6.11 | $6.16\nDiluted earnings per share | $7.46 | $6.08 | $6.13",
+    "Diluted (in dollars per share), fiscal year 2025: $7.46 per share (from Apple's income statement)"
+  ],
+  "retries_needed": 0,
+  "timestamp": "20261126_092851",
+  "error": null,
+  "error_type": null,
+  "experiment": "fdd_exp_01_top_k3",
+  "latency_s": 24.212,
+  "usage": {
+    "input_tokens": 1729,
+    "output_tokens": 939,
+    "total_tokens": 2668
+  },
+  "usage_source": "target",
+  "llm_calls": [
+    {
+      "label": "chunk_grades",
+      "model": "openai/gpt-oss-20b",
+      "input_tokens": 985,
+      "output_tokens": 154,
+      "total_tokens": 1139,
+      "seconds": 0.719,
+      "started_at": 21.392
+    },
+    {
+      "label": "grounded_answer",
+      "model": "openai/gpt-oss-120b",
+      "input_tokens": 744,
+      "output_tokens": 785,
+      "total_tokens": 1529,
+      "seconds": 2.093,
+      "started_at": 22.112
+    }
+  ],
+  "messages": null,
+  "trajectory": [
+    {
+      "type": "tool",
+      "name": "retrieve",
+      "args": {
+        "query": "What was Apple's diluted earnings per share (EPS) for FY2025?",
+        "strategy": "original"
+      },
+      "output": "chunks: AAPL-10-K-FY2025-0223, AAPL-10-K-FY2025-0264, AAPL-10-K-FY2025-0265",
+      "note": "1 of 3 relevant (mean relevance 0.33); 1 of 1 database facts relevant",
+      "retrieval_attempt": 1,
+      "started_at": 0.027,
+      "latency_s": 21.365,
+      "error": null,
+      "index": 0
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-20b",
+      "label": "chunk_grades",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 985,
+        "output": 154,
+        "total": 1139
+      },
+      "started_at": 21.392,
+      "latency_s": 0.719,
+      "error": null,
+      "index": 1
+    },
+    {
+      "type": "llm",
+      "name": "openai/gpt-oss-120b",
+      "label": "grounded_answer",
+      "tool_calls": [],
+      "output": "",
+      "tokens": {
+        "input": 744,
+        "output": 785,
+        "total": 1529
+      },
+      "started_at": 22.112,
+      "latency_s": 2.093,
+      "error": null,
+      "index": 2
+    }
+  ]
+}
