@@ -390,6 +390,7 @@ def api_experiment_run(run_id):
                     "errors_by_type": summary.get("errors_by_type"), "comparison": comparison,
                     "diagnosis": (comparison or {}).get("diagnosis") or diagnosis.get("diagnoses") or [],
                     "fine_tune_candidates": diagnosis.get("fine_tune_candidates") or {},
+                    "suggestions": _read_json(os.path.join(path, "suggestions.json")),
                     "scenarios": _scenario_steps(path)})
 
 

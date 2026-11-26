@@ -28,7 +28,7 @@ DEFAULT_THRESHOLD = 7
 DEFAULT_SCENARIOS = "scenarios"   # = run_suite.SCENARIOS_DIR
 KEYS = {"module", "function", "accepts_settings", "description", "tools", "judge_set", "judges",
         "pass_threshold", "scenarios", "non_retrieval_tools", "action_tools", "actions_sandbox", "max_steps",
-        "max_seconds", "title", "about", "tour_question"}
+        "max_seconds", "title", "about", "tour_question", "source_dirs"}
 
 
 class TargetConfigError(ValueError):
@@ -56,6 +56,8 @@ def get(target, targets=None) -> dict:
         "title": entry.get("title"),                  # None = the target's name
         "about": entry.get("about"),                  # None = the description
         "tour_question": entry.get("tour_question"),  # None = picked automatically
+        # For suggest_fixes.py: folders with the system's own code (read-only; $VARS expanded).
+        "source_dirs": list(entry.get("source_dirs") or []),   # [] = the module's source_dirs(), if any
     }
 
 
@@ -136,6 +138,9 @@ def validate(target, entry, known_judges) -> list:
         problems.append(f"{target}.max_seconds: a number of seconds > 0")
     if "actions_sandbox" in entry and not (isinstance(entry["actions_sandbox"], str) and ":" in entry["actions_sandbox"]):
         problems.append(f"{target}.actions_sandbox: module:function")
+    if "source_dirs" in entry and not (isinstance(entry["source_dirs"], list)
+                                       and all(isinstance(d, str) and d.strip() for d in entry["source_dirs"])):
+        problems.append(f"{target}.source_dirs: a list of folder paths")
     for key in ("title", "about", "tour_question"):
         if key in entry and not (isinstance(entry[key], str) and entry[key].strip()):
             problems.append(f"{target}.{key}: a non-empty string")

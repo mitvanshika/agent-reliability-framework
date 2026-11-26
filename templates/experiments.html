@@ -264,6 +264,24 @@ async function openRun(runId) {
       <div class="cause"><b>${esc(x.scenario_id)}: ${esc(x.cause)}</b>
         <div class="dim">${esc(x.evidence)}</div><div>next: ${esc(x.suggestion)}</div></div>`).join('');
   }
+  const sg = d.suggestions;
+  if (sg && (sg.items || []).length) {
+    html += `<h2 style="margin-top:18px">Suggested fixes <span class="dim">(${esc(sg.model)}; nothing was applied, a human decides)</span></h2>` +
+      sg.items.map(it => {
+        const s = it.suggestion || {}, p = it.problem || {}, pc = it.patch_check;
+        const tags = [`<span class="badge">${esc(it.status)}</span>`, s.confidence ? `<span class="badge">confidence ${esc(s.confidence)}</span>` : '',
+                      p.maybe_noise ? '<span class="badge warnb">maybe noise: also moved in the A/A test</span>' : ''].join(' ');
+        return `<div class="cause"><b>${esc(s.title || p.title)}</b> ${tags}
+          <div class="dim">${esc(p.title)} &middot; ${esc((p.scenario_ids || []).join(', '))}</div>
+          ${s.what_is_wrong ? `<p>${esc(s.what_is_wrong)}</p>` : `<p class="dim">${esc(it.reason || '')}</p>`}
+          ${(s.evidence || []).length ? `<ul>${s.evidence.map(e => `<li class="dim">${esc(e)}</li>`).join('')}</ul>` : ''}
+          ${s.setting_change ? `<div><b>setting change:</b> ${esc(s.setting_change)}</div>` : ''}
+          ${s.patch ? `<div><b>patch</b> <span class="${pc && pc.fits ? 'up' : 'down'}">${pc ? (pc.fits ? 'fits the current code' : 'does not fit: ' + esc(pc.why)) : ''}</span></div><pre>${esc(s.patch)}</pre>` : ''}
+          ${s.how_to_check ? `<div><b>how to check:</b> ${esc(s.how_to_check)}</div>` : ''}
+          ${s.risks ? `<div class="dim"><b>risks:</b> ${esc(s.risks)}</div>` : ''}
+          <div class="dim mono">${esc(it.steps)} model calls &middot; ${tokens(it.tokens)} tokens &middot; read: ${esc((it.files_read || []).join(', ') || 'nothing')}</div></div>`;
+      }).join('');
+  }
   if ((d.scenarios || []).length) {
     html += '<h2 style="margin-top:18px">Step timelines</h2><div class="steps-list">' + d.scenarios.map(s =>
       `<a class="mono steplink" href="/runs/${encodeURIComponent(d.run_id)}/${encodeURIComponent(s.scenario_id)}">${esc(s.scenario_id)}

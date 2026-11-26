@@ -49,7 +49,8 @@ for name in ("strong", "weak", "not-a-target", None):
     ok(f"{name}: all defaults", d == {"description": None, "judge_set": None, "judges": None, "pass_threshold": 7.0,
                                       "scenarios": run_suite.SCENARIOS_DIR, "non_retrieval_tools": [],
                                       "action_tools": [], "max_seconds": None,
-                                      "title": None, "about": None, "tour_question": None}, d)
+                                      "title": None, "about": None, "tour_question": None,
+                                      "source_dirs": []}, d)
 ok("every real targets.yaml entry validates", all(
    not target_config.validate(n, e, judge_sets.ALL_NAMES) for n, e in REAL.items()),
    [target_config.validate(n, e, judge_sets.ALL_NAMES) for n, e in REAL.items()])
@@ -154,6 +155,11 @@ for bad in (0, -5, "300", True):
     ok(f"max_seconds {bad!r} refused", any("max_seconds" in p for p in
        target_config.validate("t", {"module": "m", "function": "f", "max_seconds": bad}, [])))
 ok("left out -> None (no limit)", target_config.get("t", {"t": {"module": "m", "function": "f"}})["max_seconds"] is None)
+
+print("source_dirs:")
+ok("a list of paths is fine", target_config.validate("t", {"module": "m", "function": "f", "source_dirs": ["../x", "$HOME/y"]}, []) == [])
+ok("a string is refused", any("source_dirs" in p for p in
+   target_config.validate("t", {"module": "m", "function": "f", "source_dirs": "../x"}, [])))
 
 print("tour keys (title, about, tour_question):")
 ok("strings are fine", target_config.validate("t", {"module": "m", "function": "f", "title": "T", "about": "A",

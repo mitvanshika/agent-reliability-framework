@@ -287,5 +287,36 @@ except SystemExit as e:
     code = e.code
 ok("variant AND --experiment -> refused", "not both" in str(code))
 
+print("\nwhat the experiment changed decides the cause:")
+ret = ["settings.retrieval.final_top_k: (unset) -> 3"]
+c = lambda r, diff: diagnose.diagnose_row(r, diff)["cause"]
+ok("retrieval changed + correctness dropped, relevance fine -> RAG (the change being tested)",
+   c(row({"correctness_gt": -4}), ret) == "RAG (the change being tested)")
+ok("...with the reason: context_relevance can't see a missing passage",
+   "can't see a passage that is missing" in diagnose.diagnose_row(row({"correctness_gt": -4}), ret)["evidence"])
+ok("retrieval changed + completeness dropped -> RAG (the change being tested)",
+   c(row({"completeness": -3}), ["settings.chunk_size: 500 -> 200"]) == "RAG (the change being tested)")
+ok("model changed + correctness dropped -> MODEL (the change being tested)",
+   c(row({"correctness_gt": -4}), ["settings.generation.effort: high -> medium"]) == "MODEL (the change being tested)")
+ok("prompt changed -> PROMPT, as before", c(row({"correctness_gt": -4}), ["settings.prompt: a -> b"])
+   == "PROMPT (used info badly)")
+ok("nothing changed (A/A; the empty-settings artefact) -> PROMPT, as before",
+   c(row({"correctness_gt": -4}), ["settings: {} -> (unset)"]) == "PROMPT (used info badly)")
+ok("retrieval changed but relevance DID drop -> plain RAG (checked first)",
+   c(row({"context_relevance": -4, "correctness_gt": -4}), ret) == "RAG")
+ok("retrieval changed but the run crashed -> still AGENT CRASH (errors first)",
+   c(row(run_err="crash", run_error="boom"), ret) == "AGENT CRASH")
+ok("changed_areas sorts setting paths", diagnose.changed_areas(
+   ["settings.retrieval.final_top_k: 6 -> 3", "settings.model: a -> b", "settings.prompt: x -> y"])
+   == {"retrieval": ["settings.retrieval.final_top_k"], "model": ["settings.model"]})
+import tempfile  # noqa: E402
+for diff, cause_name in ((ret, "RAG (the change being tested)"), (["settings.model: a -> b"], "MODEL (the change being tested)")):
+    with tempfile.TemporaryDirectory() as tmp:
+        ds = diagnose.diagnose({"config_diff": diff, "rows": [row({"correctness_gt": -4})]})
+        path = diagnose.draft_experiment(ds, {"experiment": "baseline", "target": "configurable", "run_dir": "r"}, tmp)
+        ok(f"--draft works for {cause_name}", path and cause_name in open(path, encoding="utf-8").read(), path)
+ok("diagnose() passes the comparison's config_diff", diagnose.diagnose(
+   {"config_diff": ret, "rows": [row({"correctness_gt": -4})]})[0]["cause"] == "RAG (the change being tested)")
+
 print("\nFAILED: " + ", ".join(failures) if failures else "\nPASS")
 sys.exit(1 if failures else 0)

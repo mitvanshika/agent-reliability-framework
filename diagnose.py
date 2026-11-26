@@ -14,8 +14,11 @@ question it picks the most likely cause, checking in this order:
   (several judges dropped by about the same amount -> UNCLEAR: no single judge
    stands out, so naming one cause would be a guess)
   4. context_relevance dropped      -> RAG              retrieval fetched the wrong / no info
-  5. context fine, but correctness_gt / groundedness dropped
-                                    -> PROMPT           had the info, used it badly
+  5. context fine, but correctness_gt / groundedness (or completeness) dropped, and the
+     experiment changed retrieval   -> RAG (the change being tested)  a needed passage may be missing:
+                                       context_relevance only sees what WAS found
+     ... changed the model          -> MODEL (the change being tested)
+     ... otherwise                  -> PROMPT           had the info, used it badly
   6. tool_efficiency / tool_match dropped -> TOOL DESCRIPTIONS
   7. completeness dropped           -> PROMPT           missed part of the question
   8. judges disagreed / low confidence -> MEASUREMENT UNSURE   check by hand
@@ -68,6 +71,11 @@ CAUSES = {
     "TOOL DESCRIPTIONS": ("docstrings", "try clearer tool descriptions "
                                         "(demo agent: start from docstrings/detailed.yaml)"),
     "PROMPT (missed part)": ("prompt", "try a prompt change: 'list every part of the question first, then answer each'"),
+    "RAG (the change being tested)": ("retrieval", "compare the passages the baseline and this run found: if the "
+                                                   "baseline's had the missing fact, the retrieval change cut it; undo or "
+                                                   "soften it (e.g. a larger value), or keep it as a known cost/quality trade-off"),
+    "MODEL (the change being tested)": ("model", "the model or its settings changed: compare the two answers; "
+                                                 "undo the change for these questions or keep it as a known trade-off"),
     "MEASUREMENT UNSURE": (None, "read the answer by hand; re-judge (judge_run.py) or calibrate noise before trusting it"),
     "UNCLEAR": (None, "open the run and baseline traces side by side and read them"),
 }
@@ -80,8 +88,32 @@ def _dropped(deltas, names):
     return {n: deltas[n] for n in names if n in deltas and deltas[n] <= -DROP}
 
 
-def diagnose_row(row) -> dict:
-    """{scenario_id, cause, evidence, suggestion, setting} for one comparison row."""
+# What an experiment changed decides what a drop most likely means. context_relevance only checks that
+# the passages found are relevant; it can't see one that's MISSING. So when the experiment changed
+# retrieval (e.g. fewer passages), "context fine but the answer got worse" points at the change itself,
+# not at the prompt. Matched on the changed setting's path (any system's own setting names).
+RETRIEVAL_WORDS = ("retriev", "top_k", "topk", "chunk", "search", "rerank", "embed", "index", "bm25", "passage", "k_")
+MODEL_WORDS = ("model", "temperature", "effort", "reasoning", "max_tokens", "top_p")
+
+
+def changed_areas(config_diff):
+    """{"retrieval": [paths], "model": [paths]} from a comparison's config_diff lines ("settings.a.b: x -> y")."""
+    import overview
+    areas = {"retrieval": [], "model": []}
+    for line in overview.real_changes(config_diff):
+        path = line.split(":", 1)[0].strip().lower()
+        if any(w in path for w in RETRIEVAL_WORDS):
+            areas["retrieval"].append(path)
+        elif any(w in path.rsplit(".", 1)[-1] for w in MODEL_WORDS):
+            areas["model"].append(path)
+    return areas
+
+
+def diagnose_row(row, config_diff=None) -> dict:
+    """{scenario_id, cause, evidence, suggestion, setting} for one comparison row.
+    config_diff: what the experiment changed (comparison["config_diff"]); used to name the change being
+    tested as the likely cause when the answer got worse without the retrieval judge noticing."""
+    areas = changed_areas(config_diff)
     sid = row["scenario_id"]
     deltas = row.get("judge_deltas") or {}
     deltas_text = ", ".join(f"{n} {d:+g}" for n, d in deltas.items()) or "no judge scores on both sides"
@@ -117,6 +149,15 @@ def diagnose_row(row) -> dict:
     run_ctx = "context_relevance" in (row.get("run_judges") or {})
     context_fine = ("context_relevance" in deltas) or (not base_ctx and not run_ctx)
     bad = _dropped(deltas, CORRECTNESS_JUDGES + ("groundedness",))
+    if (context_fine and bad) or ("completeness" in deltas and deltas["completeness"] <= -DROP):
+        worse = ", ".join(f"{n} {d:+g}" for n, d in (bad or {"completeness": deltas.get("completeness")}).items())
+        if areas["retrieval"]:
+            return result("RAG (the change being tested)",
+                          f"the experiment changed retrieval ({', '.join(areas['retrieval'])}) and {worse}; the passages "
+                          "found were still relevant, but context_relevance can't see a passage that is missing")
+        if areas["model"]:
+            return result("MODEL (the change being tested)",
+                          f"the experiment changed the model ({', '.join(areas['model'])}) and {worse}")
     if context_fine and bad:
         why = "context was fine" if "context_relevance" in deltas else "no retrieval on either side"
         return result("PROMPT (used info badly)", f"{why}, but {', '.join(f'{n} {d:+g}' for n, d in bad.items())}")
@@ -137,7 +178,7 @@ def diagnose(comparison) -> list[dict]:
     rows = [r for r in comparison.get("rows", []) if r.get("direction") == "down"]
     if rows and "judge_deltas" not in rows[0]:
         raise ValueError("this comparison.json is from an older compare.py without diagnosis data: re-run compare.py")
-    return [diagnose_row(r) for r in rows]
+    return [diagnose_row(r, comparison.get("config_diff")) for r in rows]
 
 
 # ---------------------------------------------------------------- fine-tuning signal
@@ -210,6 +251,8 @@ def draft_experiment(diagnoses, comparison, experiments_dir=None, now=None):
                      "  retrieval: {method: TODO}\n",
         "prompt_addons": "  # TODO: keep the addons that address the failures (see prompt_addons/)\n"
                          "  prompt_addons: [injection_resistance, no_invention, scope]\n",
+        "model": "  # TODO: undo or soften the model change being tested (e.g. back to the baseline's model)\n"
+                 "  model: TODO\n",
     }
     body = examples[setting] if comparison.get("target") == "configurable" else \
         f"  # TODO: change the setting that controls the {setting} of your system\n"

@@ -104,6 +104,7 @@ python run_experiment.py experiments/exp_01_weak_prompt.yaml
 python judge_run.py runs/exp_01_weak_prompt_<ts>
 python compare.py runs/exp_01_weak_prompt_<ts>              # 5. question-by-question vs the baseline
 python diagnose.py runs/exp_01_weak_prompt_<ts> --draft     # 6. why it got worse + a draft next experiment
+python suggest_fixes.py runs/exp_01_weak_prompt_<ts>         # 7. a suggested fix per problem (never applied)
 ```
 
 | Command | Reads | Writes |
@@ -114,6 +115,7 @@ python diagnose.py runs/exp_01_weak_prompt_<ts> --draft     # 6. why it got wors
 | `calibrate_noise.py --experiment` | an experiment | `noise/<target>_noise.json` |
 | `compare.py` | a judged run + its baseline + noise file | `comparison.json` |
 | `diagnose.py` | `comparison.json`, `runs/` | `diagnosis.json`, optional `experiments/draft_*.yaml` |
+| `suggest_fixes.py` | the run's traces, `comparison.json`, the system's code (read-only) | `suggestions.json`, `suggestions.md` |
 | `experiment_pipeline.py` | an experiment | all of the above for one run + `pipeline.json` |
 
 Every command that calls an API first prints an estimate of the number of calls and asks for confirmation (`--yes` skips it).
@@ -186,13 +188,26 @@ When the two tests disagree, the more cautious verdict wins. A crashed answer co
 | auth error | CONFIG: check the key / model |
 | loop_limit error | TOOLS/PROMPT: stuck calling tools |
 | context_relevance dropped | RAG: retrieval fetched the wrong information |
-| context fine, correctness_gt / groundedness dropped | PROMPT: had the information, used it badly |
+| context fine, correctness_gt / groundedness (or completeness) dropped, and the experiment changed retrieval | RAG (the change being tested): a needed passage may be missing. context_relevance only checks that what was found is relevant; it can't see what wasn't found |
+| ... and the experiment changed the model (model, temperature, effort) | MODEL (the change being tested) |
+| context fine, correctness_gt / groundedness dropped (no retrieval or model change) | PROMPT: had the information, used it badly |
 | tool_efficiency / tool_match dropped | TOOL DESCRIPTIONS |
 | completeness dropped | PROMPT: missed part of the question |
 | judges disagreed / low confidence | MEASUREMENT UNSURE: check by hand |
 | several judges dropped about equally | UNCLEAR: lists them |
 
 Thresholds are constants at the top of the file. `--draft` writes `experiments/draft_<cause>_<timestamp>.yaml` extending the run's experiment with a TODO on the setting to change; it is never run automatically. Diagnosis also scans `runs/`: a scenario that failed under 3 or more different prompt settings is flagged as a **fine-tuning candidate** (prompting isn't fixing it).
+
+## Suggested fixes
+
+`diagnose.py` says *what kind* of problem a question has; `suggest_fixes.py runs/<run>` goes one step further: *what to change, where, and why*. It never edits, runs or applies anything. The owner reads the suggestion and decides (the framework tracks and suggests; it doesn't judge what a system should do).
+
+- **Problems it looks at** (from the run's own files, `--list` shows them for 0 calls): crashes; LLM or tool calls inside an answer that failed (grouped: the same failure in 5 questions is one problem); and drops `diagnose.py` explained with a fixable cause (PROMPT, RAG, TOOL DESCRIPTIONS, TOOLS/PROMPT, SAFETY, AGENT CRASH). INFRA, CONFIG, MEASUREMENT UNSURE and UNCLEAR are listed as skipped, with the reason. A drop on a question that also moved in an A/A test is marked **maybe noise**, and the model is told to say so.
+- **How**: for each problem one fixed model (temperature 0, the framework's key) gets the evidence (both answers, the answer key, the judge reasons, the steps, the config change, and what the baseline found that the run didn't) and three read-only tools: `list_files`, `read_file`, `search_code`. It's told the fix is almost always in the system's own code or settings (searches cover that folder first), and that when the cause is the change being tested it should first check whether a passage only the baseline found holds a fact the answer key needs. It ends with `submit_suggestion`: what's wrong in plain words, evidence with `file:line`, the change (a unified-diff patch, a prompt change or a setting), confidence, how to check it, risks.
+- **What it can read**: the framework's folder and the system's own code (`source_dirs` in `targets.yaml`, or the target module's `source_dirs()`; the Financial DD adapter finds its project from `FDD_PYTHON`). Never `.env` files, keys, virtual environments, `.git`, `runs/` or data files; anything that looks like an API key is redacted. Parts of that code are sent to the model's provider, and the command names the folders before asking.
+- **Checked, not applied**: every patch is matched against the current files (*fits* / *doesn't fit*, with the reason). Testing a fix (apply in a temporary copy, re-run those questions, compare) is the next step, not done automatically.
+- **Budgets and speed**: `--max` problems per call (default 5), `--max-steps` model calls (default 8) and `--max-tokens` (default 30,000) per problem; near the end only `submit_suggestion` is offered, so the model submits what it has. Every call re-sends the conversation and a free Groq account allows about 8,000 tokens a minute, so calls are kept small (reads of 80 lines at most; only the last 3 tool results stay in full) and progress is printed per call. Results are saved after each problem (`suggestions.json` / `.md` in the run folder), so a stop or a daily limit loses nothing and the same command continues. The Experiments page shows them under the run's diagnosis.
+- Rules the model is given: cite what it read; the smallest change; never change the tests, judges, answer keys or scoring to make results look better.
 
 ## Plug in your own system
 
@@ -266,6 +281,7 @@ You only need this when your system runs in its own process (like `adapters/fina
 | `title` | a short name for the guided tour page (`/tour`); never shown to the judges | the target's name |
 | `about` | a plain description of the system for visitors on the tour page; never shown to the judges | its `description` |
 | `tour_question` | the question the tour shows up close (steps, judges, reasons) | the one that wobbled most between identical runs |
+| `source_dirs` | folders with the system's own code, for `suggest_fixes.py` (read-only; `$VARS` expanded) | the target module's `source_dirs()`, else none |
 | `actions_sandbox` | `module:function(tmpdir)` that points side effects at a temp folder during `check_actions.py` | none |
 
 `python check_target.py <target>` checks all of this before you spend a token.
@@ -470,6 +486,7 @@ judge_run.py                        judges one run + summary.json
 promote_baseline.py                 promotes a judged run to baselines/<target>.json
 compare.py                          paired comparison vs the baseline (McNemar + Wilcoxon)
 diagnose.py                         likely cause per regression, fine-tune signal, drafts
+suggest_fixes.py / suggest/         a suggested fix per problem: read-only agent, patch check, never applied
 experiment_pipeline.py              run -> judge -> compare -> diagnose in one command
 export_finetune.py                  train-split fine-tuning export with leakage guard
 app.py / templates/                 dashboards: / overview, /tour, /experiments, /evidence, /systems, /approvals, /track1

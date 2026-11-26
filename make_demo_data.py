@@ -9,7 +9,7 @@ What is copied:
   runs/<run>/   the runs the dashboard points at: every truth-test run (overview.TRUTH_TESTS),
                 each experiment's latest compared run (overview.latest_verdicts) and the
                 runs the current baselines were promoted from. Per run: run_meta, summary,
-                comparison, diagnosis, step_checks, pipeline + traces/, judged/, judged_steps/
+                comparison, diagnosis, step_checks, pipeline, suggestions + traces/, judged/, judged_steps/
                 (judged_experiment_v1/ and other old judge folders are left out).
   baselines/*.json, noise/*.json, evidence/*.md, judged_traces(_weak)/ (Track 1) if present.
   config/       the prompt, tool-description and scenario files those runs point at
@@ -32,7 +32,8 @@ import overview
 import story
 
 OUT = "demo_data"
-RUN_FILES = ("run_meta.json", "summary.json", "comparison.json", "diagnosis.json", "step_checks.json", "pipeline.json")
+RUN_FILES = ("run_meta.json", "summary.json", "comparison.json", "diagnosis.json", "step_checks.json", "pipeline.json",
+             "suggestions.json")
 RUN_DIRS = ("traces", "judged", "judged_steps")
 
 

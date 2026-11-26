@@ -45,6 +45,18 @@ def available():
     return os.path.isfile(os.environ.get("FDD_PYTHON", ""))
 
 
+def source_dirs():
+    """Where Financial DD's own code lives, for suggest_fixes.py (read-only): the project folder
+    that holds the venv FDD_PYTHON points at (the first parent with pyproject.toml, setup.py or .git)."""
+    py = os.environ.get("FDD_PYTHON", "")
+    d = os.path.dirname(os.path.abspath(py)) if py else ""
+    while d and os.path.dirname(d) != d:
+        if any(os.path.exists(os.path.join(d, m)) for m in ("pyproject.toml", "setup.py", ".git")):
+            return [d]
+        d = os.path.dirname(d)
+    return []
+
+
 def worker_env(env=None, env_file=None):
     """The environment the worker starts with: this one MINUS everything that came from this
     framework's .env (its GROQ_API_KEY and other secrets). Financial DD then reads its own .env
